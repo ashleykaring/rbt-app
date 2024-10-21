@@ -1,0 +1,27 @@
+{
+    "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended"
+    ],
+    "env": {
+      "browser": true,
+      "es2023": true
+    },
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true
+      },
+      "sourceType": "module"
+    },
+    "rules": {
+      "max-len": ["error", { "code": 64 }], // keep consistent line length
+      "consistent-return": "error",
+      "eqeqeq": "warn",
+      "react/prop-types": "off" // or 0
+    },
+    "settings": {
+      "react": {
+        "version": "detect"
+      }
+    }
+}
