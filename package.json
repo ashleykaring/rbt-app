@@ -1,0 +1,18 @@
+{
+    "name": "full-stack-app",
+    "version": "1.0.0",
+    "description": "Full stack application with Express backend and React frontend",
+    "scripts": {
+        "install": "npm run install:backend && npm run install:frontend",
+        "install:backend": "cd express-backend && npm install",
+        "install:frontend": "cd react-frontend && npm install",
+        "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+        "start:backend": "cd express-backend && npm start",
+        "start:frontend": "cd react-frontend && npm start"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "concurrently": "^6.2.0"
+    }
+}
