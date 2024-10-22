@@ -43,7 +43,7 @@ function NewEntry(props) {
     function submitEntry() {
         props.handleSubmit(entry);
         setEntry({rose: "", bud: "", thorn: ""});
-     }
+    }
 
     return(
         <form>
