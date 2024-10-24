@@ -23,6 +23,6 @@ const UserEntriesSchema = new mongoose.Schema({
 })
 
 
-module.exports.userEntry = UserSchema;
+module.exports.userSchema = UserSchema;
 module.exports.entrySchema = EntrySchema;
 module.exports.userEntriesSchema = UserEntriesSchema;
