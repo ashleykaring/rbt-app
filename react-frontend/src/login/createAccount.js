@@ -93,6 +93,31 @@ function CreateAccount({ setIsLoggedIn }) {
         }
     };
 
+    // Add a function to get the glow effect
+    const getPasswordStrengthGlow = () => {
+        return passwordStrength === 4
+            ? "0 0 10px #27ae60, 0 0 20px #27ae60"
+            : "none";
+    };
+
+    // Add a new function to get the password improvement message
+    const getPasswordImprovementMessage = () => {
+        const messages = [];
+        if (password.length < 8)
+            messages.push("at least 8 characters");
+        if (
+            !password.match(/[a-z]/) ||
+            !password.match(/[A-Z]/)
+        )
+            messages.push("both cases");
+        if (!password.match(/\d/)) messages.push("a number");
+        if (!password.match(/[^a-zA-Z\d]/))
+            messages.push("a special character");
+        return messages.length > 0
+            ? `Add ${messages.join(", ")}`
+            : "";
+    };
+
     // Render
     return (
         <AccountContainer>
@@ -143,7 +168,7 @@ function CreateAccount({ setIsLoggedIn }) {
                         <Input
                             type="password"
                             id="password"
-                            placeholder="Create a strong password"
+                            placeholder="Create a password"
                             value={password}
                             onChange={handlePasswordChange}
                             required
@@ -155,10 +180,21 @@ function CreateAccount({ setIsLoggedIn }) {
                                         passwordStrength * 25
                                     }%`,
                                     backgroundColor:
-                                        getPasswordStrengthColor()
+                                        getPasswordStrengthColor(),
+                                    boxShadow:
+                                        getPasswordStrengthGlow()
                                 }}
                             />
                         </PasswordStrengthContainer>
+                        <small
+                            style={{
+                                color: "#555",
+                                marginTop: "5px",
+                                display: "block"
+                            }}
+                        >
+                            {getPasswordImprovementMessage()}
+                        </small>
                     </InputGroup>
 
                     {/* Submit button */}
