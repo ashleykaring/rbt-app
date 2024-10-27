@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import {
     AccountContainer,
     FormContainer,
-    Logo,
+    LogoImage,
     Title,
     Form,
     InputGroup,
@@ -19,8 +19,16 @@ import {
     PasswordStrengthContainer,
     PasswordStrengthBar,
     Button,
-    LinkText
+    LinkText,
+    AlertOverlay,
+    AlertText
 } from "./login.styles";
+
+// Image
+import RBDLogo from "./RBDLogo.png";
+
+// Add to imports section
+import { registerUser } from "./authService";
 
 /*
 COMPONENTS & RENDER
@@ -32,6 +40,7 @@ function CreateAccount({ setIsLoggedIn }) {
     const [password, setPassword] = useState("");
     const [passwordStrength, setPasswordStrength] = useState(0);
     const [isFormValid, setIsFormValid] = useState(false);
+    const [statusMessage, setStatusMessage] = useState("");
 
     // Update strength indicator on input change
     const handlePasswordChange = (e) => {
@@ -63,17 +72,41 @@ function CreateAccount({ setIsLoggedIn }) {
         );
     }, [firstName, email, password, passwordStrength]);
 
-    // Future development for submit button
-    const handleSubmit = (e) => {
+    // Update the handleSubmit function with more logging
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("Form submission initiated");
+
         if (isFormValid) {
-            // Add your account creation logic here
-            console.log("Account created:", {
-                firstName,
+            console.log(
+                "Form validation passed, preparing user data"
+            );
+            const userData = {
                 email,
-                password
+                password,
+                first_name: firstName
+            };
+
+            console.log("Calling registerUser with:", {
+                email: userData.email,
+                first_name: userData.first_name
             });
-            setIsLoggedIn(true);
+
+            const result = await registerUser(userData);
+            console.log("Registration result:", result);
+
+            if (!result.success) {
+                setStatusMessage(result.message);
+                // Clear error message after 3 seconds
+                setTimeout(() => setStatusMessage(""), 3000);
+            } else {
+                console.log(
+                    "Registration successful, preparing to redirect"
+                );
+                setIsLoggedIn(true);
+            }
+        } else {
+            console.log("Form validation failed");
         }
     };
 
@@ -122,9 +155,9 @@ function CreateAccount({ setIsLoggedIn }) {
     return (
         <AccountContainer>
             <FormContainer>
-                {/* Title & Logo */}
-                <Logo>RBT</Logo>
-                <Title>Join the Reflection Revolution</Title>
+                {/* Replace the Logo div with LogoImage */}
+                <LogoImage src={RBDLogo} alt="RBD Logo" />
+                <Title>Start Your Journey!</Title>
                 <Form onSubmit={handleSubmit}>
                     {/* First Name Input Field */}
                     <InputGroup>
@@ -209,6 +242,11 @@ function CreateAccount({ setIsLoggedIn }) {
                     Already on the path?{" "}
                     <Link to="/login">Sign in</Link>
                 </LinkText>
+                {statusMessage && (
+                    <AlertOverlay>
+                        <AlertText>{statusMessage}</AlertText>
+                    </AlertOverlay>
+                )}
             </FormContainer>
         </AccountContainer>
     );

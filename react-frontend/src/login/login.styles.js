@@ -18,55 +18,80 @@ STYLES
 
 export const AccountContainer = styled.div`
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    align-items: center;
+    height: 100vh;
+    padding: 0 20px;
     background: linear-gradient(
         -45deg,
-        #ee7752,
-        #e73c7e,
-        #23a6d5,
-        #23d5ab
+        #f5d8da,
+        #de7792,
+        #879e84,
+        #2d5441
     );
     background-size: 400% 400%;
     animation: ${gradientAnimation} 15s ease infinite;
-    padding: 20px;
+
+    @media (max-width: 480px) {
+        padding: 0 10px;
+    }
 `;
 
 export const FormContainer = styled.div`
     background-color: rgba(255, 255, 255, 0.9);
-    padding: 40px 30px;
+    padding: 95px 30px 40px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 400px;
-    backdrop-filter: blur(10px);
+    box-sizing: border-box;
+    margin: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+
+    @media (max-width: 480px) {
+        padding: 75px 24px 32px;
+        border-radius: 15px;
+        margin: 15px;
+    }
 `;
 
-export const Logo = styled.div`
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 20px;
-    background-color: #f0f0f0;
+export const LogoImage = styled.img`
+    width: 150px;
+    height: 150px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    background-color: white;
+    padding: 10px;
+    z-index: 1;
+
+    @media (max-width: 480px) {
+        width: 120px;
+        height: 120px;
+        padding: 8px;
+    }
 `;
 
 export const Title = styled.h2`
     color: #333;
-    font-size: 28px;
+    font-size: 32px;
     margin-bottom: 30px;
     text-align: center;
-    font-weight: 600;
+    font-weight: 800;
+    margin-top: 15px;
+
+    @media (max-width: 480px) {
+        font-size: 24px;
+        margin-bottom: 25px;
+        margin-top: 10px;
+    }
 `;
 
 export const Form = styled.form`
@@ -79,6 +104,10 @@ export const InputGroup = styled.div`
     margin-bottom: 25px;
     position: relative;
     width: 100%;
+
+    @media (max-width: 480px) {
+        margin-bottom: 20px;
+    }
 `;
 
 export const Label = styled.label`
@@ -90,6 +119,11 @@ export const Label = styled.label`
     text-transform: uppercase;
     letter-spacing: 0.5px;
     width: 100%;
+
+    @media (max-width: 480px) {
+        font-size: 12px;
+        margin-bottom: 6px;
+    }
 `;
 
 export const Input = styled.input`
@@ -105,6 +139,12 @@ export const Input = styled.input`
         border-color: #23a6d5;
         box-shadow: 0 0 0 3px rgba(35, 166, 213, 0.1);
         outline: none;
+    }
+
+    @media (max-width: 480px) {
+        padding: 10px 12px;
+        font-size: 14px;
+        border-radius: 6px;
     }
 `;
 
@@ -147,6 +187,18 @@ export const Button = styled.button`
         transform: none;
         box-shadow: none;
     }
+
+    @media (max-width: 480px) {
+        padding: 12px;
+        font-size: 14px;
+        border-radius: 6px;
+    }
+
+    @media (hover: none) {
+        &:hover {
+            transform: none;
+        }
+    }
 `;
 
 export const LinkText = styled.p`
@@ -164,4 +216,45 @@ export const LinkText = styled.p`
             text-decoration: underline;
         }
     }
+
+    @media (max-width: 480px) {
+        font-size: 13px;
+        margin-top: 20px;
+    }
+`;
+
+// Add these exports at the end of the file
+
+export const AlertOverlay = styled.div`
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    padding: 16px 24px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border-left: 4px solid #ff4d4d;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideDown 0.3s ease-out;
+
+    @keyframes slideDown {
+        from {
+            transform: translate(-50%, -100%);
+            opacity: 0;
+        }
+        to {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+    }
+`;
+
+export const AlertText = styled.span`
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
 `;
