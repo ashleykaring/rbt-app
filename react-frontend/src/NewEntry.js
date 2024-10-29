@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState} from "react";
 
 function NewEntry(props) {
     const [entry, setEntry] = useState(
@@ -8,6 +8,7 @@ function NewEntry(props) {
             thorn:""
         }
     );
+    const [errorMessage, setErrorMessage] = useState("");
 
     function handleChange(event) {
         const { name, value } = event.target;
@@ -17,32 +18,19 @@ function NewEntry(props) {
             ...prevEntry,
             [name]: value
         }));
+
+        if (errorMessage) {
+            setErrorMessage("");
+        }
     }
 
-    // function handleChange(event) {
-    //     const { name, value } = event.target;
-        
-    //     if (name === "rose") {
-    //         setEntry(prevEntry => ({
-    //             ...prevEntry,
-    //             rose: value
-    //         }));
-    //     } else if (name === "bud") {
-    //         setEntry(prevEntry => ({
-    //             ...prevEntry,
-    //             bud: value
-    //         }));
-    //     } else if (name === "thorn") {
-    //         setEntry(prevEntry => ({
-    //             ...prevEntry,
-    //             thorn: value
-    //         }));
-    //     }
-    // }
-
     function submitEntry() {
-        props.handleSubmit(entry);
-        setEntry({rose: "", bud: "", thorn: ""});
+        if (entry.rose && entry.bud && entry.thorn) {
+            props.handleSubmit(entry);
+            setEntry({rose: "", bud: "", thorn: ""});
+        } else {
+            setErrorMessage("Please fill in all fields")
+        }
     }
 
     return(
@@ -52,6 +40,7 @@ function NewEntry(props) {
                 type="text"
                 name="rose"
                 id="rose"
+                placeholder="What went well today?"
                 value={entry.rose}
                 onChange={handleChange} 
             />
@@ -60,6 +49,7 @@ function NewEntry(props) {
                 type="text"
                 name="bud"
                 id="bud"
+                placeholder="Any areas for growth?"
                 value={entry.bud}
                 onChange={handleChange} 
             />
@@ -68,10 +58,12 @@ function NewEntry(props) {
                 type="text"
                 name="thorn"
                 id="thorn"
+                placeholder="What could have been better?"
                 value={entry.thorn}
                 onChange={handleChange} 
             />
-            <input type="button" value="Submit" onClick={submitEntry} />  
+            <p>{errorMessage}</p>
+            <input type="button" value="Submit Entry" onClick={submitEntry} />  
         </form>
     );
 }
