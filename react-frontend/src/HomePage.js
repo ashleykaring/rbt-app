@@ -3,7 +3,7 @@ import Calendar from 'react-calendar';
 import './App.css';
 import 'react-calendar/dist/Calendar.css';
  
-function App() {
+function HomePage() {
   const [date, setDate] = useState(new Date());
  
   return (
@@ -20,4 +20,4 @@ function App() {
   );
 }
  
-export default App;
+export default HomePage;
