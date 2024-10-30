@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/.env
 /react-frontend/node_modules
 /express-backend/node_modules
 /.pnpnp
@@ -19,6 +20,7 @@
 .env.development.local
 .env.test.local
 .env.production.local
+
 
 npm-debug.log*
 yarn-debug.log*

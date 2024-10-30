@@ -1,25 +1,20 @@
 import mongoose from "mongoose";
 import {userSchema, entrySchema, userEntriesSchema} from "./user.js"
+import dotenv from "dotenv";
+dotenv.config();
 
 const uSchema = userSchema;
 const eSchema = entrySchema;
 const ueSchema = userEntriesSchema;
 
 
-/*
-mongoose.connect("mongodb+srv://bwelsh0707:o02SFQamJRzEiW6T@cluster0.q1r5h.mongodb.net/").then((ans) => {
-    console.log("ConnectedSuccessful");
-  }).catch((err) => {
-    console.log("Error");
-});
-*/
 
 
 let dbConnection;
 
 function getDbConnection() {
     if (!dbConnection) {
-        dbConnection = mongoose.createConnection("mongodb+srv://bwelsh0707:o02SFQamJRzEiW6T@cluster0.q1r5h.mongodb.net/rbt_users_data", {
+        dbConnection = mongoose.createConnection(process.env.MONGODB_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         }); 
@@ -97,7 +92,6 @@ async function getAllEntries(userid) {
     const entryModel = getDbConnection().model("rbt_entries", eSchema);
     return await entryModel.find({'user_id':userid});
 }
-
 
 
 export {addUser, findUserByUsername, addEntry, getAllEntries, findUserById};
