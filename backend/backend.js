@@ -1,30 +1,34 @@
 import express from "express";
 import cors from 'cors';
-// import mongoose from 'mongoose';
 import User from './models/user.js'
-// const cors = require('cors');
-
+// import Entry from './models/entry.js';
 
 const app = express();
 const port = 8000;
 
-
 app.use(cors());
 app.use(express.json());
-
-
-
 
 // Create a new entry for a user
 app.post("/entries", async (req, res) => {
     try {
       const { user_id, rose_text, bud_text, thorn_text, is_public } = req.body;
  
+      if (!user_id || !rose_text || !bud_text || !thorn_text) {
+        return res.status(400).json({ error: "All fields are required" });
+      }
       // Create a new entry
-      const newEntry = new Entry({ user_id, rose_text, bud_text, thorn_text, is_public });
+      const newEntry = new Entry({ 
+        user_id, 
+        rose_text, 
+        bud_text, 
+        thorn_text, 
+        is_public,
+        date: new Date() 
+    });
       await newEntry.save(); //saves new enty to Mongo
  
-      // Update user's entries array
+      // Updates entries array
       await User.findByIdAndUpdate(user_id, { $push: { entries: newEntry._id } });
  
       res.status(201).json(newEntry);
@@ -45,9 +49,6 @@ app.get("/users/:userId/entries", async (req, res) => {
     }
   });
 
-
-
-
 // returns a specific entry by entry ID
 app.get("/entries/:entryId", async (req, res) => {
     try {
@@ -59,36 +60,23 @@ app.get("/entries/:entryId", async (req, res) => {
     }
   });
 
-
-
-
-  // DATE RBT?
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
   });
 
 
-  function getFormattedDate() {
+  // Date
+function getFormattedDate() {
     const now = new Date();
-
 
     const options = {
         weekday: 'long',   // "Monday"
-        year: 'numeric',   // "2023"
+        year: 'numeric',   // "2024"
         month: 'long',     // "October"
-        day: 'numeric',    // "30"
-        hour: 'numeric',   // "10"
-        minute: 'numeric', // "45"
-        hour12: true       // "AM/PM" format
+        day: 'numeric'     // "30"
     };
 
-
-    // Format the date according to the options
+    // (only date, no time)
     return now.toLocaleDateString('en-US', options);
 }
-
-
-// Example usage
-console.log(getFormattedDate()); // Output: "Monday, October 30, 2023, 10:45 AM"
-
 
