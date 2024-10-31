@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
     username: String,
@@ -20,9 +20,7 @@ const EntrySchema = new mongoose.Schema({
 const UserEntriesSchema = new mongoose.Schema({
     user_id: mongoose.Types.ObjectId,
     entries: [mongoose.Types.ObjectId],
-})
+});
 
 
-module.exports.userSchema = UserSchema;
-module.exports.entrySchema = EntrySchema;
-module.exports.userEntriesSchema = UserEntriesSchema;
+export {UserSchema as userSchema, EntrySchema as entrySchema, UserEntriesSchema as userEntriesSchema};
