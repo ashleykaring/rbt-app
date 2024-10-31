@@ -7,8 +7,10 @@
         "install:backend": "cd express-backend && npm install",
         "install:frontend": "cd react-frontend && npm install",
         "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
-        "start:backend": "cd express-backend && npm start",
+        "start:backend": "cd express-backend && node backend.js",
         "start:frontend": "cd react-frontend && npm start",
+        "dev": "concurrently \"npm run dev:backend\" \"npm run start:frontend\"",
+        "dev:backend": "cd express-backend && nodemon backend.js",
         "loginTest": "concurrently \"npm run loginBackend\" \"npm run loginFrontend\"",
         "loginBackend": "cd express-backend\\login && node userServer.js",
         "loginFrontend": "cd react-frontend && npm start"

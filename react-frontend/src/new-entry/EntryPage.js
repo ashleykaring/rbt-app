@@ -1,85 +1,94 @@
-import React, {useState, useEffect} from 'react';
-import Table from './Table';
-import NewEntry from './NewEntry';
-import axios from 'axios';
-import './Entry.css';
-import Footer from '../Footer.js'
-import Header from '../Header.js'
+import React, { useState, useEffect } from "react";
+import NewEntry from "./NewEntry";
+import axios from "axios";
+import "./Entry.css";
 
-function EntryPage() { 
-  const [rbt, setRbt] = useState([]);
-  // for keeping track of user
-  const [user, setUser] = useState("");
+function EntryPage() {
+    const [entries, setEntries] = useState([]);
+    const [userId, setUserId] = useState("");
 
-  // construct object on submit and send to backend with id
-  // get id from local storage
+    useEffect(() => {
+        const currentUserId = localStorage.getItem("userId");
+        if (currentUserId) {
+            setUserId(currentUserId);
+            fetchUserEntries(currentUserId);
+        } else {
+            console.error("No user ID found in localStorage");
+        }
+    }, []);
 
-  useEffect(() => {
-    // get user id from local storage
-    const user = localStorage.getItem('userId');
-    if (user) {
-      setUser(user);
-    } else {
-      console.log("Error getting user id");
-      return false;
-    }
-  }, []);
-
-  async function makePostCall(entry) {
-    try {
-      const response = await axios.post('http://localhost:8000/entries', entry);
-      return response;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-  }
-
-  function updateRbt(entry) {
-    // construct entry object
-    const addedEntry = {
-      user_id: user,
-      // date as integer for now
-      // may be converted to a string when sent
-      date: Date.now(),
-      // edit once public feature added
-      is_public: false,
-      rose_text: entry.rose,
-      bud_text: entry.bud,
-      thorn_text: entry.thorn,
+    const fetchUserEntries = async (userId) => {
+        try {
+            const response = await axios.get(
+                `http://localhost:8000/users/${userId}/entries`
+            );
+            setEntries(response.data);
+        } catch (error) {
+            console.error("Error fetching entries:", error);
+        }
     };
 
-    console.log({addedEntry});
+    async function makePostCall(entry) {
+        try {
+            const entryWithUser = {
+                ...entry,
+                user_id: userId
+            };
 
-    makePostCall(addedEntry).then(result => {
-        // change success status code based on backend
-        // 201 success code for created
-        if (result && result.status === 201) {
-          setRbt([...rbt, result.data]);
+            const response = await axios.post(
+                "http://localhost:8000/entries",
+                entryWithUser
+            );
+
+            if (response.status === 201) {
+                await fetchUserEntries(userId);
+            }
+
+            return response;
+        } catch (error) {
+            console.error("Error creating entry:", error);
+            return false;
         }
-      });
-  }
+    }
 
-  // function updateRbt(entry) { 
-  //   makePostCall(entry).then(result => {
-  //   if (result && result.status === 201)
-  //      setRbt([...rbt, result.data]);
-  //   });
-  // }
+    function handleSubmit(entry) {
+        if (!userId) {
+            console.error("No user ID available");
+            return;
+        }
 
-  // function updateRbt(entry) {
-  //   setRbt([...rbt, entry]);
-  // }
+        makePostCall(entry).then((result) => {
+            if (result && result.status === 201) {
+                setEntries([result.data, ...entries]);
+            }
+        });
+    }
 
-  return (
-    <div className="container">
-        <Header />
-        <h1>New Journal Entry</h1>
-        <Table rbtData={rbt}/>
-        <NewEntry handleSubmit={updateRbt}/>
-        <Footer />
-    </div>
-  );
+    return (
+        <div className="entry-page">
+            <h1>New Journal Entry</h1>
+            <NewEntry handleSubmit={handleSubmit} />
+            {entries.length > 0 && (
+                <div className="recent-entry">
+                    <h2>Most Recent Entry</h2>
+                    <div className="entry-card">
+                        <div className="entry-item">
+                            <h3>Rose</h3>
+                            <p>{entries[0].rose_text}</p>
+                        </div>
+                        <div className="entry-item">
+                            <h3>Bud</h3>
+                            <p>{entries[0].bud_text}</p>
+                        </div>
+                        <div className="entry-item">
+                            <h3>Thorn</h3>
+                            <p>{entries[0].thorn_text}</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 }
 
 export default EntryPage;

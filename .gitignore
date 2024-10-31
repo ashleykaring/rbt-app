@@ -5,6 +5,7 @@
 /.env
 /react-frontend/node_modules
 /express-backend/node_modules
+/express-backend/.env
 /.pnpnp
 .pnp.js
 

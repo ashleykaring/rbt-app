@@ -1,41 +1,22 @@
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "http://localhost:8000/api";
 
 export const registerUser = async (userData) => {
-    console.log("Attempting to register user:", {
-        email: userData.email,
-        first_name: userData.first_name
-    });
-
     try {
         const response = await fetch(
             `${API_BASE_URL}/register`,
             {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    Accept: "application/json"
                 },
                 body: JSON.stringify(userData)
             }
         );
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.log("Server error response:", errorData);
-            return {
-                success: false,
-                message: errorData.message
-            };
-        }
-
         const data = await response.json();
-        console.log("Registration response:", {
-            status: response.status,
-            success: response.ok,
-            message: data.message
-        });
-
         return {
-            success: true,
+            success: response.ok,
             message: data.message
         };
     } catch (error) {
@@ -43,7 +24,7 @@ export const registerUser = async (userData) => {
         return {
             success: false,
             message:
-                "There was an error registering, please try again."
+                "Unable to connect to the server. Please check your connection and try again."
         };
     }
 };
@@ -72,6 +53,9 @@ export const loginUser = async (credentials) => {
         }
 
         const data = await response.json();
+        if (data.userId) {
+            localStorage.setItem("userId", data.userId);
+        }
         console.log("Login response:", {
             status: response.status,
             success: response.ok,
@@ -80,7 +64,8 @@ export const loginUser = async (credentials) => {
 
         return {
             success: true,
-            message: data.message
+            message: data.message,
+            userId: data.userId
         };
     } catch (error) {
         console.error("Login error:", error);

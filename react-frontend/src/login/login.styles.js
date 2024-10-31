@@ -101,7 +101,7 @@ export const Form = styled.form`
 `;
 
 export const InputGroup = styled.div`
-    margin-bottom: 25px;
+    margin-bottom: 5px;
     position: relative;
     width: 100%;
 

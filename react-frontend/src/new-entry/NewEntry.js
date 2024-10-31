@@ -1,40 +1,47 @@
-import React, {useState} from "react";
-import './Entry.css';
+import React, { useState } from "react";
+import "./Entry.css";
 
 function NewEntry(props) {
-    const [entry, setEntry] = useState(
-        {
-            rose: "",
-            bud: "",
-            thorn:""
-        }
-    );
+    const [entry, setEntry] = useState({
+        rose: "",
+        bud: "",
+        thorn: ""
+    });
     const [errorMessage, setErrorMessage] = useState("");
 
     function handleChange(event) {
         const { name, value } = event.target;
-
-        setEntry(prevEntry => ({
-            // keep previous entry content same
+        setEntry((prevEntry) => ({
             ...prevEntry,
             [name]: value
         }));
-
-        if (errorMessage) {
-            setErrorMessage("");
-        }
+        if (errorMessage) setErrorMessage("");
     }
 
     function submitEntry() {
         if (entry.rose && entry.bud && entry.thorn) {
-            props.handleSubmit(entry);
-            setEntry({rose: "", bud: "", thorn: ""});
+            const userId = localStorage.getItem("userId");
+            if (!userId) {
+                setErrorMessage("User not logged in");
+                return;
+            }
+
+            const newEntry = {
+                rose_text: entry.rose,
+                bud_text: entry.bud,
+                thorn_text: entry.thorn,
+                user_id: userId,
+                is_public: false
+            };
+
+            props.handleSubmit(newEntry);
+            setEntry({ rose: "", bud: "", thorn: "" });
         } else {
-            setErrorMessage("Please fill in all fields")
+            setErrorMessage("Please fill in all fields");
         }
     }
 
-    return(
+    return (
         <form>
             <label htmlFor="rose">Rose</label>
             <input
@@ -43,7 +50,7 @@ function NewEntry(props) {
                 id="rose"
                 placeholder="What went well today?"
                 value={entry.rose}
-                onChange={handleChange} 
+                onChange={handleChange}
             />
             <label htmlFor="bud">Bud</label>
             <input
@@ -52,7 +59,7 @@ function NewEntry(props) {
                 id="bud"
                 placeholder="Any areas for growth?"
                 value={entry.bud}
-                onChange={handleChange} 
+                onChange={handleChange}
             />
             <label htmlFor="thorn">Thorn</label>
             <input
@@ -61,10 +68,16 @@ function NewEntry(props) {
                 id="thorn"
                 placeholder="What could have been better?"
                 value={entry.thorn}
-                onChange={handleChange} 
+                onChange={handleChange}
             />
-            <p>{errorMessage}</p>
-            <input type="button" value="Submit Entry" onClick={submitEntry} />  
+            {errorMessage && (
+                <p className="error-message">{errorMessage}</p>
+            )}
+            <input
+                type="button"
+                value="Submit Entry"
+                onClick={submitEntry}
+            />
         </form>
     );
 }

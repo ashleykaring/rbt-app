@@ -4,7 +4,8 @@
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
     width: 100%;
@@ -21,7 +22,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: left; /* logo to left */
-    background-color: #F2C4BB;
+    background-color: #f2c4bb;
     margin-top: 0;
 }
 
@@ -44,13 +45,14 @@ h1 {
 form {
     display: flex;
     flex-direction: column;
-    margin: 20px;
-    margin-left: 20px;
+    gap: 15px;
+    margin-bottom: 30px;
 }
 
 label {
-    margin-bottom: 5px;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 14px;
+    color: #555;
 }
 
 p {
@@ -59,49 +61,69 @@ p {
 }
 
 input[type="text"] {
-    padding: 10px;
-    margin-left: 0;
-    margin-right: 15px;
-    margin-bottom: 15px;
-    display: block;
-    width: 80%; 
-    max-width: 400px; 
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 0.6em !important;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
 }
 
 input[type="button"] {
-    display: block;
-    margin: 0 auto;
-    padding: 10px;
-    background-color: #F2C4BB;
+    background-color: #f2c4bb;
+    color: #333;
     border: none;
-    border-radius: 4px;
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 1em;
+    transition: background-color 0.2s;
 }
 
-/* button hover effect */
 input[type="button"]:hover {
-    background-color: #F2C4BB;
+    background-color: #eab3a9;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    margin-bottom: 20px;
+.error-message {
+    color: #ff4d4d;
+    font-size: 14px;
+    margin-top: 5px;
 }
 
-th, td {
-    padding: 10px;
-    border: 1px solid #ccc;
-    text-align: left;
+.recent-entry {
+    margin-top: 30px;
 }
 
-th {
-    background-color: #F2C4BB;
+.recent-entry h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.entry-card {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.entry-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.entry-item:last-child {
+    border-bottom: none;
+}
+
+.entry-item h3 {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.entry-item p {
+    font-size: 16px;
+    color: #333;
 }
 
 @media (max-width: 600px) {
@@ -109,7 +131,8 @@ th {
         font-size: 1.2em;
     }
 
-    input[type="text"], input[type="button"] {
+    input[type="text"],
+    input[type="button"] {
         font-size: 1em;
     }
 }
