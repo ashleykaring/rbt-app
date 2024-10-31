@@ -10,6 +10,8 @@ import {
 } from "react-router-dom";
 import Login from "./login/login";
 import CreateAccount from "./login/createAccount";
+import HomePage from "./HomePage";
+import NewEntry from "./new-entry/EntryPage.js"
 
 // Development toggle for bypassing login
 /*
@@ -32,7 +34,18 @@ const MainAppFlow = () => {
                 fontWeight: "bold"
             }}
         >
-            Main App Flow
+            <Router>
+                <Routes>
+                    <Route path="/" element={<Navigate to="/dashboard" />} />
+                    <Route path="/dashboard" element={<HomePage />} />
+                    <Route path="/new-entry" element={<NewEntry />} />
+                    {/* Default Route */}
+                    <Route
+                        path="*"
+                        element={<Navigate to="/dashboard" />}
+                    />
+                </Routes>
+            </Router>
         </div>
     );
 };

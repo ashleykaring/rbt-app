@@ -2,6 +2,9 @@ import React, {useState, useEffect} from 'react';
 import Table from './Table';
 import NewEntry from './NewEntry';
 import axios from 'axios';
+import './Entry.css';
+import Footer from '../Footer.js'
+import Header from '../Header.js'
 
 function EntryPage() { 
   const [rbt, setRbt] = useState([]);
@@ -70,9 +73,11 @@ function EntryPage() {
 
   return (
     <div className="container">
+        <Header />
         <h1>New Journal Entry</h1>
         <Table rbtData={rbt}/>
         <NewEntry handleSubmit={updateRbt}/>
+        <Footer />
     </div>
   );
 }

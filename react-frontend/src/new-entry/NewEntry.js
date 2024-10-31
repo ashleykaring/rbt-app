@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import './Entry.css';
 
 function NewEntry(props) {
     const [entry, setEntry] = useState(

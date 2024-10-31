@@ -1,19 +1,22 @@
-// import React from "react";
-// import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
+import "./Footer.css"
 
-// // links will depend on how routing is done
-// function Footer() {
-//     return(
-//         <footer>
-//             <nav>
-//                 <ul className="footer-links">
-//                     <li>
-//                         <Link to="/new-entry">New Entry</Link>
-//                     </li>
-//                 </ul>
-//             </nav>
-//         </footer>
-//     );
-// }
+function Footer() {
+    return(
+        <footer>
+            <nav>
+                <ul className="footer-links">
+                    <li>
+                        <Link to="/dashboard" className="home">Home</Link>
+                    </li>
+                    <li>
+                        <Link to="/new-entry" className="new">New Entry</Link>
+                    </li>
+                </ul>
+            </nav>
+        </footer>
+    );
+}
 
-// export default Footer;
+export default Footer;

@@ -1,9 +1,13 @@
 import React from 'react';
+import "./Header.css";
 
 function Header() {
-    <>
-        <img src="../public/RBDLogoRounded.png" alt="RBT Logo" styles="margin: auto"></img>
-    </>
+    return (
+        <header className="header">
+            <img src="/RBDLogoRounded.png" alt="RBT Logo" classname="logo" />
+        </header>
+        
+    )
 }
 
 export default Header;
