@@ -159,9 +159,15 @@ app.post("/api/login", async (req, res) => {
 // Get user entries
 app.get("/users/:userId/entries", async (req, res) => {
     try {
+        console.log(
+            "Fetching entries for userId:",
+            req.params.userId
+        );
         const entries = await getAllEntries(req.params.userId);
+        console.log("Retrieved entries:", entries);
         res.json(entries);
     } catch (err) {
+        console.error("Error in /users/:userId/entries:", err);
         res.status(500).json({
             error: "Error fetching entries"
         });

@@ -44,9 +44,15 @@ const App = () => {
 
     useEffect(() => {
         const userId = localStorage.getItem("userId");
+        if (userId) {
+            setIsLoggedIn(true);
+        }
+    }, []);
+
+    useEffect(() => {
         console.log("App - Authentication Status:", {
             isLoggedIn,
-            userId: userId || "none"
+            userId: localStorage.getItem("userId") || "none"
         });
     }, [isLoggedIn]);
 
