@@ -26,9 +26,8 @@ app.post("/entries", async (req, res) => {
         is_public,
         date: new Date() 
     });
-      await newEntry.save(); //saves new enty to Mongo
- 
-      // Updates entries array
+      await newEntry.save(); 
+
       await User.findByIdAndUpdate(user_id, { $push: { entries: newEntry._id } });
  
       res.status(201).json(newEntry);
@@ -36,6 +35,53 @@ app.post("/entries", async (req, res) => {
       res.status(500).json({ error: "Error creating journal entry" });
     }
   });
+
+
+  // Toggle privacy by entry ID
+app.patch("/entries/:entryId/togglePrivacy", async (req, res) => {
+  try {
+    const entry = await Entry.findById(req.params.entryId);
+    if (!entry) return res.status(404).json({ error: "Entry not found" });
+
+    entry.is_public = !entry.is_public;
+    await entry.save();
+
+    res.status(201).json({ success: true, is_public: entry.is_public });
+  } catch (err) {
+    res.status(500).json({ error: "Error toggling privacy" });
+  }
+});
+
+// helps check if its past 11:59 pm
+function isPastEditDeadline() {
+  const now = new Date();
+  return now.getHours() > 23 || (now.getHours() === 23 && now.getMinutes() >= 59);
+}
+
+// update content by entry ID
+app.patch("/entries/:entryId/updateContent", async (req, res) => {
+  try {
+
+    if (isPastEditDeadline()) {
+      return res.status(403).json({ error: "Whoops, too late to edit." });
+    }
+
+    const { rose_text, bud_text, thorn_text } = req.body;
+    const entry = await Entry.findById(req.params.entryId);
+    if (!entry) return res.status(404).json({ error: "Entry not found" });
+
+    // Update content fields if provided
+    if (rose_text) entry.rose_text = rose_text;
+    if (bud_text) entry.bud_text = bud_text;
+    if (thorn_text) entry.thorn_text = thorn_text;
+
+    await entry.save();
+
+    res.status(201).json({ success: true, entry });
+  } catch (err) {
+    res.status(500).json({ error: "Error updating entry content" });
+  }
+});
 
 
 // flag
