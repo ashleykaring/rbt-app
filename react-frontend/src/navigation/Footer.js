@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { MdHome, MdAddCircle } from "react-icons/md";
+import { MdHome, MdAddCircle, MdGroups } from "react-icons/md";
 import "./Footer.css";
 
 function Footer() {
@@ -24,6 +24,17 @@ function Footer() {
                             <MdAddCircle className="footer-icon" />
                             <span className="footer-text">
                                 New Entry
+                            </span>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link
+                            to="/groups"
+                            className="footer-link"
+                        >
+                            <MdGroups className="footer-icon" />
+                            <span className="footer-text">
+                                Groups
                             </span>
                         </Link>
                     </li>

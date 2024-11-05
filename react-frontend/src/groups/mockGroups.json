@@ -1,0 +1,34 @@
+{
+    "groups": [
+        {
+            "_id": "507f1f77bcf86cd799439011",
+            "code": "ABC123",
+            "name": "Study Group Alpha",
+            "members": [
+                "507f1f77bcf86cd799439001",
+                "507f1f77bcf86cd799439002",
+                "507f1f77bcf86cd799439003"
+            ]
+        },
+        {
+            "_id": "507f1f77bcf86cd799439012",
+            "code": "XYZ789",
+            "name": "Book Club Beta",
+            "members": [
+                "507f1f77bcf86cd799439001",
+                "507f1f77bcf86cd799439004",
+                "507f1f77bcf86cd799439005"
+            ]
+        },
+        {
+            "_id": "507f1f77bcf86cd799439013",
+            "code": "DEF456",
+            "name": "Fitness Friends",
+            "members": [
+                "507f1f77bcf86cd799439001",
+                "507f1f77bcf86cd799439006"
+            ]
+        }
+    ],
+    "currentUserId": "507f1f77bcf86cd799439001"
+}

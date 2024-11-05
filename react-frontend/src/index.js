@@ -1,3 +1,4 @@
+// Libraries
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import {
@@ -6,10 +7,18 @@ import {
     Route,
     Navigate
 } from "react-router-dom";
+
+// Login & Create Account
 import Login from "./login/login.js";
 import CreateAccount from "./login/createAccount.js";
+
+// Main Pages
 import HomePage from "./home/HomePage.js";
 import NewEntry from "./new-entry/EntryPage.js";
+import GroupsPage from "./groups/groupsPage.js";
+import GroupEntries from "./groups/groupEntries.js";
+
+// Navigation
 import Header from "./navigation/Header.js";
 import Footer from "./navigation/Footer.js";
 import "./index.css";
@@ -31,6 +40,14 @@ const MainAppFlow = () => {
                     <Route
                         path="/new-entry"
                         element={<NewEntry />}
+                    />
+                    <Route
+                        path="/groups"
+                        element={<GroupsPage />}
+                    />
+                    <Route
+                        path="/groups/:groupId/:groupName"
+                        element={<GroupEntries />}
                     />
                 </Routes>
             </main>
