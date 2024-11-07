@@ -16,6 +16,13 @@ import {
     addEntry,
     getAllEntries
 } from "./models/user-services.js";
+
+import {
+    createGroup,
+    findGroupByCode,
+    joinGroup
+} from "./models/group-services.js";
+
 import { userSchema, entrySchema } from "./models/user.js";
 
 const app = express();
@@ -173,6 +180,100 @@ app.get("/users/:userId/entries", async (req, res) => {
         });
     }
 });
+
+// JOIN GROUP
+
+
+app.put("/groups/:groupCode/:userId", async (req, res) => {
+    try {
+        // Make sure group exists
+        const foundGroup = await findGroupByCode(req.params.groupCode);
+
+        if (!foundGroup) {
+            return res
+                .status(500)
+                .json({ error: "Error: group does not exist" });
+        }
+
+        // Make sure user is not already in that group
+
+
+        for (let i = 0; i<foundGroup.users.length; i++) {
+            if (foundGroup.users[i] == req.params.userId) {
+                return res
+                .status(500)
+                .json({ error: "Error: user already in group" });
+            }
+        }
+
+        const updatedGroup = await joinGroup(req.params.userId, foundGroup._id);
+
+        if(!updatedGroup) {
+            return res
+                .status(500)
+                .json({ error: "Error joining group" });
+        }
+
+        res.status(201).json(updatedGroup);
+
+
+
+
+
+    } catch (err) {
+        console.error("Error in /groups/:userId");
+        res.status(500).json({
+            error: "Error creating group"
+        });
+    }
+
+});
+
+
+// CREATE GROUP
+
+app.post("/groups/:userId", async (req, res) => {
+    try {
+        const {
+            group_code,
+            name
+            } = req.body;
+        if (
+            !group_code ||
+            !name ||
+            !users
+        ) {
+        return res
+            .status(400)
+            .json({ error: "All fields are required" });
+        }
+
+        const group = {
+            group_code,
+            name,
+            users: [req.params.userId],
+        };
+
+        const newGroup = await createGroup(group);
+
+        if (!newGroup) {
+            return res
+                .status(500)
+                .json({ error: "Error creating entry" });
+        }
+
+        res.status(201).json(newGroup);
+
+    } catch (err) {
+        console.error("Error in /groups/:userId");
+        res.status(500).json({
+            error: "Error creating group"
+        });
+    }
+
+});
+
+
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

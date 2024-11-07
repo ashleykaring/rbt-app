@@ -138,12 +138,12 @@ async function addGroupToUser(userId, groupId) {
 
     const userModel = getDbConnection().model("users", uSchema);
     try {
-        await userModel.findOneAndUpdate(
+        return await userModel.findOneAndUpdate(
             { _id: userId },
             {
                 $push: { groups: groupId }
             }
-        );   
+        );
 
     } catch (error) {
         console.log(error);

@@ -67,15 +67,4 @@ async function joinGroup(userId, groupId) {
 }
 
 
-
-
-// Group Database functions
-// Create group, add that 1 user who created it
-// Add user to group
-// Get group by ID
-
-const testGroup = {
-    group_code: "ABC123",
-    name: "Brady's Group",
-    users: ["672a7a9c3404b61370fcf0e6"],
-};
+export {createGroup, findGroupByCode, findGroupById, joinGroup}
