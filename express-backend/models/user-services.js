@@ -4,6 +4,8 @@ import {
     entrySchema,
     userEntriesSchema
 } from "./user.js";
+
+
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -121,10 +123,44 @@ async function getAllEntries(userid) {
     return entries;
 }
 
+async function getUserEntriesByUserId(userId) {
+    const userEntriesModel = getDbConnection().model("user_entries", ueSchema);
+    return await userEntriesModel.find({user_id: userId});
+
+}
+
+async function getEntryById(entryId) {
+    const entryModel = getDbConnection().model("rbt_entries", eSchema);
+    return await entryModel.find({_id: entryId});
+}
+
+async function addGroupToUser(userId, groupId) {
+
+    const userModel = getDbConnection().model("users", uSchema);
+    try {
+        await userModel.findOneAndUpdate(
+            { _id: userId },
+            {
+                $push: { groups: groupId }
+            }
+        );   
+
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+
+}
+
+
+
 export {
     addUser,
     findUserByUsername,
     addEntry,
     getAllEntries,
-    findUserById
+    findUserById,
+    addGroupToUser,
+    getUserEntriesByUserId,
+    getEntryById,
 };
