@@ -17,18 +17,58 @@ export const getGradient = (groupId) => {
     return gradients[positiveHash % gradients.length];
 };
 
-export const PageContainer = styled.div`
-    margin-horizontal: 5px;
-    margin-bottom: 50px;
+export const Container = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: white;
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+`;
+
+export const ContentContainer = styled.div`
+    width: 100%;
+    max-width: 480px;
+    height: 100%;
+    background: #fdf2f1;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+`;
+
+export const CloseButton = styled.button`
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    color: #2c3e50;
+    font-size: 20px;
+    z-index: 10;
+
+    &:hover {
+        color: #38a169;
+    }
 `;
 
 export const Title = styled.h1`
     font-size: 2.4rem;
     font-weight: 700;
     color: #2c3e50;
-    margin: 1rem 0 3rem;
+    margin: 0;
     position: relative;
     padding-left: 1rem;
+    flex: 1;
 
     &::before {
         content: "";
@@ -150,10 +190,12 @@ export const CreateContainer = styled(GroupCard)`
         props.expanded ? "220px" : "auto"};
     transition: all 0.3s ease;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     color: #2c3e50;
     border: 2px dashed #e9ecef;
     box-shadow: none;
+    cursor: ${(props) =>
+        props.expanded ? "default" : "pointer"};
 
     &:hover {
         border-color: #38a169;
@@ -167,32 +209,6 @@ export const CreateContainer = styled(GroupCard)`
         background: white;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     `}
-`;
-
-export const CloseButton = styled.div`
-    position: absolute;
-    top: 1.2rem;
-    right: 1.2rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #f8f9fa;
-    transition: all 0.2s ease;
-    z-index: 10;
-
-    svg {
-        font-size: 1.4rem;
-        color: #2c3e50;
-    }
-
-    &:hover {
-        background: #e9ecef;
-        transform: rotate(90deg);
-    }
 `;
 
 export const InitialView = styled.div`
@@ -226,7 +242,8 @@ export const NameInput = styled.input`
     padding: 1.2rem;
     border: 2px solid #e9ecef;
     border-radius: 12px;
-    margin: 5px 0 10px;
+    margin-top: 20px;
+    margin-bottom: 10px;
     font-size: 1.2rem;
     background: #f8f9fa;
     transition: all 0.2s ease;
@@ -255,8 +272,11 @@ export const CreateButton = styled.button`
         props.disabled ? "not-allowed" : "pointer"};
     transition: all 0.2s ease;
     display: block;
-    margin: 0 auto;
+    width: auto;
+    margin: 0 auto 0px;
     letter-spacing: 0.02em;
+    z-index: 10;
+    position: relative;
 
     &:hover:not(:disabled) {
         transform: translateY(-2px);
@@ -271,40 +291,41 @@ export const CreateButton = styled.button`
 export const ShareHeader = styled.h3`
     text-align: center;
     font-size: 1.4rem;
-    margin: 0.5rem auto 1.4rem;
     color: #38a169;
+    margin-bottom: 20px;
     font-weight: 700;
     letter-spacing: -0.02em;
-    max-width: calc(100% - 80px);
+    padding: 0 2rem;
 `;
 
 export const CodeContainer = styled.div`
     background: #f8f9fa;
     border-radius: 12px;
-    padding: 1.4rem;
-    margin: 0 auto;
-    width: fit-content;
+    padding: 1.8rem;
+    margin: 1rem auto;
+    width: 80%;
     border: 2px solid #e9ecef;
+    text-align: center;
 `;
 
 export const CodeDisplay = styled.div`
-    text-align: center;
-    font-size: 2.2rem;
+    font-family: "SF Mono", "Fira Code", monospace;
+    font-size: 2.4rem;
     font-weight: 800;
     letter-spacing: 0.5rem;
     color: #2c3e50;
-    font-family: "SF Mono", "Fira Code", monospace;
+    user-select: all;
 `;
 
 export const IconsContainer = styled.div`
     display: flex;
     justify-content: center;
-    gap: 1.5rem;
-    margin-top: 1.8rem;
-    margin-bottom: 0.5rem;
+    gap: 2rem;
+    position: relative;
+    z-index: 20;
 `;
 
-export const Icon = styled.div`
+export const Icon = styled.button`
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -313,23 +334,24 @@ export const Icon = styled.div`
     height: 48px;
     border-radius: 12px;
     background: #f8f9fa;
-    transition: all 0.2s ease;
     border: 2px solid #e9ecef;
+    transition: all 0.2s ease;
+    color: #2c3e50;
+    position: relative;
+    z-index: 30;
+    pointer-events: all;
 
     svg {
-        font-size: 1.6rem;
-        color: #2c3e50;
+        font-size: 1.4rem;
+        pointer-events: none;
     }
 
     &:hover {
         background: #38a169;
         border-color: #38a169;
+        color: white;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(56, 161, 105, 0.2);
-
-        svg {
-            color: white;
-        }
     }
 
     &:active {
@@ -337,24 +359,34 @@ export const Icon = styled.div`
     }
 `;
 
+export const PageContainer = styled.div`
+    margin-horizontal: 5px;
+    margin-bottom: 50px;
+`;
+
 export const Toast = styled.div`
     position: fixed;
-    top: 24px;
+    top: 0;
     left: 50%;
     transform: translateX(-50%);
-    background: #2c3e50;
+    width: 100%;
+    max-width: 480px;
+    background: ${(props) =>
+        props.variant === "error" ? "#e53e3e" : "#38a169"};
     color: white;
-    padding: 1rem 2rem;
-    border-radius: 12px;
+    padding: 1.2rem;
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-size: 1.1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     z-index: 1000;
     animation: fadeInOut 3s ease;
+    text-align: center;
+    line-height: 1.4;
 
     @keyframes fadeInOut {
         0% {
             opacity: 0;
-            transform: translate(-50%, -20px);
+            transform: translate(-50%, -100%);
         }
         15% {
             opacity: 1;
@@ -366,7 +398,7 @@ export const Toast = styled.div`
         }
         100% {
             opacity: 0;
-            transform: translate(-50%, -20px);
+            transform: translate(-50%, -100%);
         }
     }
 `;
@@ -401,6 +433,8 @@ export const CodeInput = styled.div`
     justify-content: center;
     gap: 0.5rem;
     margin: 1.5rem 0;
+    position: relative;
+    z-index: 20;
 `;
 
 export const Digit = styled.input`
@@ -413,6 +447,9 @@ export const Digit = styled.input`
     border-radius: 8px;
     background: #f8f9fa;
     transition: all 0.2s ease;
+    position: relative;
+    z-index: 30;
+    pointer-events: all;
 
     &:focus {
         outline: none;
@@ -428,6 +465,9 @@ export const Digit = styled.input`
 export const JoinButton = styled(CreateButton)`
     background: ${(props) =>
         props.disabled ? "#e9ecef" : "#4299e1"};
+    position: relative;
+    z-index: 30;
+    pointer-events: all;
 
     &:hover:not(:disabled) {
         box-shadow: 0 4px 12px rgba(66, 153, 225, 0.2);
@@ -436,4 +476,148 @@ export const JoinButton = styled(CreateButton)`
 
 export const JoinHeader = styled(ShareHeader)`
     color: #4299e1;
+`;
+
+export const GroupCodeSection = styled.div`
+    margin-top: 1rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+`;
+
+export const GroupCodeHeader = styled.h3`
+    font-size: 1.1rem;
+    color: #38a169;
+    margin: 0 0 1rem 0;
+    text-align: center;
+    font-weight: 600;
+`;
+
+export const CodeAndActions = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+`;
+
+export const GroupCodeDisplay = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: white;
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+    transform-origin: top;
+    opacity: ${(props) => (props.isVisible ? 1 : 0)};
+    transform: ${(props) =>
+        props.isVisible ? "scaleY(1)" : "scaleY(0)"};
+    height: ${(props) => (props.isVisible ? "auto" : "0")};
+
+    .code {
+        font-family: "SF Mono", "Fira Code", monospace;
+        font-size: 1.4rem;
+        font-weight: 600;
+        letter-spacing: 0.3rem;
+        color: #2c3e50;
+        margin-right: auto;
+    }
+`;
+
+export const ActionIcons = styled.div`
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+`;
+
+export const TitleRow = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 24px 0 0;
+    padding-right: 48px;
+`;
+
+export const CodeButton = styled.button`
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #2c3e50;
+    flex-shrink: 0;
+
+    svg {
+        font-size: 1.4rem;
+    }
+
+    &:hover {
+        background: white;
+        border-color: #38a169;
+        color: #38a169;
+        transform: translateY(-1px);
+    }
+`;
+
+export const ActionIcon = styled.button`
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    svg {
+        font-size: 1.2rem;
+    }
+
+    &:hover {
+        color: #38a169;
+        transform: translateY(-1px);
+    }
+`;
+
+export const LoadingContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    gap: 1.5rem;
+`;
+
+export const LoadingSpinner = styled.div`
+    svg {
+        font-size: 3rem;
+        color: #d66c84;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+`;
+
+export const LoadingText = styled.p`
+    font-size: 1.2rem;
+    color: #2c3e50;
+    font-weight: 500;
+    margin: 0;
+    text-align: center;
 `;

@@ -1,65 +1,86 @@
-import React from "react";
+/*
+IMPORTS
+*/
+
+// Libraries
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import { FiCopy, FiShare, FiX, FiHash } from "react-icons/fi";
 
-const Container = styled.div`
-    position: fixed;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 480px;
-    height: 100vh;
-    background: #fdf2f1;
-    z-index: 2000;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow-y: auto;
-`;
+// Styles
+import {
+    Container,
+    ContentContainer,
+    CloseButton,
+    Title,
+    TitleRow,
+    CodeButton,
+    GroupCodeDisplay,
+    ActionIcon,
+    Toast
+} from "./group.styles";
 
-const CloseButton = styled.button`
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    background: #f2c4bb;
-    color: #2c3e50;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-    box-shadow: 0 2px 8px rgba(242, 196, 187, 0.3);
-
-    &:hover {
-        background: #edb5ab;
-        transform: translateY(-1px);
-    }
-
-    &:active {
-        transform: translateY(0);
-    }
-`;
-
-const Title = styled.h1`
-    font-size: 2rem;
-    margin-top: 2rem;
-    color: #2c3e50;
-    padding-right: 60px;
-`;
+/*
+RENDER
+*/
 
 function GroupEntries() {
+    // Constants & states
     const { groupId, groupName } = useParams();
     const navigate = useNavigate();
+    const [showToast, setShowToast] = useState(false);
+    const [showCode, setShowCode] = useState(false);
+
+    // TODO: This should come from your backend/state management
+    // For now using groupId, but this should be replaced with actual group code
+    const groupCode = "ABC123"; // This should be fetched based on groupId
+
+    // Function for copying group code
+    const handleCopyCode = () => {
+        navigator.clipboard.writeText(groupCode);
+        setShowToast(true);
+    };
 
     return (
         <Container>
-            <CloseButton onClick={() => navigate("/groups")}>
-                Close
-            </CloseButton>
-            <Title>
-                Entries for {decodeURIComponent(groupName)}
-            </Title>
+            <ContentContainer>
+                <CloseButton
+                    onClick={() => navigate("/groups")}
+                >
+                    <FiX />
+                </CloseButton>
+
+                <TitleRow>
+                    <Title>
+                        {decodeURIComponent(groupName)}
+                    </Title>
+                    <CodeButton
+                        onClick={() => setShowCode(!showCode)}
+                    >
+                        <FiHash />
+                    </CodeButton>
+                </TitleRow>
+
+                <GroupCodeDisplay isVisible={showCode}>
+                    <span className="code">{groupCode}</span>
+                    <ActionIcon onClick={handleCopyCode}>
+                        <FiCopy />
+                    </ActionIcon>
+                    <ActionIcon>
+                        <FiShare />
+                    </ActionIcon>
+                </GroupCodeDisplay>
+
+                {showToast && (
+                    <Toast
+                        onAnimationEnd={() =>
+                            setShowToast(false)
+                        }
+                    >
+                        Code copied to clipboard!
+                    </Toast>
+                )}
+            </ContentContainer>
         </Container>
     );
 }

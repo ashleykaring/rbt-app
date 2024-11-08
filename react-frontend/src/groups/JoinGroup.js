@@ -1,42 +1,78 @@
 /*
 IMPORTS
 */
-
-// Libraries
 import React, { useState } from "react";
 import { FiUserPlus, FiX } from "react-icons/fi";
 
 // Styles
 import {
-    CloseButton,
+    JoinContainer,
     InitialView,
-    Toast,
     JoinIcon,
     JoinText,
     CodeInput,
     Digit,
     JoinHeader,
     JoinButton,
-    JoinContainer
+    CloseButton,
+    Toast
 } from "./group.styles";
 
 /*
 RENDER
 */
-
-function JoinGroup() {
+function JoinGroup({ onGroupUpdate }) {
     const [stage, setStage] = useState("initial");
     const [code, setCode] = useState(["", "", "", "", "", ""]);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const [toastSuccess, setToastSuccess] = useState(true);
 
-    /*
-    EVENT HANDLERS
-    */
+    const API_BASE_URL = "http://localhost:8000";
+
+    // Join group API call
+    const joinGroup = async (groupCode) => {
+        const userId = localStorage.getItem("userId");
+        console.log("Joining group:", { groupCode, userId });
+
+        if (!userId) {
+            throw new Error("User not logged in");
+        }
+
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/groups/${groupCode}/${userId}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
+
+            console.log("Join group response:", response);
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(
+                    error.error || "Failed to join group"
+                );
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Error joining group:", error);
+            throw error;
+        }
+    };
 
     // Handles the initial join button click
     const handleJoin = () => {
+        console.log(
+            "Handle join clicked, current stage:",
+            stage
+        );
         if (stage === "initial") {
             setStage("code");
         }
@@ -44,7 +80,7 @@ function JoinGroup() {
 
     // Handles the digit change for the group code
     const handleDigitChange = (index, value) => {
-        if (value.length > 1) return; // Prevent multiple characters per digit
+        if (value.length > 1) return;
 
         const newCode = [...code];
         newCode[index] = value.toUpperCase();
@@ -74,26 +110,47 @@ function JoinGroup() {
     };
 
     // Handles the confirmation of the group code
-    /* FLAGGED FOR UPDATE */
-    const handleConfirmCode = () => {
+    const handleConfirmCode = async () => {
         const joinCode = code.join("");
+        console.log("Attempting to join with code:", joinCode);
 
-        // !!! Later: This should be a database call to:
-        // 1. Check if group exists with this code
-        // 2. If exists, append current user to group.members
-        // 3. Append group to current user's groups list
-        // 4. Return success/failure
+        setIsLoading(true);
+        try {
+            const result = await joinGroup(joinCode);
+            console.log("Join successful:", result);
 
-        if (joinCode === "123456") {
             setToastSuccess(true);
-            setToastMessage("Group joined successfully!");
+            setToastMessage("Successfully joined group!");
             setShowToast(true);
             setStage("initial");
             setCode(["", "", "", "", "", ""]);
-        } else {
+
+            // Call the update function after successful join
+            onGroupUpdate();
+        } catch (error) {
+            console.error("Join failed:", error);
             setToastSuccess(false);
-            setToastMessage("Group not found!");
+
+            // More user-friendly error messages
+            switch (error.message) {
+                case "You're already a member of this group":
+                    setToastMessage(
+                        "You're already a member of this group"
+                    );
+                    break;
+                case "Group not found":
+                    setToastMessage(
+                        "This group code doesn't exist. Please check and try again."
+                    );
+                    break;
+                default:
+                    setToastMessage(
+                        "Something went wrong. Please try again later."
+                    );
+            }
             setShowToast(true);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -103,16 +160,12 @@ function JoinGroup() {
         setCode(["", "", "", "", "", ""]);
     };
 
-    /*
-    RENDER
-    */
-
-    // Renders the content based on the current stage
+    // Render content based on current stage
     const renderContent = () => {
         switch (stage) {
             case "initial":
                 return (
-                    <InitialView onClick={handleJoin}>
+                    <InitialView>
                         <JoinIcon>
                             <FiUserPlus />
                         </JoinIcon>
@@ -122,7 +175,12 @@ function JoinGroup() {
             case "code":
                 return (
                     <>
-                        <CloseButton onClick={handleClose}>
+                        <CloseButton
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleClose();
+                            }}
+                        >
                             <FiX />
                         </CloseButton>
                         <JoinHeader>
@@ -146,16 +204,22 @@ function JoinGroup() {
                                     maxLength={1}
                                     placeholder="_"
                                     autoFocus={index === 0}
+                                    disabled={isLoading}
                                 />
                             ))}
                         </CodeInput>
                         <JoinButton
-                            onClick={handleConfirmCode}
-                            disabled={code.some(
-                                (digit) => !digit
-                            )}
+                            type="button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleConfirmCode();
+                            }}
+                            disabled={
+                                code.some((digit) => !digit) ||
+                                isLoading
+                            }
                         >
-                            Join
+                            {isLoading ? "Joining..." : "Join"}
                         </JoinButton>
                     </>
                 );
@@ -171,17 +235,15 @@ function JoinGroup() {
                 onClick={
                     stage === "initial" ? handleJoin : undefined
                 }
+                role="button"
+                tabIndex={0}
             >
                 {renderContent()}
             </JoinContainer>
             {showToast && (
                 <Toast
                     onAnimationEnd={() => setShowToast(false)}
-                    style={{
-                        background: toastSuccess
-                            ? "#38a169"
-                            : "#e53e3e"
-                    }}
+                    variant={toastSuccess ? "success" : "error"}
                 >
                     {toastMessage}
                 </Toast>
