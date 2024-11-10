@@ -78,16 +78,16 @@ const App = () => {
         }
     }, []);
 
-    useEffect(() => {
-        console.log("App - Authentication Status:", {
-            isLoggedIn,
-            userId: localStorage.getItem("userId") || "none"
-        });
-    }, [isLoggedIn]);
-
     if (BYPASS_AUTH) {
-        console.log("Auth bypassed - entering MainAppFlow");
-        return <MainAppFlow />;
+        return (
+            <Routes>
+                <Route path="/*" element={<MainAppFlow />} />
+                <Route
+                    path="/groups/:groupId/:groupName"
+                    element={<GroupEntries />}
+                />
+            </Routes>
+        );
     }
 
     return (

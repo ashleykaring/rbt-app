@@ -1,18 +1,10 @@
-/* UPDATES NEEDED WITHIN CREATEGROUP & JOINGROUP */
-/* IMPLEMENTATION OF GROUP ENTRIES IS FAKE */
-
 /* 
 IMPORTS
  */
-
-// Libraries
 import React, { useState, useEffect } from "react";
 import { IoChevronForward } from "react-icons/io5";
-import { ChevronIcon } from "./group.styles";
+import { BiLoaderAlt } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
-
-// Data (DRAWS MOCK DATA RN)
-import mockData from "./mockGroups.json";
 
 // Styles
 import {
@@ -21,31 +13,55 @@ import {
     Subtitle,
     GroupCard,
     getGradient,
-    GroupCardContent
+    GroupCardContent,
+    ChevronIcon,
+    LoadingContainer,
+    LoadingSpinner,
+    LoadingText
 } from "./group.styles";
 
 // Components
 import CreateGroup from "./CreateGroup";
 import JoinGroup from "./JoinGroup";
 
+const API_BASE_URL = "http://localhost:8000";
+
 /*
 RENDER
 */
 function GroupsPage() {
     const [userGroups, setUserGroups] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    /* TAGGED FOR UPDATE */
-    useEffect(() => {
-        // !!! Later: Replace with database call
-        const fetchGroups = () => {
-            const currentUserId = mockData.currentUserId;
-            const userGroups = mockData.groups.filter((group) =>
-                group.members.includes(currentUserId)
-            );
-            setUserGroups(userGroups);
-        };
+    const fetchGroups = async () => {
+        try {
+            const userId = localStorage.getItem("userId");
+            if (!userId) {
+                throw new Error("User not logged in");
+            }
 
+            const response = await fetch(
+                `${API_BASE_URL}/users/${userId}/groups`
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch groups");
+            }
+
+            const groups = await response.json();
+            console.log("Fetched groups:", groups);
+            setUserGroups(groups);
+        } catch (err) {
+            console.error("Error fetching groups:", err);
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchGroups();
     }, []);
 
@@ -62,8 +78,8 @@ function GroupsPage() {
     const NoGroupsView = () => (
         <>
             <Title>Share the experience!</Title>
-            <CreateGroup />
-            <JoinGroup />
+            <CreateGroup onGroupUpdate={fetchGroups} />
+            <JoinGroup onGroupUpdate={fetchGroups} />
         </>
     );
 
@@ -86,10 +102,27 @@ function GroupsPage() {
                 </GroupCard>
             ))}
             <Subtitle>Expand Your Groups</Subtitle>
-            <CreateGroup />
-            <JoinGroup />
+            <CreateGroup onGroupUpdate={fetchGroups} />
+            <JoinGroup onGroupUpdate={fetchGroups} />
         </>
     );
+
+    if (isLoading) {
+        return (
+            <LoadingContainer>
+                <LoadingSpinner>
+                    <BiLoaderAlt />
+                </LoadingSpinner>
+                <LoadingText>
+                    Getting your groups...
+                </LoadingText>
+            </LoadingContainer>
+        );
+    }
+
+    if (error) {
+        return <PageContainer>Error: {error}</PageContainer>;
+    }
 
     // Render the page based on # of groups
     return (
@@ -103,5 +136,4 @@ function GroupsPage() {
     );
 }
 
-// Used in index.js
 export default GroupsPage;
