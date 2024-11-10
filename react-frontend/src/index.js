@@ -24,13 +24,15 @@ import Header from "./navigation/Header.js";
 import Footer from "./navigation/Footer.js";
 import "./index.css";
 
-const BYPASS_AUTH = true;
+const BYPASS_AUTH = false;
 
 const MainAppFlow = () => {
     useEffect(() => {
-        const darkMode = localStorage.getItem('theme');
+        const darkMode = localStorage.getItem('theme') === 'dark-mode';
         if (darkMode) {
             document.body.classList.add('dark-mode'); // apply global dark-mode class
+        } else {
+            document.body.classList.remove('dark-mode');
         }
         const userId = localStorage.getItem("userId");
         console.log("MainAppFlow - Current userId:", userId);
