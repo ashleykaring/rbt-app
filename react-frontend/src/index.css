@@ -1,3 +1,11 @@
+:root {
+    --background-color: white;
+}
+
+body.dark-mode {
+    --background-color: #333333;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -20,7 +28,7 @@ body {
     width: 100%;
     max-width: 480px;
     min-height: 100vh;
-    background: white;
+    background: var(--background-color);
     position: relative;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
@@ -42,7 +50,7 @@ body {
     top: 0;
     width: 100%;
     max-width: 480px;
-    height: 80px;
+    height: 85px;
     z-index: 100;
 }
 

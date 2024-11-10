@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { MdHome, MdAddCircle, MdGroups } from "react-icons/md";
+import { IoIosRose } from "react-icons/io";
 import "./Footer.css";
 
 function Footer() {
@@ -9,24 +10,30 @@ function Footer() {
             <nav>
                 <ul className="footer-links">
                     <li>
-                        <Link to="/" className="footer-link">
+                        <Link 
+                            to="/" 
+                            className="footer-link"
+                        >
                             <MdHome className="footer-icon" />
                             <span className="footer-text">
                                 Home
                             </span>
                         </Link>
                     </li>
-                    <li>
-                        <Link
-                            to="/new-entry"
-                            className="footer-link"
-                        >
-                            <MdAddCircle className="footer-icon" />
-                            <span className="footer-text">
-                                New Entry
-                            </span>
-                        </Link>
-                    </li>
+                    <div className="circle">
+                        <li>
+                            <Link 
+                                to="/new-entry" 
+                                className="footer-link"
+                                id="new-entry"
+                            >
+                                <MdAddCircle className="footer-icon" id="new-icon" />
+                                <span className="footer-text">
+                                    New Entry
+                                </span>
+                            </Link>
+                        </li>
+                    </div>
                     <li>
                         <Link
                             to="/groups"

@@ -17,16 +17,21 @@ import HomePage from "./home/HomePage.js";
 import NewEntry from "./new-entry/EntryPage.js";
 import GroupsPage from "./groups/groupsPage.js";
 import GroupEntries from "./groups/groupEntries.js";
+import Settings from "./settings/SettingsPage.js"
 
 // Navigation
 import Header from "./navigation/Header.js";
 import Footer from "./navigation/Footer.js";
 import "./index.css";
 
-const BYPASS_AUTH = false;
+const BYPASS_AUTH = true;
 
 const MainAppFlow = () => {
     useEffect(() => {
+        const darkMode = localStorage.getItem('theme');
+        if (darkMode) {
+            document.body.classList.add('dark-mode'); // apply global dark-mode class
+        }
         const userId = localStorage.getItem("userId");
         console.log("MainAppFlow - Current userId:", userId);
     }, []);
@@ -36,10 +41,17 @@ const MainAppFlow = () => {
             <Header />
             <main className="main-content">
                 <Routes>
-                    <Route path="/" element={<HomePage />} />
+                    <Route 
+                        path="/" 
+                        element={<HomePage />} 
+                    />
                     <Route
                         path="/new-entry"
                         element={<NewEntry />}
+                    />
+                    <Route
+                        path="/settings"
+                        element={<Settings />}
                     />
                     <Route
                         path="/groups"

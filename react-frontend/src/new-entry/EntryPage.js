@@ -66,7 +66,7 @@ function EntryPage() {
 
     return (
         <div className="entry-page">
-            <h1>New Journal Entry</h1>
+            <h1 className="entry-header">New Journal Entry</h1>
             <NewEntry handleSubmit={handleSubmit} />
             {entries.length > 0 && (
                 <div className="recent-entry">
