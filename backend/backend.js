@@ -28,7 +28,6 @@ app.post("/entries", async (req, res) => {
         });
        }
 
-      // Create a new entry
       const newEntry = new Entry({ 
         user_id, 
         rose_text, 
@@ -48,33 +47,16 @@ app.post("/entries", async (req, res) => {
   });
 
 
-//   // Toggle privacy by entry ID( FOR GROUPS HAVE NOT YET DONE IT, public to a group )
-// app.patch("/entries/:entryId/togglePrivacy", async (req, res) => {
-//   try {
-//     const entry = await Entry.findById(req.params.entryId);
-//     if (!entry) return res.status(404).json({ error: "Entry not found" });
-
-//     entry.is_public = !entry.is_public;
-//     await entry.save();
-
-//     res.status(201).json({ success: true, is_public: entry.is_public });
-//   } catch (err) {
-//     res.status(500).json({ error: "Error toggling privacy" });
-//   }
-// });
-//OR
-
-// Toggle privacy status of an entry within a group
+// toggles privacy status of an entry within a group
 app.patch("/groups/:groupId/entries/:entryId/toggle-privacy", async (req, res) => {
   try {
     const { groupId, entryId } = req.params;
-    const userId = req.body.user_id; // assuming the user ID is provided in the request body
+    const userId = req.body.user_id; 
 
     const group = await Group.findById(groupId);
     if (!group) {
       return res.status(404).json({ error: "Group not found" });
     }
-    
     if (!group.members.includes(userId)) { //checks if user is in a group
       return res.status(403).json({ error: "User not authorized in this group" });
     }
@@ -95,16 +77,15 @@ app.patch("/groups/:groupId/entries/:entryId/toggle-privacy", async (req, res) =
 });
 
 
-
-//helper date yyy-mm-dd
-function formatDate(date){
+function formatDate(date){//helper date yyy-mm-dd
   return date.toISOString().split('T')[0];
 }
 
 
-// update content by entry ID
+//allowed to edit only within the same day
 app.patch("/entries/:entryId/updateContent", async (req, res) => {
-  try {
+  try { // update content by entry ID
+
 
     if (isPastEditDeadline()) {
       return res.status(403).json({ error: "Whoops, too late to edit." });
@@ -115,7 +96,7 @@ app.patch("/entries/:entryId/updateContent", async (req, res) => {
     if (!entry) return res.status(404).json({ error: "Entry not found" });
 
     const today = formatDate(new Date());
-    if (formatDate(entry.date) !== today) { //comapres todays date 
+    if (formatDate(entry.date) !== today) { //comapres todays date deny edit if not
       return res.status(403).json({ error: "Cannot edit an entry from a previous day." });
     }
     if (rose_text) entry.rose_text = rose_text;
@@ -158,7 +139,6 @@ app.listen(port, () => {
   });
 
 
-  // Date
 function getFormattedDate() {
     const now = new Date();
 
