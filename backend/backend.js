@@ -14,9 +14,20 @@ app.post("/entries", async (req, res) => {
     try {
       const { user_id, rose_text, bud_text, thorn_text, is_public } = req.body;
  
-      if (!user_id || !rose_text || !bud_text || !thorn_text) {
-        return res.status(400).json({ error: "All fields are required" });
-      }
+      const today = formatDate(new Date()); //yyy-mm-dd format
+
+      const existingEntry = await Entry.findOne({
+        user_id : user_id,
+        date: today // check for entries w same date 
+      });
+
+       if (existingEntry){
+        return res.status(201).json({
+          message: "You already started an entry today",
+          enrty: existingEnrty
+        });
+       }
+
       // Create a new entry
       const newEntry = new Entry({ 
         user_id, 
@@ -24,7 +35,7 @@ app.post("/entries", async (req, res) => {
         bud_text, 
         thorn_text, 
         is_public,
-        date: new Date() 
+        date: today // only date
     });
       await newEntry.save(); 
 
@@ -37,26 +48,59 @@ app.post("/entries", async (req, res) => {
   });
 
 
-  // Toggle privacy by entry ID
-app.patch("/entries/:entryId/togglePrivacy", async (req, res) => {
-  try {
-    const entry = await Entry.findById(req.params.entryId);
-    if (!entry) return res.status(404).json({ error: "Entry not found" });
+//   // Toggle privacy by entry ID( FOR GROUPS HAVE NOT YET DONE IT, public to a group )
+// app.patch("/entries/:entryId/togglePrivacy", async (req, res) => {
+//   try {
+//     const entry = await Entry.findById(req.params.entryId);
+//     if (!entry) return res.status(404).json({ error: "Entry not found" });
 
+//     entry.is_public = !entry.is_public;
+//     await entry.save();
+
+//     res.status(201).json({ success: true, is_public: entry.is_public });
+//   } catch (err) {
+//     res.status(500).json({ error: "Error toggling privacy" });
+//   }
+// });
+//OR
+
+// Toggle privacy status of an entry within a group
+app.patch("/groups/:groupId/entries/:entryId/toggle-privacy", async (req, res) => {
+  try {
+    const { groupId, entryId } = req.params;
+    const userId = req.body.user_id; // assuming the user ID is provided in the request body
+
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ error: "Group not found" });
+    }
+    
+    if (!group.members.includes(userId)) { //checks if user is in a group
+      return res.status(403).json({ error: "User not authorized in this group" });
+    }
+    const entry = await Entry.findById(entryId);// find entry by ID
+    if (!entry || entry.group_id.toString() !== groupId) { //verifies its in a group
+      return res.status(404).json({ error: "Entry not found or not part of the specified group" });
+    }
     entry.is_public = !entry.is_public;
     await entry.save();
 
-    res.status(201).json({ success: true, is_public: entry.is_public });
+    res.status(200).json({
+      message: "Privacy status toggled successfully",
+      entry
+    });
   } catch (err) {
-    res.status(500).json({ error: "Error toggling privacy" });
+    res.status(500).json({ error: "Error toggling privacy status" });
   }
 });
 
-// helps check if its past 11:59 pm
-function isPastEditDeadline() {
-  const now = new Date();
-  return now.getHours() > 23 || (now.getHours() === 23 && now.getMinutes() >= 59);
+
+
+//helper date yyy-mm-dd
+function formatDate(date){
+  return date.toISOString().split('T')[0];
 }
+
 
 // update content by entry ID
 app.patch("/entries/:entryId/updateContent", async (req, res) => {
@@ -70,16 +114,19 @@ app.patch("/entries/:entryId/updateContent", async (req, res) => {
     const entry = await Entry.findById(req.params.entryId);
     if (!entry) return res.status(404).json({ error: "Entry not found" });
 
-    // Update content fields if provided
+    const today = formatDate(new Date());
+    if (formatDate(entry.date) !== today) { //comapres todays date 
+      return res.status(403).json({ error: "Cannot edit an entry from a previous day." });
+    }
     if (rose_text) entry.rose_text = rose_text;
     if (bud_text) entry.bud_text = bud_text;
-    if (thorn_text) entry.thorn_text = thorn_text;
+    if (thorn_text) entry.thorn_text = thorn_text;//updates content
 
     await entry.save();
 
     res.status(201).json({ success: true, entry });
   } catch (err) {
-    res.status(500).json({ error: "Error updating entry content" });
+    res.status(500).json({ error: "Error" });
   }
 });
 
