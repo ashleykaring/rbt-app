@@ -1,0 +1,44 @@
+{
+    "entries": [
+        {
+            "userId": "507f1f77bcf86cd799439001",
+            "userName": "Sarah",
+            "date": "2024-11-07",
+            "rose_text": "Finally got the authentication system working after a week of debugging. The team was super supportive and we celebrated with virtual coffee!",
+            "thorn_text": "Spent too much time stuck on a CSS bug that turned out to be a simple typo. Need to be more careful with code reviews.",
+            "bud_text": "Looking forward to implementing the new API integration next week. Already started reading the documentation."
+        },
+        {
+            "userId": "507f1f77bcf86cd799439002",
+            "userName": "Marcus",
+            "date": "2024-11-06",
+            "rose_text": "Great pair programming session today",
+            "thorn_text": "Server went down during demo",
+            "bud_text": "Starting to understand Redux better"
+        },
+        {
+            "userId": "507f1f77bcf86cd799439003",
+            "userName": "Priya",
+            "date": "2024-11-05",
+            "rose_text": "Successfully deployed my first feature to production. The user feedback has been overwhelmingly positive, and it feels great to see my code making a real impact. The mentorship from senior developers really helped me get here.",
+            "thorn_text": "Struggled with work-life balance this week. Had to skip lunch twice to meet deadlines.",
+            "bud_text": "Planning to learn TypeScript over the weekend. Found some great tutorials and excited to improve type safety in our codebase."
+        },
+        {
+            "userId": "507f1f77bcf86cd799439004",
+            "userName": "Alex",
+            "date": "2024-11-07",
+            "rose_text": "Code review went smoothly",
+            "thorn_text": "Lost some work due to Git merge conflict",
+            "bud_text": "Started learning about accessibility best practices"
+        },
+        {
+            "userId": "507f1f77bcf86cd799439005",
+            "userName": "Jordan",
+            "date": "2024-11-05",
+            "rose_text": "Solved a complex performance issue that was affecting our main dashboard. The response time improved by 60%!",
+            "thorn_text": "Communication breakdown with the design team led to some rework",
+            "bud_text": "Excited about the upcoming team hackathon next month"
+        }
+    ]
+}

@@ -101,7 +101,7 @@ export const Form = styled.form`
 `;
 
 export const InputGroup = styled.div`
-    margin-bottom: 25px;
+    margin-bottom: 5px;
     position: relative;
     width: 100%;
 
@@ -203,7 +203,7 @@ export const Button = styled.button`
 
 export const LinkText = styled.p`
     text-align: center;
-    margin-top: 25px;
+    margin-top: 5px;
     font-size: 14px;
     color: #555;
 

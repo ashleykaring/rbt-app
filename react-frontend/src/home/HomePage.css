@@ -1,0 +1,87 @@
+.home-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.home-page h1 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.calendar-container {
+    width: 100%;
+    max-width: 350px;
+    margin-bottom: 20px;
+}
+
+/* Custom calendar styling */
+.custom-calendar {
+    width: 100%;
+    border: none !important;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.react-calendar__tile--active {
+    background: #f2c4bb !important;
+    color: #333 !important;
+}
+
+.react-calendar__tile--now {
+    background: #f8f8f8 !important;
+}
+
+.selected-date {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.date-label {
+    font-weight: 600;
+    color: #666;
+    margin-right: 8px;
+}
+
+.date-value {
+    color: #333;
+}
+
+.entry-display {
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.entry-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.entry-item:last-child {
+    border-bottom: none;
+}
+
+.entry-item h3 {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.entry-item p {
+    color: #333;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.no-entry {
+    color: #666;
+    text-align: center;
+    margin-top: 20px;
+    font-style: italic;
+}
