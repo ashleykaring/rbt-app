@@ -442,6 +442,11 @@ app.get("/users/:userId/recent", async (req, res) => {
         }
 
         const listOfEntries = userEntries.entries;
+
+        // Get username of user 
+
+        const userInfo = await findUserById(userId);
+        const name = userInfo.first_name;
         
         for(let i = listOfEntries.length - 1; i>= 0; i--) {
             // Check from end of user entries list, search database for corresponding entry, 
@@ -450,8 +455,10 @@ app.get("/users/:userId/recent", async (req, res) => {
             
             const currentEntry = await getEntryById(currentEntryId);
 
+
             if (currentEntry.is_public) {
                 // We found most recent public post
+                currentEntry.userName = name;
                 console.log("Retrieved most recent entry: ", currentEntry);
                 res.status(201).json(currentEntry);
                 break;
