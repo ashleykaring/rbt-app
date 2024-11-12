@@ -51,7 +51,14 @@ function GroupsPage() {
             }
 
             const groups = await response.json();
-            console.log("Fetched groups:", groups);
+            console.log(
+                "Fetched groups with codes:",
+                groups.map((g) => ({
+                    id: g._id,
+                    name: g.name,
+                    code: g.group_code
+                }))
+            );
             setUserGroups(groups);
         } catch (err) {
             console.error("Error fetching groups:", err);
@@ -70,14 +77,15 @@ function GroupsPage() {
         navigate(
             `/groups/${group._id}/${encodeURIComponent(
                 group.name
-            )}`
+            )}`,
+            { state: { group_code: group.group_code } }
         );
     };
 
     // Shown if the user is not in any groups
     const NoGroupsView = () => (
         <>
-            <Title>Share the experience!</Title>
+            <Title>Join a Group!</Title>
             <CreateGroup onGroupUpdate={fetchGroups} />
             <JoinGroup onGroupUpdate={fetchGroups} />
         </>

@@ -41,31 +41,11 @@ export const ContentContainer = styled.div`
     flex-direction: column;
 `;
 
-export const CloseButton = styled.button`
-    position: absolute;
-    top: 24px;
-    right: 24px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px;
-    color: #2c3e50;
-    font-size: 20px;
-    z-index: 10;
-
-    &:hover {
-        color: #38a169;
-    }
-`;
-
 export const Title = styled.h1`
     font-size: 2.4rem;
     font-weight: 700;
     color: #2c3e50;
-    margin: 0;
+    margin-bottom: 15px;
     position: relative;
     padding-left: 1rem;
     flex: 1;
@@ -158,6 +138,26 @@ export const ChevronIcon = styled.div`
 
     ${GroupCard}:hover & svg {
         transform: translateX(3px);
+    }
+`;
+
+export const CloseButton = styled.button`
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    color: #2c3e50;
+    font-size: 20px;
+    z-index: 10;
+
+    &:hover {
+        color: #38a169;
     }
 `;
 
@@ -506,16 +506,26 @@ export const GroupCodeDisplay = styled.div`
     align-items: center;
     gap: 1rem;
     background: white;
-    padding: 1rem 1.2rem;
-    border-radius: 12px;
+    padding: 0;
+    margin: 0 5px;
+    border-radius: 16px;
     border: 2px solid #e9ecef;
-    margin-top: 1rem;
-    transition: all 0.3s ease;
-    transform-origin: top;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: ${(props) => (props.isVisible ? "60px" : "0")};
     opacity: ${(props) => (props.isVisible ? 1 : 0)};
-    transform: ${(props) =>
-        props.isVisible ? "scaleY(1)" : "scaleY(0)"};
-    height: ${(props) => (props.isVisible ? "auto" : "0")};
+    overflow: hidden;
+    margin-top: ${(props) => (props.isVisible ? "10px" : "0")};
+    border-width: ${(props) => (props.isVisible ? "2px" : "0")};
+    box-shadow: ${(props) =>
+        props.isVisible
+            ? "0 2px 8px rgba(0, 0, 0, 0.05)"
+            : "none"};
+
+    ${(props) =>
+        props.isVisible &&
+        `
+        padding: 1rem 1.2rem;
+    `}
 
     .code {
         font-family: "SF Mono", "Fira Code", monospace;
@@ -533,37 +543,42 @@ export const ActionIcons = styled.div`
     margin-top: 0.5rem;
 `;
 
-export const TitleRow = styled.div`
+export const HeaderContainer = styled.div`
+    background: white;
+    border-radius: 16px;
+    padding: 16px 10px;
+    margin: 0 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+`;
+
+export const HeaderRow = styled.div`
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin: 24px 0 0;
-    padding-right: 48px;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
 `;
 
 export const CodeButton = styled.button`
     background: #f8f9fa;
-    border: 2px solid #e9ecef;
+    border: none;
     border-radius: 12px;
-    width: 44px;
-    height: 44px;
+    padding: 12px;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
     color: #2c3e50;
-    flex-shrink: 0;
-
-    svg {
-        font-size: 1.4rem;
-    }
+    font-size: 20px;
+    transition: all 0.2s ease;
 
     &:hover {
-        background: white;
-        border-color: #38a169;
-        color: #38a169;
-        transform: translateY(-1px);
+        background: #e9ecef;
+        transform: translateX(-2px);
+    }
+
+    &:active {
+        transform: translateX(0);
     }
 `;
 
@@ -620,4 +635,159 @@ export const LoadingText = styled.p`
     font-weight: 500;
     margin: 0;
     text-align: center;
+`;
+
+export const BackButton = styled.button`
+    background: #f8f9fa;
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2c3e50;
+    font-size: 20px;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #e9ecef;
+        transform: translateX(-2px);
+    }
+
+    &:active {
+        transform: translateX(0);
+    }
+`;
+
+export const EntriesContainer = styled.div`
+    margin-top: 10px;
+    padding: 0 5px;
+    overflow-y: auto;
+    flex: 1;
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+`;
+
+export const EntryCard = styled.div`
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+`;
+
+export const EntryName = styled.h3`
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin: 0 0 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &::after {
+        content: "";
+        flex: 1;
+        height: 2px;
+        background: linear-gradient(
+            to right,
+            rgba(44, 62, 80, 0.1),
+            rgba(44, 62, 80, 0.02)
+        );
+    }
+`;
+
+export const EntrySection = styled.div`
+    position: relative;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    background: ${(props) => {
+        switch (props.type) {
+            case "rose":
+                return "rgba(255, 143, 177, 0.1)";
+            case "thorn":
+                return "rgba(184, 58, 58, 0.1)";
+            case "bud":
+                return "rgba(152, 206, 0, 0.1)";
+            default:
+                return "transparent";
+        }
+    }};
+
+    &::before {
+        content: "${(props) => {
+            switch (props.type) {
+                case "rose":
+                    return "Rose";
+                case "thorn":
+                    return "Thorn";
+                case "bud":
+                    return "Bud";
+                default:
+                    return "";
+            }
+        }}";
+        position: absolute;
+        left: 20px;
+        top: -10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 6px;
+        background: white;
+        color: ${(props) => {
+            switch (props.type) {
+                case "rose":
+                    return "#FF8FB1";
+                case "thorn":
+                    return "#B83A3A";
+                case "bud":
+                    return "#98CE00";
+                default:
+                    return "#2c3e50";
+            }
+        }};
+    }
+`;
+
+export const EntryText = styled.p`
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #2c3e50;
+    margin: 0;
+    white-space: pre-wrap;
+`;
+
+export const EntryPageTitle = styled.h1`
+    font-size: 2.4rem;
+    font-weight: 700;
+    flex: 1;
+    text-align: center;
+    margin: 0;
+    padding: 0 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background: ${(props) => props.gradient};
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 `;

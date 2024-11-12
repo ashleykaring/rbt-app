@@ -1,39 +1,56 @@
 /*
 IMPORTS
 */
-
-// Libraries
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { FiCopy, FiShare, FiX, FiHash } from "react-icons/fi";
+import {
+    useParams,
+    useNavigate,
+    useLocation
+} from "react-router-dom";
+import {
+    FiCopy,
+    FiShare,
+    FiHash,
+    FiChevronLeft
+} from "react-icons/fi";
+
+// Import mock data
+import mockEntries from "./groupEntries.json";
 
 // Styles
 import {
     Container,
     ContentContainer,
-    CloseButton,
-    Title,
-    TitleRow,
+    EntryPageTitle,
     CodeButton,
     GroupCodeDisplay,
     ActionIcon,
-    Toast
+    Toast,
+    HeaderRow,
+    BackButton,
+    HeaderContainer,
+    getGradient,
+    EntriesContainer,
+    EntryCard,
+    EntryName,
+    EntrySection,
+    EntryText
 } from "./group.styles";
 
 /*
 RENDER
 */
-
 function GroupEntries() {
     // Constants & states
     const { groupId, groupName } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const groupCode = location.state?.group_code;
     const [showToast, setShowToast] = useState(false);
     const [showCode, setShowCode] = useState(false);
 
-    // TODO: This should come from your backend/state management
-    // For now using groupId, but this should be replaced with actual group code
-    const groupCode = "ABC123"; // This should be fetched based on groupId
+    // Get gradient for the group
+    const gradient = getGradient(groupId);
 
     // Function for copying group code
     const handleCopyCode = () => {
@@ -44,22 +61,25 @@ function GroupEntries() {
     return (
         <Container>
             <ContentContainer>
-                <CloseButton
-                    onClick={() => navigate("/groups")}
-                >
-                    <FiX />
-                </CloseButton>
-
-                <TitleRow>
-                    <Title>
-                        {decodeURIComponent(groupName)}
-                    </Title>
-                    <CodeButton
-                        onClick={() => setShowCode(!showCode)}
-                    >
-                        <FiHash />
-                    </CodeButton>
-                </TitleRow>
+                <HeaderContainer>
+                    <HeaderRow>
+                        <BackButton
+                            onClick={() => navigate("/groups")}
+                        >
+                            <FiChevronLeft />
+                        </BackButton>
+                        <EntryPageTitle gradient={gradient}>
+                            {decodeURIComponent(groupName)}
+                        </EntryPageTitle>
+                        <CodeButton
+                            onClick={() =>
+                                setShowCode(!showCode)
+                            }
+                        >
+                            <FiHash />
+                        </CodeButton>
+                    </HeaderRow>
+                </HeaderContainer>
 
                 <GroupCodeDisplay isVisible={showCode}>
                     <span className="code">{groupCode}</span>
@@ -80,6 +100,32 @@ function GroupEntries() {
                         Code copied to clipboard!
                     </Toast>
                 )}
+
+                {/* We can now map through the mock entries */}
+                <EntriesContainer>
+                    {mockEntries.entries.map((entry) => (
+                        <EntryCard key={entry.userId}>
+                            <EntryName>
+                                {entry.userName}
+                            </EntryName>
+                            <EntrySection type="rose">
+                                <EntryText>
+                                    {entry.rose_text}
+                                </EntryText>
+                            </EntrySection>
+                            <EntrySection type="bud">
+                                <EntryText>
+                                    {entry.bud_text}
+                                </EntryText>
+                            </EntrySection>
+                            <EntrySection type="thorn">
+                                <EntryText>
+                                    {entry.thorn_text}
+                                </EntryText>
+                            </EntrySection>
+                        </EntryCard>
+                    ))}
+                </EntriesContainer>
             </ContentContainer>
         </Container>
     );
