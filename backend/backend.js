@@ -10,18 +10,9 @@ const port = 8000;
 app.use(cors());
 app.use(express.json());
 
-// Helper functions for date formatting
-function formatDateForDatabase(date) { //database
-  return date.toISOString().split('T')[0];
-}
 
-//format display date 
-function formatDateForDisplay(date) { // Day, Month 00, 0000 format
-  const options = { weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' };
-  return date.toLocaleDateString('en-US', options);
+function formatDateForDatabase(date) { //database date 
+  return date.toISOString().split('T')[0];
 }
 
 // Create a new entry for a user
@@ -29,7 +20,6 @@ app.post("/entries", async (req, res) => {
     try {
       const { user_id, rose_text, bud_text, thorn_text, is_public } = req.body;
       const today = formatDateForDatabase(new Date()); //yyy-mm-dd format
-      const displayToday = formatDateForDisplay(new Date()); // Human-readable date for frontend
 
       const existingEntry = await Entry.findOne({
         user_id : user_id,
@@ -142,6 +132,21 @@ app.get("/entries/:entryId", async (req, res) => {
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
+
+
+    
   });
 
+// Date
+function getFormattedDate() {
+  const now = new Date();
 
+  const options = {
+      weekday: 'long',   // "Monday"
+      year: 'numeric',   // "2024"
+      month: 'long',     // "October"
+      day: 'numeric'     // "30"
+  };
+
+  return now.toLocaleDateString('en-US', options);
+}
