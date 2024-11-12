@@ -61,20 +61,20 @@ body {
     font-size: 1.2rem;
     transform: translateY(7px);
 }
-  
+
 .toggle {
     position: relative;
     /* display: inline-block; */
     width: 70px;
     height: 34px;
 }
-  
+
 .toggle input {
     opacity: 0;
     width: 0;
     height: 0;
 }
-  
+
 .slider {
     position: absolute;
     cursor: pointer;
@@ -86,7 +86,7 @@ body {
     transition: 0.4s;
     border-radius: 34px;
 }
-  
+
 .slider:before {
     position: absolute;
     content: "";
@@ -99,7 +99,7 @@ body {
     background-color: white;
     transition: 0.4s;
 }
-  
+
 input:checked + .slider {
     background-color: #23a6d5;
 }
@@ -107,4 +107,65 @@ input:checked + .slider {
 /* move slider */
 input:checked + .slider:before {
     transform: translateX(36px);
+}
+
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.logout-section {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.logout-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logout-button:hover {
+    background-color: #ff3333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.logout-button:active {
+    transform: translateY(0);
+}
+
+.logout-icon {
+    font-size: 1.2rem;
+}
+
+/* Dark mode specific styles */
+body.dark-mode .logout-button {
+    background-color: #d93d3d;
+}
+
+body.dark-mode .logout-button:hover {
+    background-color: #c53333;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 480px) {
+    .logout-button {
+        width: 80%;
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
 }

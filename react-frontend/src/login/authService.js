@@ -15,9 +15,23 @@ export const registerUser = async (userData) => {
         );
 
         const data = await response.json();
+        console.log("Register response:", data);
+
+        if (response.ok && data.userId) {
+            localStorage.setItem("userId", data.userId);
+            console.log(
+                "Stored userId in localStorage after registration:",
+                data.userId
+            );
+            return {
+                success: true,
+                userId: data.userId
+            };
+        }
+
         return {
-            success: response.ok,
-            message: data.message
+            success: false,
+            message: data.message || "Registration failed"
         };
     } catch (error) {
         console.error("Registration error:", error);
@@ -43,28 +57,29 @@ export const loginUser = async (credentials) => {
             body: JSON.stringify(credentials)
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-            const errorData = await response.json();
-            console.log("Server error response:", errorData);
+            console.log("Server error response:", data);
             return {
                 success: false,
-                message: errorData.message
+                message: data.message || "Login failed"
             };
         }
 
-        const data = await response.json();
-        if (data.userId) {
-            localStorage.setItem("userId", data.userId);
+        if (!data.userId) {
+            console.error(
+                "No userId received in login response"
+            );
+            return {
+                success: false,
+                message: "Server error: No user ID received"
+            };
         }
-        console.log("Login response:", {
-            status: response.status,
-            success: response.ok,
-            message: data.message
-        });
 
         return {
             success: true,
-            message: data.message,
+            message: "Login successful",
             userId: data.userId
         };
     } catch (error) {
