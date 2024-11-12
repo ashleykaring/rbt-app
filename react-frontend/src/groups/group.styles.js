@@ -188,6 +188,7 @@ export const CreateContainer = styled(GroupCard)`
     background: #f8f9fa;
     min-height: ${(props) =>
         props.expanded ? "220px" : "auto"};
+    padding: 1.8rem;
     transition: all 0.3s ease;
     position: relative;
     overflow: visible;
@@ -214,9 +215,9 @@ export const CreateContainer = styled(GroupCard)`
 export const InitialView = styled.div`
     display: flex;
     align-items: center;
-    gap: 1.4rem;
+    gap: 1.6rem;
     cursor: pointer;
-    padding: 0.5rem 0;
+    height: 1.4rem;
 `;
 
 export const PlusIcon = styled.div`
@@ -225,16 +226,16 @@ export const PlusIcon = styled.div`
     justify-content: center;
 
     svg {
-        font-size: 2.4rem;
+        font-size: 2.8rem;
         color: #38a169;
     }
 `;
 
 export const CreateText = styled.span`
-    font-size: 1.5rem;
+    font-size: 1.7rem;
     font-weight: 700;
     color: #38a169;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.01em;
 `;
 
 export const NameInput = styled.input`
@@ -676,6 +677,13 @@ export const EntriesContainer = styled.div`
     scrollbar-width: none; /* Firefox */
 `;
 
+export const EntryHeader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+`;
+
 export const EntryCard = styled.div`
     background: white;
     border-radius: 16px;
@@ -697,7 +705,7 @@ export const EntryName = styled.h3`
     font-size: 1.6rem;
     font-weight: 800;
     color: #2c3e50;
-    margin: 0 0 20px 0;
+    margin: 0 0 0 0;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -711,6 +719,28 @@ export const EntryName = styled.h3`
             rgba(44, 62, 80, 0.1),
             rgba(44, 62, 80, 0.02)
         );
+    }
+`;
+
+export const EntryDate = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1rem;
+    color: #64748b;
+    font-weight: 600;
+    padding: 6px 12px;
+    background: #f8fafc;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+
+    &:hover {
+        transform: translateY(-1px);
+        background: #f1f5f9;
+    }
+
+    span {
+        font-size: 1.2rem;
     }
 `;
 

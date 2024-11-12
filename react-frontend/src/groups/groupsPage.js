@@ -78,7 +78,12 @@ function GroupsPage() {
             `/groups/${group._id}/${encodeURIComponent(
                 group.name
             )}`,
-            { state: { group_code: group.group_code } }
+            {
+                state: {
+                    group_code: group.group_code,
+                    users: group.users
+                }
+            }
         );
     };
 
