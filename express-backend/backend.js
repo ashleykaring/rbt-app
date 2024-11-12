@@ -17,7 +17,9 @@ import {
     findUserByUsername,
     addEntry,
     getAllEntries,
-    findUserById
+    findUserById,
+    getUserEntriesByUserId,
+    getEntryById
 } from "./models/user-services.js";
 
 // Services
@@ -422,6 +424,55 @@ app.get("/users/:userId/groups", async (req, res) => {
             error: "Error fetching groups"
         });
     }
+});
+
+
+// GET USER'S MOST RECENT PUBLIC POST
+app.get("/users/:userId/recent", async (req, res) => {
+
+    try {
+        console.log("Fetching most recent post for userId: ", req.params.userId);
+        
+        const userId = new mongoose.Types.ObjectId(req.params.userId);
+
+        const userEntries = await getUserEntriesByUserId(userId);
+
+        if (!userEntries) {
+            return res.status(404).json({error: "user not found"});
+        }
+
+        const listOfEntries = userEntries.entries;
+        
+        for(let i = listOfEntries.length - 1; i>= 0; i--) {
+            // Check from end of user entries list, search database for corresponding entry, 
+            // return most recent public entry
+            const currentEntryId = listOfEntries[i];
+            
+            const currentEntry = await getEntryById(currentEntryId);
+
+            if (currentEntry.is_public) {
+                // We found most recent public post
+                console.log("Retrieved most recent entry: ", currentEntry);
+                res.status(201).json(currentEntry);
+                break;
+            }
+
+            if (i == 0) {
+                console.log("No public entries");
+                res.status(200);
+            }
+
+        }
+
+
+    } catch (err) {
+        console.log("Error in /users/:userId/recent", err);
+        res.status(500).json({
+            error: "Fetching most recent group"
+        });
+    }
+
+
 });
 
 // LISTEN
