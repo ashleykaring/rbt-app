@@ -24,7 +24,7 @@ app.post("/entries", async (req, res) => {
        if (existingEntry){
         return res.status(201).json({
           message: "You already started an entry today",
-          enrty: existingEnrty
+          entry: existingEnrty
         });
        }
 
@@ -86,18 +86,13 @@ function formatDate(date){//helper date yyy-mm-dd
 app.patch("/entries/:entryId/updateContent", async (req, res) => {
   try { // update content by entry ID
 
-
-    if (isPastEditDeadline()) {
-      return res.status(403).json({ error: "Whoops, too late to edit." });
-    }
-
     const { rose_text, bud_text, thorn_text } = req.body;
     const entry = await Entry.findById(req.params.entryId);
     if (!entry) return res.status(404).json({ error: "Entry not found" });
 
     const today = formatDate(new Date());
     if (formatDate(entry.date) !== today) { //comapres todays date deny edit if not
-      return res.status(403).json({ error: "Cannot edit an entry from a previous day." });
+      return res.status(403).json({ error: "Whoops, it's too late to edit." });
     }
     if (rose_text) entry.rose_text = rose_text;
     if (bud_text) entry.bud_text = bud_text;
