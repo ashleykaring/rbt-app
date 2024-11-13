@@ -15,7 +15,7 @@ function formatDateForDatabase(date) { //database date
   return date.toISOString().split('T')[0];
 }
 
-// Create a new entry for a user
+// create a new entry for a user
 app.post("/entries", async (req, res) => {
     try {
       const { user_id, rose_text, bud_text, thorn_text, is_public } = req.body;

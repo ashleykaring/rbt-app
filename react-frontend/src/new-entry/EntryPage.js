@@ -28,6 +28,24 @@ function EntryPage() {
         }
     };
 
+    const togglePrivacy = async (entryId, groupId) => {
+        try {
+            const response = await axios.patch(
+                `http://localhost:8000/groups/${groupId}/entries/${entryId}/toggle-privacy`,
+                { user_id: userId } // Sending user ID for authorization
+            );
+            const updatedEntry = response.data.entry;
+            setEntries((prevEntries) =>
+                prevEntries.map((entry) =>
+                    entry._id === entryId ? { ...entry, is_public: updatedEntry.is_public } : entry
+                )
+            );
+        } catch (error) {
+            console.error("Error toggling privacy status:", error);
+        }
+    };
+    
+
     async function makePostCall(entry) {
         try {
             const entryWithUser = {
@@ -69,22 +87,27 @@ function EntryPage() {
             <h1 className="entry-header">New Journal Entry</h1>
             <NewEntry handleSubmit={handleSubmit} />
             {entries.length > 0 && (
-                <div className="recent-entry">
+                <div className="entries-list">
                     <h2>Most Recent Entry</h2>
-                    <div className="entry-card">
+                    {entries.map((entry) => (
+                        <div key={entry._id} className="entry-card">
                         <div className="entry-item">
                             <h3>Rose</h3>
-                            <p>{entries[0].rose_text}</p>
+                            <p>{entry.rose_text}</p>
                         </div>
                         <div className="entry-item">
                             <h3>Bud</h3>
-                            <p>{entries[0].bud_text}</p>
+                            <p>{entry.bud_text}</p>
                         </div>
                         <div className="entry-item">
                             <h3>Thorn</h3>
-                            <p>{entries[0].thorn_text}</p>
+                            <p>{entry.thorn_text}</p>
                         </div>
+                        <button onClick={()=> togglePrivacy(entry._id, entry.group_id)}>
+                            {entry.is_public ? "Make Private" : "Make Public"}
+                        </button>
                     </div>
+                  ))}
                 </div>
             )}
         </div>
