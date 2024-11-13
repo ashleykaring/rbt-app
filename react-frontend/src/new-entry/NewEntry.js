@@ -13,7 +13,7 @@ function NewEntry(props) {
     const [existingEntry, setExistingEntry] = useState(null);
    
     useEffect(() => {
-        // Fetch today's entry when the component mounts
+        // fetch today's entry when the component mounts
         async function fetchTodayEntry() {
             const userId = localStorage.getItem("userId");
             if (!userId) {
@@ -24,15 +24,11 @@ function NewEntry(props) {
             try {
                 const response = await axios.get(`/users/${userId}/entries`);
                 const entries = response.data;
-
-                // Get today's date in yyyy-mm-dd format
                 const today = new Date().toISOString().split("T")[0];
-                
-                // Check if there's an entry for today
                 const todayEntry = entries.find((entry) => entry.date === today);
 
                 if (todayEntry) {
-                    setExistingEntry(todayEntry); // Set today's entry if it exists
+                    setExistingEntry(todayEntry); 
                 }
             } catch (error) {
                 console.error("Error fetching today's entry:", error);

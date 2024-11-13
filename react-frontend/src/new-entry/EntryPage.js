@@ -32,7 +32,7 @@ function EntryPage() {
         try {
             const response = await axios.patch(
                 `http://localhost:8000/groups/${groupId}/entries/${entryId}/toggle-privacy`,
-                { user_id: userId } // Sending user ID for authorization
+                { user_id: userId } // sends user ID for authorization
             );
             const updatedEntry = response.data.entry;
             setEntries((prevEntries) =>
