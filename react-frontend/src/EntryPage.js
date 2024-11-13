@@ -8,6 +8,7 @@ function EntryPage() {
   // for keeping track of user
   const [user, setUser] = useState("");
 
+
   // construct object on submit and send to backend with id
   // get id from local storage
 
@@ -16,11 +17,41 @@ function EntryPage() {
     const user = localStorage.getItem('userId');
     if (user) {
       setUser(user);
+      fetchUserEntries(user); // fetch users entries
+      fetchGroupEntries(user); // fetch entries for the user's group
     } else {
       console.log("Error getting user id");
       return false;
     }
   }, []);
+
+ // fetch group entries of user
+ async function fetchGroupEntries(userId) {
+  try {
+    const response = await axios.get(`/groups/user/${userId}/entries`); // Adjust endpoint if necessary
+    setRbt(response.data); // users entries
+  } catch (error) {
+    console.error("Error fetching group entries:", error);
+  }
+}
+
+  // toggle privacy for a user entry
+  async function togglePrivacy(entryId) {
+    try {
+      const response = await axios.patch(`/groups/${groupId}/entries/${entryId}/toggle-privacy`, {
+        user_id: user, // Pass the current user ID for authorization
+      });
+      const updatedEntry = response.data.entry;
+      // update the entrys privacy status in the rbt state
+      setRbt(prevEntries =>
+        prevEntries.map(entry =>
+          entry._id === entryId ? { ...entry, is_public: updatedEntry.is_public } : entry
+        )
+      );
+    } catch (error) {
+      console.error("Error toggling privacy status:", error);
+    }
+  }
 
   async function makePostCall(entry) {
     try {
@@ -45,6 +76,7 @@ function EntryPage() {
       bud_text: entry.bud,
       thorn_text: entry.thorn,
     };
+
 
     console.log({addedEntry});
 
@@ -71,9 +103,9 @@ function EntryPage() {
   return (
     <div className="container">
         <h1>New Journal Entry</h1>
-        <Table rbtData={rbt}/>
-        <NewEntry handleSubmit={updateRbt}/>
-    </div>
+        <Table rbtData={entries} /> {/* Display all entries */}
+        <NewEntry userId="user123" onNewEntry={handleNewEntry} /> {/* Render NewEntry component */}
+        </div>
   );
 }
 

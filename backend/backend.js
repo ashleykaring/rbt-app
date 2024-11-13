@@ -47,34 +47,53 @@ app.post("/entries", async (req, res) => {
   });
 
 
-// toggles privacy status of an entry within a group
+// toggles privacy status of entry within a group
 app.patch("/groups/:groupId/entries/:entryId/toggle-privacy", async (req, res) => {
   try {
     const { groupId, entryId } = req.params;
-    const userId = req.body.user_id; 
+    const userId = req.body.user_id;
 
+    // finds the group and verify that the user is a member
     const group = await Group.findById(groupId);
-    if (!group) {
-      return res.status(404).json({ error: "Group not found" });
+    if (!group || !group.members.includes(userId)) {
+      return res.status(403).json({ error: "User is not authorized in this group" });
     }
-    if (!group.members.includes(userId)) { //checks if user is in a group
-      return res.status(403).json({ error: "User not authorized in this group" });
+
+    // Find the entry and verify ownership
+    const entry = await Entry.findOne({ _id: entryId, user_id: userId, group_id: groupId });
+    if (!entry) {
+      return res.status(404).json({ error: "Entry not found or unauthorized" });
     }
-    const entry = await Entry.findById(entryId);// find entry by ID
-    if (!entry || entry.group_id.toString() !== groupId) { //verifies its in a group
-      return res.status(404).json({ error: "Entry not found or not part of the specified group" });
-    }
+
+    // Toggle the privacy setting
     entry.is_public = !entry.is_public;
     await entry.save();
 
-    res.status(200).json({
-      message: "Privacy status toggled successfully",
-      entry
-    });
+    res.status(200).json({ message: "Privacy status chnaged", entry });
   } catch (err) {
     res.status(500).json({ error: "Error toggling privacy status" });
   }
 });
+
+// gets group entries for specific user
+app.get("/groups/user/:userId/entries", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const groups = await Group.find({ members: userId }).select('_id');
+    const groupIds = groups.map(group => group._id);
+    const entries = await Entry.find({ group_id: { $in: groupIds } });
+
+    res.status(200).json(entries);
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching group entries" });
+  }
+});
+
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
+
 
 
 function formatDate(date){//helper date yyy-mm-dd
