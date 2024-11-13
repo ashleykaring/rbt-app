@@ -31,7 +31,7 @@ function NewEntry(props) {
                 bud_text: entry.bud,
                 thorn_text: entry.thorn,
                 user_id: userId,
-                is_public: false
+                is_public: true
             };
 
             props.handleSubmit(newEntry);
