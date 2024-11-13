@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import { IoChevronForward } from "react-icons/io5";
 import { BiLoaderAlt } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
+import { ThemeProvider } from "styled-components";
 
 // Styles
 import {
@@ -34,6 +35,12 @@ function GroupsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const [theme, setTheme] = useState({ mode: "light-mode" });
+
+    useEffect(() => {
+        const currentTheme = localStorage.getItem("theme");
+        setTheme({ mode: currentTheme || "light-mode" });
+    }, []);
 
     const fetchGroups = async () => {
         try {
@@ -139,13 +146,15 @@ function GroupsPage() {
 
     // Render the page based on # of groups
     return (
-        <PageContainer>
-            {userGroups.length === 0 ? (
-                <NoGroupsView />
-            ) : (
-                <GroupsView />
-            )}
-        </PageContainer>
+        <ThemeProvider theme={theme}>
+            <PageContainer>
+                {userGroups.length === 0 ? (
+                    <NoGroupsView />
+                ) : (
+                    <GroupsView />
+                )}
+            </PageContainer>
+        </ThemeProvider>
     );
 }
 

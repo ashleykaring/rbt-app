@@ -1,5 +1,25 @@
 import styled from "styled-components";
 
+const lightTheme = {
+    background: "white",
+    text: "#2c3e50",
+    secondaryText: "#64748b",
+    cardBackground: "white",
+    inputBackground: "#f8f9fa",
+    borderColor: "#e9ecef",
+    hoverBackground: "#f1f5f9"
+};
+
+const darkTheme = {
+    background: "#333333",
+    text: "#f0f0f0",
+    secondaryText: "#a0aec0",
+    cardBackground: "#2d2d2d",
+    inputBackground: "#333333",
+    borderColor: "#404040",
+    hoverBackground: "#404040"
+};
+
 const gradients = [
     "linear-gradient(135deg, #D66C84 0%, #F0C5BC 100%)",
     "linear-gradient(135deg, #859880 0%, #2E5141 100%)",
@@ -34,7 +54,10 @@ export const ContentContainer = styled.div`
     width: 100%;
     max-width: 480px;
     height: 100%;
-    background: #fdf2f1;
+    background: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? "#2d1f1f" // darker pink for dark mode
+            : "#fdf2f1"};
     padding: 20px;
     position: relative;
     display: flex;
@@ -44,7 +67,10 @@ export const ContentContainer = styled.div`
 export const Title = styled.h1`
     font-size: 2.4rem;
     font-weight: 700;
-    color: #2c3e50;
+    color: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? darkTheme.text
+            : lightTheme.text};
     margin-bottom: 15px;
     position: relative;
     padding-left: 1rem;
@@ -66,6 +92,10 @@ export const Title = styled.h1`
 export const Subtitle = styled(Title).attrs({ as: "h2" })`
     font-size: 1.8rem;
     margin: 4rem 0 1.5rem;
+    color: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? darkTheme.text
+            : lightTheme.text};
 
     &:first-of-type {
         margin-top: 0;
@@ -80,7 +110,10 @@ export const GroupCard = styled.div`
     transition: all 0.3s ease;
     background: ${(props) => props.gradient || gradients[0]};
     color: white;
-    box-shadow: 0 4px 15px rgba(214, 108, 132, 0.2);
+    box-shadow: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? "0 4px 15px rgba(0, 0, 0, 0.4)"
+            : "0 4px 15px rgba(214, 108, 132, 0.2)"};
     position: relative;
     overflow: hidden;
 
@@ -185,30 +218,49 @@ export const ActionButton = styled.button`
 `;
 
 export const CreateContainer = styled(GroupCard)`
-    background: #f8f9fa;
+    background: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? darkTheme.cardBackground
+            : lightTheme.cardBackground};
+    color: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? darkTheme.text
+            : lightTheme.text};
     min-height: ${(props) =>
         props.expanded ? "220px" : "auto"};
     padding: 1.8rem;
     transition: all 0.3s ease;
     position: relative;
     overflow: visible;
-    color: #2c3e50;
-    border: 2px dashed #e9ecef;
+    border: 2px dashed
+        ${(props) =>
+            props.theme.mode === "dark-mode"
+                ? darkTheme.borderColor
+                : lightTheme.borderColor};
     box-shadow: none;
     cursor: ${(props) =>
         props.expanded ? "default" : "pointer"};
 
     &:hover {
         border-color: #38a169;
-        background: #ffffff;
+        background: ${(props) =>
+            props.theme.mode === "dark-mode"
+                ? "#333333"
+                : "#ffffff"};
     }
 
     ${(props) =>
         props.expanded &&
         `
         border: 2px solid #38a169;
-        background: white;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        background: ${
+            props.theme.mode === "dark-mode"
+                ? darkTheme.cardBackground
+                : "white"
+        };
+        box-shadow: 0 4px 20px rgba(0, 0, 0, ${
+            props.theme.mode === "dark-mode" ? "0.3" : "0.08"
+        });
     `}
 `;
 
@@ -241,16 +293,30 @@ export const CreateText = styled.span`
 export const NameInput = styled.input`
     width: 100%;
     padding: 1.2rem;
-    border: 2px solid #e9ecef;
+    border: 2px solid
+        ${(props) =>
+            props.theme.mode === "dark-mode"
+                ? darkTheme.borderColor
+                : lightTheme.borderColor};
     border-radius: 12px;
     margin-top: 20px;
     margin-bottom: 10px;
     font-size: 1.2rem;
-    background: #f8f9fa;
+    background: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? darkTheme.inputBackground
+            : lightTheme.inputBackground};
     transition: all 0.2s ease;
+    color: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? darkTheme.text
+            : lightTheme.text};
 
     &::placeholder {
-        color: #95a5a6;
+        color: ${(props) =>
+            props.theme.mode === "dark-mode"
+                ? "#666666"
+                : "#95a5a6"};
     }
 
     &:focus {
@@ -363,6 +429,14 @@ export const Icon = styled.button`
 export const PageContainer = styled.div`
     margin-horizontal: 5px;
     margin-bottom: 50px;
+    background: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? darkTheme.background
+            : lightTheme.background};
+    color: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? darkTheme.text
+            : lightTheme.text};
 `;
 
 export const Toast = styled.div`
@@ -407,15 +481,24 @@ export const Toast = styled.div`
 export const JoinContainer = styled(CreateContainer)`
     &:hover {
         border-color: #4299e1;
-        background: #ffffff;
+        background: ${(props) =>
+            props.theme.mode === "dark-mode"
+                ? "#333333"
+                : "#ffffff"};
     }
 
     ${(props) =>
         props.expanded &&
         `
         border: 2px solid #4299e1;
-        background: white;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        background: ${
+            props.theme.mode === "dark-mode"
+                ? darkTheme.cardBackground
+                : "white"
+        };
+        box-shadow: 0 4px 20px rgba(0, 0, 0, ${
+            props.theme.mode === "dark-mode" ? "0.3" : "0.08"
+        });
     `}
 `;
 
@@ -506,11 +589,18 @@ export const GroupCodeDisplay = styled.div`
     display: flex;
     align-items: center;
     gap: 1rem;
-    background: white;
+    background: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? darkTheme.cardBackground
+            : "white"};
     padding: 0;
     margin: 0 5px;
     border-radius: 16px;
-    border: 2px solid #e9ecef;
+    border: 2px solid
+        ${(props) =>
+            props.theme.mode === "dark-mode"
+                ? darkTheme.borderColor
+                : "#e9ecef"};
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     max-height: ${(props) => (props.isVisible ? "60px" : "0")};
     opacity: ${(props) => (props.isVisible ? 1 : 0)};
@@ -519,7 +609,9 @@ export const GroupCodeDisplay = styled.div`
     border-width: ${(props) => (props.isVisible ? "2px" : "0")};
     box-shadow: ${(props) =>
         props.isVisible
-            ? "0 2px 8px rgba(0, 0, 0, 0.05)"
+            ? props.theme.mode === "dark-mode"
+                ? "0 2px 8px rgba(0, 0, 0, 0.2)"
+                : "0 2px 8px rgba(0, 0, 0, 0.05)"
             : "none"};
 
     ${(props) =>
@@ -533,7 +625,10 @@ export const GroupCodeDisplay = styled.div`
         font-size: 1.4rem;
         font-weight: 600;
         letter-spacing: 0.3rem;
-        color: #2c3e50;
+        color: ${(props) =>
+            props.theme.mode === "dark-mode"
+                ? darkTheme.text
+                : "#2c3e50"};
         margin-right: auto;
     }
 `;
@@ -545,7 +640,10 @@ export const ActionIcons = styled.div`
 `;
 
 export const HeaderContainer = styled.div`
-    background: white;
+    background: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? darkTheme.cardBackground
+            : "white"};
     border-radius: 16px;
     padding: 16px 10px;
     margin: 0 5px;
@@ -561,7 +659,10 @@ export const HeaderRow = styled.div`
 `;
 
 export const CodeButton = styled.button`
-    background: #f8f9fa;
+    background: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? darkTheme.cardBackground
+            : "#f8f9fa"};
     border: none;
     border-radius: 12px;
     padding: 12px;
@@ -569,12 +670,18 @@ export const CodeButton = styled.button`
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #2c3e50;
+    color: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? "#ffffff"
+            : "#2c3e50"};
     font-size: 20px;
     transition: all 0.2s ease;
 
     &:hover {
-        background: #e9ecef;
+        background: ${(props) =>
+            props.theme.mode === "dark-mode"
+                ? "#404040"
+                : "#e9ecef"};
         transform: translateX(-2px);
     }
 
@@ -588,7 +695,10 @@ export const ActionIcon = styled.button`
     border: none;
     padding: 0.5rem;
     cursor: pointer;
-    color: #2c3e50;
+    color: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? darkTheme.text
+            : "#2c3e50"};
     display: flex;
     align-items: center;
     justify-content: center;
@@ -599,7 +709,10 @@ export const ActionIcon = styled.button`
     }
 
     &:hover {
-        color: #38a169;
+        color: ${(props) =>
+            props.theme.mode === "dark-mode"
+                ? "#4299e1"
+                : "#38a169"};
         transform: translateY(-1px);
     }
 `;
@@ -639,7 +752,10 @@ export const LoadingText = styled.p`
 `;
 
 export const BackButton = styled.button`
-    background: #f8f9fa;
+    background: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? darkTheme.cardBackground
+            : "#f8f9fa"};
     border: none;
     border-radius: 12px;
     padding: 12px;
@@ -647,12 +763,18 @@ export const BackButton = styled.button`
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #2c3e50;
+    color: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? "#ffffff"
+            : "#2c3e50"};
     font-size: 20px;
     transition: all 0.2s ease;
 
     &:hover {
-        background: #e9ecef;
+        background: ${(props) =>
+            props.theme.mode === "dark-mode"
+                ? "#404040"
+                : "#e9ecef"};
         transform: translateX(-2px);
     }
 
@@ -685,12 +807,19 @@ export const EntryHeader = styled.div`
 `;
 
 export const EntryCard = styled.div`
-    background: white;
+    background: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? "#363636" // Slightly brighter than the dark theme background
+            : lightTheme.cardBackground};
     border-radius: 16px;
     padding: 24px;
     margin-bottom: 20px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid
+        ${(props) =>
+            props.theme.mode === "dark-mode"
+                ? "rgba(255, 255, 255, 0.1)"
+                : "rgba(0, 0, 0, 0.05)"};
 
     &:hover {
         transform: translateY(-2px);
@@ -704,7 +833,10 @@ export const EntryCard = styled.div`
 export const EntryName = styled.h3`
     font-size: 1.6rem;
     font-weight: 800;
-    color: #2c3e50;
+    color: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? darkTheme.text
+            : lightTheme.text};
     margin: 0 0 0 0;
     display: flex;
     align-items: center;
@@ -716,8 +848,10 @@ export const EntryName = styled.h3`
         height: 2px;
         background: linear-gradient(
             to right,
-            rgba(44, 62, 80, 0.1),
-            rgba(44, 62, 80, 0.02)
+            ${(props) =>
+                props.theme.mode === "dark-mode"
+                    ? "rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02)"
+                    : "rgba(44, 62, 80, 0.1), rgba(44, 62, 80, 0.02)"}
         );
     }
 `;
@@ -750,13 +884,20 @@ export const EntrySection = styled.div`
     margin-bottom: 16px;
     border-radius: 12px;
     background: ${(props) => {
+        const isDark = props.theme.mode === "dark-mode";
         switch (props.type) {
             case "rose":
-                return "rgba(255, 143, 177, 0.1)";
+                return isDark
+                    ? "rgba(255, 143, 177, 0.05)"
+                    : "rgba(255, 143, 177, 0.1)";
             case "thorn":
-                return "rgba(184, 58, 58, 0.1)";
+                return isDark
+                    ? "rgba(184, 58, 58, 0.05)"
+                    : "rgba(184, 58, 58, 0.1)";
             case "bud":
-                return "rgba(152, 206, 0, 0.1)";
+                return isDark
+                    ? "rgba(152, 206, 0, 0.05)"
+                    : "rgba(152, 206, 0, 0.1)";
             default:
                 return "transparent";
         }
@@ -782,7 +923,10 @@ export const EntrySection = styled.div`
         font-weight: 600;
         padding: 2px 8px;
         border-radius: 6px;
-        background: white;
+        background: ${(props) =>
+            props.theme.mode === "dark-mode"
+                ? darkTheme.cardBackground
+                : "white"};
         color: ${(props) => {
             switch (props.type) {
                 case "rose":
@@ -801,7 +945,10 @@ export const EntrySection = styled.div`
 export const EntryText = styled.p`
     font-size: 1rem;
     line-height: 1.6;
-    color: #2c3e50;
+    color: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? "#ffffff"
+            : "#2c3e50"};
     margin: 0;
     white-space: pre-wrap;
 `;

@@ -13,6 +13,7 @@ import {
     FiHash,
     FiChevronLeft
 } from "react-icons/fi";
+import { ThemeProvider } from "styled-components";
 
 // Styles
 import {
@@ -49,6 +50,12 @@ function GroupEntries() {
     const [showToast, setShowToast] = useState(false);
     const [showCode, setShowCode] = useState(false);
     const [entries, setEntries] = useState([]);
+    const [theme, setTheme] = useState({ mode: "light-mode" });
+
+    useEffect(() => {
+        const currentTheme = localStorage.getItem("theme");
+        setTheme({ mode: currentTheme || "light-mode" });
+    }, []);
 
     // Get gradient for the group
     const gradient = getGradient(groupId);
@@ -162,91 +169,97 @@ function GroupEntries() {
     }, [groupUsers]);
 
     return (
-        <Container>
-            <ContentContainer>
-                <HeaderContainer>
-                    <HeaderRow>
-                        <BackButton
-                            onClick={() => navigate("/groups")}
-                        >
-                            <FiChevronLeft />
-                        </BackButton>
-                        <EntryPageTitle gradient={gradient}>
-                            {decodeURIComponent(groupName)}
-                        </EntryPageTitle>
-                        <CodeButton
-                            onClick={() =>
-                                setShowCode(!showCode)
+        <ThemeProvider theme={theme}>
+            <Container>
+                <ContentContainer>
+                    <HeaderContainer>
+                        <HeaderRow>
+                            <BackButton
+                                onClick={() =>
+                                    navigate("/groups")
+                                }
+                            >
+                                <FiChevronLeft />
+                            </BackButton>
+                            <EntryPageTitle gradient={gradient}>
+                                {decodeURIComponent(groupName)}
+                            </EntryPageTitle>
+                            <CodeButton
+                                onClick={() =>
+                                    setShowCode(!showCode)
+                                }
+                            >
+                                <FiHash />
+                            </CodeButton>
+                        </HeaderRow>
+                    </HeaderContainer>
+
+                    <GroupCodeDisplay isVisible={showCode}>
+                        <span className="code">
+                            {groupCode}
+                        </span>
+                        <ActionIcon onClick={handleCopyCode}>
+                            <FiCopy />
+                        </ActionIcon>
+                        <ActionIcon>
+                            <FiShare />
+                        </ActionIcon>
+                    </GroupCodeDisplay>
+
+                    {showToast && (
+                        <Toast
+                            onAnimationEnd={() =>
+                                setShowToast(false)
                             }
                         >
-                            <FiHash />
-                        </CodeButton>
-                    </HeaderRow>
-                </HeaderContainer>
+                            Code copied to clipboard!
+                        </Toast>
+                    )}
 
-                <GroupCodeDisplay isVisible={showCode}>
-                    <span className="code">{groupCode}</span>
-                    <ActionIcon onClick={handleCopyCode}>
-                        <FiCopy />
-                    </ActionIcon>
-                    <ActionIcon>
-                        <FiShare />
-                    </ActionIcon>
-                </GroupCodeDisplay>
-
-                {showToast && (
-                    <Toast
-                        onAnimationEnd={() =>
-                            setShowToast(false)
-                        }
-                    >
-                        Code copied to clipboard!
-                    </Toast>
-                )}
-
-                {/* We can now map through the mock entries */}
-                <EntriesContainer>
-                    {entries.map((entry) => (
-                        <EntryCard key={entry.userId}>
-                            <EntryHeader>
-                                <EntryName>
-                                    {entry.userName}
-                                </EntryName>
-                                <EntryDate>
-                                    {
-                                        getDateDisplay(
-                                            entry.date
-                                        ).text
-                                    }
-                                    <span>
+                    {/* We can now map through the mock entries */}
+                    <EntriesContainer>
+                        {entries.map((entry) => (
+                            <EntryCard key={entry.userId}>
+                                <EntryHeader>
+                                    <EntryName>
+                                        {entry.userName}
+                                    </EntryName>
+                                    <EntryDate>
                                         {
                                             getDateDisplay(
                                                 entry.date
-                                            ).emoji
+                                            ).text
                                         }
-                                    </span>
-                                </EntryDate>
-                            </EntryHeader>
-                            <EntrySection type="rose">
-                                <EntryText>
-                                    {entry.rose_text}
-                                </EntryText>
-                            </EntrySection>
-                            <EntrySection type="bud">
-                                <EntryText>
-                                    {entry.bud_text}
-                                </EntryText>
-                            </EntrySection>
-                            <EntrySection type="thorn">
-                                <EntryText>
-                                    {entry.thorn_text}
-                                </EntryText>
-                            </EntrySection>
-                        </EntryCard>
-                    ))}
-                </EntriesContainer>
-            </ContentContainer>
-        </Container>
+                                        <span>
+                                            {
+                                                getDateDisplay(
+                                                    entry.date
+                                                ).emoji
+                                            }
+                                        </span>
+                                    </EntryDate>
+                                </EntryHeader>
+                                <EntrySection type="rose">
+                                    <EntryText>
+                                        {entry.rose_text}
+                                    </EntryText>
+                                </EntrySection>
+                                <EntrySection type="bud">
+                                    <EntryText>
+                                        {entry.bud_text}
+                                    </EntryText>
+                                </EntrySection>
+                                <EntrySection type="thorn">
+                                    <EntryText>
+                                        {entry.thorn_text}
+                                    </EntryText>
+                                </EntrySection>
+                            </EntryCard>
+                        ))}
+                    </EntriesContainer>
+                </ContentContainer>
+            </Container>
+        </ThemeProvider>
     );
 }
 
