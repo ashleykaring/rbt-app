@@ -24,7 +24,7 @@ import Header from "./navigation/Header.js";
 import Footer from "./navigation/Footer.js";
 import "./index.css";
 
-const BYPASS_AUTH = false;
+const BYPASS_AUTH = false; // this is what i change!!
 
 const MainAppFlow = ({ setIsLoggedIn }) => {
     useEffect(() => {
