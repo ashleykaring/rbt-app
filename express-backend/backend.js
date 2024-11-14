@@ -19,7 +19,8 @@ import {
     getAllEntries,
     findUserById,
     getUserEntriesByUserId,
-    getEntryById
+    getEntryById,
+    EntryModel
 } from "./models/user-services.js";
 
 // Services
@@ -485,6 +486,42 @@ app.get("/users/:userId/recent", async (req, res) => {
         res.status(500).json({
             error: "Error fetching most recent entry"
         });
+    }
+});
+
+// UPDATE ENTRY
+/*
+ * Updates an existing entry with new rose, bud, and thorn text
+ */
+app.patch("/entries/:entryId", async (req, res) => {
+    try {
+        const { entryId } = req.params;
+        const { rose, bud, thorn } = req.body;
+
+        // Find the entry by ID and update it
+        const updatedEntry = await EntryModel.findByIdAndUpdate(
+            entryId,
+            {
+                rose_text: rose,
+                bud_text: bud,
+                thorn_text: thorn
+            },
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedEntry) {
+            return res
+                .status(404)
+                .json({ error: "Entry not found" });
+        }
+
+        res.status(200).json({
+            message: "Entry updated successfully",
+            entry: updatedEntry
+        });
+    } catch (error) {
+        console.error("Error updating entry:", error);
+        res.status(500).json({ error: "Error updating entry" });
     }
 });
 
