@@ -19,15 +19,13 @@ function formatDateForDatabase(date) { //database date
 app.post("/entries", async (req, res) => {
     try {
       const { user_id, rose_text, bud_text, thorn_text, is_public } = req.body;
-      const today = formatDateForDatabase(new Date()); //yyy-mm-dd format
-
+      const today = formatDateForDatabase(new Date()); 
+        //checks if entry already exists
       const existingEntry = await Entry.findOne({
-        user_id : user_id,
-        date: today // check for entries w same date 
-      });
-
+        user_id : user_id, date: today });// check for entries w same date 
+      
       if (existingEntry){
-        return res.status(201).json({
+        return res.status().json({
           message: "You already started an entry today",
           entry: existingEntry
         });
@@ -80,7 +78,33 @@ app.patch("/groups/:groupId/entries/:entryId/toggle-privacy", async (req, res) =
     res.status(500).json({ error: "Error toggling privacy status" });
   }
 });
+// app.patch("/entries/:entryId/toggle-privacy", async (req, res) => {
+//   try {
+//     const { entryId } = req.params;
+//     const userId = req.body.user_id; // Authorization by user
 
+//     const entry = await Entry.findById(entryId);
+//     if (!entry) {
+//       return res.status(404).json({ error: "Entry not found" });
+//     }
+
+//     // Check if the user is the owner of the entry
+//     if (entry.user_id.toString() !== userId) {
+//       return res.status(403).json({ error: "User not authorized to modify this entry" });
+//     }
+
+//     // Toggle the privacy status
+//     entry.is_public = !entry.is_public;
+//     await entry.save();
+
+//     res.status(200).json({
+//       message: "Privacy status toggled successfully",
+//       entry
+//     });
+//   } catch (err) {
+//     res.status(500).json({ error: "Error toggling privacy status" });
+//   }
+// });
 
 //allowed to edit only within the same day
 app.patch("/entries/:entryId/updateContent", async (req, res) => {
