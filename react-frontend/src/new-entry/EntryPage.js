@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import NewEntry from "./NewEntry";
 import axios from "axios";
 import "./Entry.css";
@@ -16,17 +16,7 @@ function EntryPage() {
         thorn: ""
     });
 
-    useEffect(() => {
-        const currentUserId = localStorage.getItem("userId");
-        if (currentUserId) {
-            setUserId(currentUserId);
-            fetchUserEntries(currentUserId);
-        } else {
-            console.error("No user ID found in localStorage");
-        }
-    }, []);
-
-    const fetchUserEntries = async (userId) => {
+    const fetchUserEntries = useCallback(async (userId) => {
         try {
             const response = await axios.get(
                 `http://localhost:8000/users/${userId}/entries`
@@ -37,7 +27,17 @@ function EntryPage() {
         } catch (error) {
             console.error("Error fetching entries:", error);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const currentUserId = localStorage.getItem("userId");
+        if (currentUserId) {
+            setUserId(currentUserId);
+            fetchUserEntries(currentUserId);
+        } else {
+            console.error("No user ID found in localStorage");
+        }
+    }, [fetchUserEntries]);
 
     const checkIfSubmittedToday = (entries) => {
         if (entries.length > 0) {
