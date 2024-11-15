@@ -13,7 +13,8 @@ function EntryPage() {
     const [editableEntry, setEditableEntry] = useState({
         rose: "",
         bud: "",
-        thorn: ""
+        thorn: "",
+        isPublic: true
     });
 
     const fetchUserEntries = useCallback(async (userId) => {
@@ -58,7 +59,8 @@ function EntryPage() {
                 setEditableEntry({
                     rose: mostRecentEntry.rose_text,
                     bud: mostRecentEntry.bud_text,
-                    thorn: mostRecentEntry.thorn_text
+                    thorn: mostRecentEntry.thorn_text,
+                    isPublic: mostRecentEntry.is_public
                 });
             }
         }
@@ -72,7 +74,8 @@ function EntryPage() {
             setEditableEntry({
                 rose: mostRecentEntry.rose_text,
                 bud: mostRecentEntry.bud_text,
-                thorn: mostRecentEntry.thorn_text
+                thorn: mostRecentEntry.thorn_text,
+                isPublic: mostRecentEntry.is_public
             });
         }
     };
@@ -87,9 +90,16 @@ function EntryPage() {
 
     const handleUpdate = async () => {
         try {
+            const updateData = {
+                rose_text: editableEntry.rose,
+                bud_text: editableEntry.bud,
+                thorn_text: editableEntry.thorn,
+                is_public: editableEntry.isPublic
+            };
+
             const response = await axios.patch(
                 `http://localhost:8000/entries/${entries[0]._id}`,
-                editableEntry
+                updateData
             );
 
             if (response.status === 200) {
@@ -207,6 +217,33 @@ function EntryPage() {
                                             handleInputChange
                                         }
                                     />
+                                </div>
+                                <div className="toggle-container">
+                                    <label className="toggle-switch">
+                                        <input
+                                            type="checkbox"
+                                            checked={
+                                                editableEntry.isPublic
+                                            }
+                                            onChange={(e) =>
+                                                setEditableEntry(
+                                                    (prev) => ({
+                                                        ...prev,
+                                                        isPublic:
+                                                            e
+                                                                .target
+                                                                .checked
+                                                    })
+                                                )
+                                            }
+                                        />
+                                        <span className="toggle-slider"></span>
+                                    </label>
+                                    <span className="toggle-label">
+                                        {editableEntry.isPublic
+                                            ? "Public Entry"
+                                            : "Private Entry"}
+                                    </span>
                                 </div>
                                 <button
                                     className="update-button"

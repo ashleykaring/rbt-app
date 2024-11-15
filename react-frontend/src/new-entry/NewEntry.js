@@ -5,7 +5,8 @@ function NewEntry(props) {
     const [entry, setEntry] = useState({
         rose: "",
         bud: "",
-        thorn: ""
+        thorn: "",
+        isPublic: true
     });
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -31,11 +32,16 @@ function NewEntry(props) {
                 bud_text: entry.bud,
                 thorn_text: entry.thorn,
                 user_id: userId,
-                is_public: true
+                is_public: entry.isPublic
             };
 
             props.handleSubmit(newEntry);
-            setEntry({ rose: "", bud: "", thorn: "" });
+            setEntry({
+                rose: "",
+                bud: "",
+                thorn: "",
+                isPublic: true
+            });
         } else {
             setErrorMessage("Please fill in all fields");
         }
@@ -70,6 +76,26 @@ function NewEntry(props) {
                 value={entry.thorn}
                 onChange={handleChange}
             />
+            <div className="toggle-container">
+                <label className="toggle-switch">
+                    <input
+                        type="checkbox"
+                        checked={entry.isPublic}
+                        onChange={(e) =>
+                            setEntry((prev) => ({
+                                ...prev,
+                                isPublic: e.target.checked
+                            }))
+                        }
+                    />
+                    <span className="toggle-slider"></span>
+                </label>
+                <span className="toggle-label">
+                    {entry.isPublic
+                        ? "Public Entry"
+                        : "Private Entry"}
+                </span>
+            </div>
             {errorMessage && (
                 <p className="error-message">{errorMessage}</p>
             )}
