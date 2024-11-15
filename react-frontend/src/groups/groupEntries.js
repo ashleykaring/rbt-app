@@ -95,8 +95,7 @@ function GroupEntries() {
         }
     };
 
-    // app.get("/users/:userId/recent", async (req, res) => {
-
+    // Fetch entries for the group
     useEffect(() => {
         const fetchEntries = async () => {
             try {
@@ -108,6 +107,7 @@ function GroupEntries() {
                     return;
                 }
 
+                // Fetch entries for each user in the group
                 const recentEntries = await Promise.all(
                     groupUsers.map(async (user) => {
                         try {
@@ -172,6 +172,7 @@ function GroupEntries() {
         <ThemeProvider theme={theme}>
             <Container>
                 <ContentContainer>
+                    {/* Header */}
                     <HeaderContainer>
                         <HeaderRow>
                             <BackButton
@@ -194,6 +195,7 @@ function GroupEntries() {
                         </HeaderRow>
                     </HeaderContainer>
 
+                    {/* Group code display */}
                     <GroupCodeDisplay isVisible={showCode}>
                         <span className="code">
                             {groupCode}
@@ -206,6 +208,7 @@ function GroupEntries() {
                         </ActionIcon>
                     </GroupCodeDisplay>
 
+                    {/* Toast for copying code */}
                     {showToast && (
                         <Toast
                             onAnimationEnd={() =>
@@ -216,7 +219,7 @@ function GroupEntries() {
                         </Toast>
                     )}
 
-                    {/* We can now map through the mock entries */}
+                    {/* Map through the entries */}
                     <EntriesContainer>
                         {entries.map((entry) => (
                             <EntryCard key={entry.userId}>

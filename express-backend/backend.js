@@ -491,20 +491,22 @@ app.get("/users/:userId/recent", async (req, res) => {
 
 // UPDATE ENTRY
 /*
- * Updates an existing entry with new rose, bud, and thorn text
+ * Updates an existing entry with new rose, bud, and thorn text & public status
  */
 app.patch("/entries/:entryId", async (req, res) => {
     try {
         const { entryId } = req.params;
-        const { rose, bud, thorn } = req.body;
+        const { rose_text, bud_text, thorn_text, is_public } =
+            req.body;
 
         // Find the entry by ID and update it
         const updatedEntry = await EntryModel.findByIdAndUpdate(
             entryId,
             {
-                rose_text: rose,
-                bud_text: bud,
-                thorn_text: thorn
+                rose_text,
+                bud_text,
+                thorn_text,
+                is_public
             },
             { new: true } // Return the updated document
         );
