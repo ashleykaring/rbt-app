@@ -21,7 +21,9 @@ export const AccountContainer = styled.div`
     justify-content: center;
     align-items: center;
     height: 100vh;
-    padding: 0 20px;
+    width: 100%;
+    max-width: 480px;
+    padding: 0;
     background: linear-gradient(
         -45deg,
         #f5d8da,
@@ -31,31 +33,20 @@ export const AccountContainer = styled.div`
     );
     background-size: 400% 400%;
     animation: ${gradientAnimation} 15s ease infinite;
-
-    @media (max-width: 480px) {
-        padding: 0 10px;
-    }
 `;
 
 export const FormContainer = styled.div`
     background-color: rgba(255, 255, 255, 0.9);
-    padding: 95px 30px 40px;
+    padding: 95px 30px 10px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 400px;
     box-sizing: border-box;
-    margin: 20px;
+    margin: 10px 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
-
-    @media (max-width: 480px) {
-        padding: 75px 24px 32px;
-        border-radius: 15px;
-        margin: 15px;
-    }
 `;
 
 export const LogoImage = styled.img`
@@ -85,13 +76,7 @@ export const Title = styled.h2`
     margin-bottom: 30px;
     text-align: center;
     font-weight: 800;
-    margin-top: 15px;
-
-    @media (max-width: 480px) {
-        font-size: 24px;
-        margin-bottom: 25px;
-        margin-top: 10px;
-    }
+    margin-top: 5px;
 `;
 
 export const Form = styled.form`
@@ -104,10 +89,6 @@ export const InputGroup = styled.div`
     margin-bottom: 5px;
     position: relative;
     width: 100%;
-
-    @media (max-width: 480px) {
-        margin-bottom: 20px;
-    }
 `;
 
 export const Label = styled.label`
@@ -203,7 +184,7 @@ export const Button = styled.button`
 
 export const LinkText = styled.p`
     text-align: center;
-    margin-top: 5px;
+    margin-top: 0px;
     font-size: 14px;
     color: #555;
 
@@ -219,7 +200,7 @@ export const LinkText = styled.p`
 
     @media (max-width: 480px) {
         font-size: 13px;
-        margin-top: 20px;
+        margin-top: 0px;
     }
 `;
 
