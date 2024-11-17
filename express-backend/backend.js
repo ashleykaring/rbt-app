@@ -110,6 +110,35 @@ app.post("/api/register", async (req, res) => {
     }
 });
 
+// CHECK IF USER EXISTS
+/*
+ * Need email
+ * Checks if email is registered
+ * Returns boolean indicating existence
+ */
+app.get("/api/user-exists/:email", async (req, res) => {
+    const { email } = req.params;
+
+    try {
+        const users = await findUserByUsername(email);
+        if (users.length === 0) {
+            return res.status(200).json({
+                exists: false
+            });
+        }
+
+        res.status(200).json({
+            exists: true,
+            firstName: users[0].first_name
+        });
+    } catch (error) {
+        res.status(500).json({
+            message:
+                "Error checking user existence. Please try again."
+        });
+    }
+});
+
 // LOGIN
 /*
  * Need email and password

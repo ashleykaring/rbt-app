@@ -1,5 +1,46 @@
 const API_BASE_URL = "http://localhost:8000/api";
 
+// CHECK IF USER EXISTS
+export const checkIfUserExists = async (email) => {
+    try {
+        const response = await fetch(
+            `${API_BASE_URL}/user-exists/${email}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json"
+                }
+            }
+        );
+
+        const data = await response.json();
+        console.log("Check user exists response:", data);
+
+        if (response.ok) {
+            return {
+                exists: data.exists,
+                firstName: data.firstName
+            };
+        } else {
+            return {
+                exists: false,
+                message:
+                    data.message ||
+                    "Failed to check user existence"
+            };
+        }
+    } catch (error) {
+        console.error("Error checking user existence:", error);
+        return {
+            exists: false,
+            message:
+                "Unable to connect to the server. Please check your connection and try again."
+        };
+    }
+};
+
+// REGISTER USER
 export const registerUser = async (userData) => {
     try {
         const response = await fetch(
@@ -43,6 +84,7 @@ export const registerUser = async (userData) => {
     }
 };
 
+// LOGIN USER
 export const loginUser = async (credentials) => {
     console.log("Attempting to login user:", {
         email: credentials.email

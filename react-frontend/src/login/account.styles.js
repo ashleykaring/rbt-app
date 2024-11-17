@@ -110,6 +110,7 @@ export const Label = styled.label`
 export const Input = styled.input`
     width: 100%;
     padding: 12px 15px;
+    background-color: white;
     border: 2px solid #ddd;
     border-radius: 8px;
     font-size: 16px;
@@ -238,4 +239,97 @@ export const AlertText = styled.span`
     color: #333;
     font-size: 14px;
     font-weight: 500;
+`;
+
+export const UserName = styled.span`
+    font-weight: 800;
+    display: inline-block;
+    background: linear-gradient(120deg, #b8860b, #daa520);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    padding: 0 4px;
+    animation: shimmer 2s ease-in-out infinite;
+
+    @keyframes shimmer {
+        0% {
+            background-position: -200% center;
+            opacity: 0.97;
+        }
+        50% {
+            opacity: 1;
+        }
+        100% {
+            background-position: 200% center;
+            opacity: 0.97;
+        }
+    }
+
+    background-size: 200% auto;
+`;
+
+export const NameInput = styled(Input)`
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+
+    &:focus {
+        border-color: #23a6d5;
+        box-shadow: 0 0 0 3px rgba(35, 166, 213, 0.1);
+    }
+
+    @media (max-width: 480px) {
+        padding: 10px 12px;
+        font-size: 14px;
+        border-radius: 6px;
+    }
+`;
+
+export const SubTitle = styled.div`
+    font-size: 0.45em;
+    color: #666;
+    font-weight: 500;
+    display: block;
+    text-align: center;
+    margin-top: 4px;
+`;
+
+export const RequirementsText = styled.div`
+    color: #666;
+    font-size: 13px;
+    margin-top: 6px;
+    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+`;
+
+export const Tooltip = styled.div`
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 8px;
+    white-space: nowrap;
+    pointer-events: none;
+    animation: fadeIn 0.2s ease-out;
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: rgba(0, 0, 0, 0.8);
+    }
 `;

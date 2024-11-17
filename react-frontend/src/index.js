@@ -8,9 +8,8 @@ import {
     Navigate
 } from "react-router-dom";
 
-// Login & Create Account
-import Login from "./login/login.js";
-import CreateAccount from "./login/createAccount.js";
+// Account Flow
+import AccountFlow from "./login/accountFlow.js";
 
 // Main Pages
 import HomePage from "./home/HomePage.js";
@@ -31,7 +30,7 @@ const MainAppFlow = ({ setIsLoggedIn }) => {
         const darkMode =
             localStorage.getItem("theme") === "dark-mode";
         if (darkMode) {
-            document.body.classList.add("dark-mode"); // apply global dark-mode class
+            document.body.classList.add("dark-mode");
         } else {
             document.body.classList.remove("dark-mode");
         }
@@ -75,7 +74,6 @@ const MainAppFlow = ({ setIsLoggedIn }) => {
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    // Check authentication status on mount and userId changes
     useEffect(() => {
         const checkAuth = () => {
             const userId = localStorage.getItem("userId");
@@ -87,16 +85,12 @@ const App = () => {
         };
 
         checkAuth();
-
-        // Listen for storage changes (in case of multiple tabs)
         window.addEventListener("storage", checkAuth);
-
         return () => {
             window.removeEventListener("storage", checkAuth);
         };
     }, []);
 
-    // Your existing useEffect for logging
     useEffect(() => {
         console.log("App - Authentication Status:", {
             isLoggedIn,
@@ -126,22 +120,12 @@ const App = () => {
     return (
         <Routes>
             <Route
-                path="/login"
+                path="/account"
                 element={
                     isLoggedIn ? (
                         <Navigate to="/" />
                     ) : (
-                        <Login setIsLoggedIn={setIsLoggedIn} />
-                    )
-                }
-            />
-            <Route
-                path="/create-account"
-                element={
-                    isLoggedIn ? (
-                        <Navigate to="/" />
-                    ) : (
-                        <CreateAccount
+                        <AccountFlow
                             setIsLoggedIn={setIsLoggedIn}
                         />
                     )
@@ -155,7 +139,7 @@ const App = () => {
                             setIsLoggedIn={setIsLoggedIn}
                         />
                     ) : (
-                        <Navigate to="/login" />
+                        <Navigate to="/account" />
                     )
                 }
             />
