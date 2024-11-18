@@ -119,6 +119,13 @@ export const loginUser = async (credentials) => {
             };
         }
 
+        // Store the userId in localStorage
+        localStorage.setItem("userId", data.userId);
+        console.log(
+            "Stored userId in localStorage:",
+            data.userId
+        );
+
         return {
             success: true,
             message: "Login successful",

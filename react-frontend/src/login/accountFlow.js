@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import RBDLogo from "./RBDLogo.png";
+import { Helmet } from "react-helmet";
 
 // Styles
 import {
@@ -12,7 +12,6 @@ import {
     Label,
     Input,
     Button,
-    LinkText,
     LogoImage,
     AlertOverlay,
     AlertText,
@@ -22,7 +21,9 @@ import {
     NameInput,
     RequirementsText,
     Tooltip,
-    SubTitle
+    SubTitle,
+    SuccessOverlay,
+    SuccessCheckmark
 } from "./account.styles";
 
 // Services
@@ -56,6 +57,10 @@ function AccountFlow({ setIsLoggedIn }) {
     const [isFormValid, setIsFormValid] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState(0);
     const [userName, setUserName] = useState("");
+
+    // Add new state for success animation
+    const [showSuccessAnimation, setShowSuccessAnimation] =
+        useState(false);
 
     // Password Strength Logic (from createAccount.js)
     const calculatePasswordStrength = (password) => {
@@ -115,7 +120,11 @@ function AccountFlow({ setIsLoggedIn }) {
         e.preventDefault();
         const result = await loginUser({ email, password });
         if (result.success) {
-            setIsLoggedIn(true);
+            setShowSuccessAnimation(true);
+            // Wait for animation to complete before transitioning
+            setTimeout(() => {
+                setIsLoggedIn(true);
+            }, 800); // Increased from 1000 to give a cleaner transition
         } else {
             setStatusMessage(result.message);
             setTimeout(() => setStatusMessage(""), 3000);
@@ -131,7 +140,11 @@ function AccountFlow({ setIsLoggedIn }) {
             first_name: firstName
         });
         if (result.success) {
-            setIsLoggedIn(true);
+            setShowSuccessAnimation(true);
+            // Wait for animation to complete before transitioning
+            setTimeout(() => {
+                setIsLoggedIn(true);
+            }, 800);
         } else {
             setStatusMessage(result.message);
             setTimeout(() => setStatusMessage(""), 3000);
@@ -389,6 +402,17 @@ function AccountFlow({ setIsLoggedIn }) {
 
     return (
         <AccountContainer>
+            <Helmet>
+                <link
+                    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&display=swap"
+                    rel="stylesheet"
+                />
+            </Helmet>
+            {showSuccessAnimation && (
+                <SuccessOverlay>
+                    <SuccessCheckmark />
+                </SuccessOverlay>
+            )}
             <FormContainer>
                 <LogoImage src={RBDLogo} alt="RBD Logo" />
                 <Title>{getTitle()}</Title>
