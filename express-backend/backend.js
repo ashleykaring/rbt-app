@@ -689,6 +689,30 @@ app.get(
     }
 );
 
+// LOGOUT
+app.post("/api/logout", authMiddleware, async (req, res) => {
+    try {
+        // Clear the JWT cookie
+        res.cookie("jwt", "", {
+            httpOnly: true,
+            expires: new Date(0), // Expire immediately
+            sameSite: "strict",
+            secure: process.env.NODE_ENV === "production"
+        });
+
+        res.status(200).json({
+            message: "Logged out successfully"
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error logging out" });
+    }
+});
+
+// VERIFY AUTH
+app.get("/api/auth/verify", authMiddleware, (req, res) => {
+    res.status(200).json({ authenticated: true });
+});
+
 // LISTEN
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

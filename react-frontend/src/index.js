@@ -75,20 +75,22 @@ const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        const checkAuth = () => {
-            const userId = localStorage.getItem("userId");
-            console.log(
-                "Checking auth status - userId:",
-                userId
-            );
-            setIsLoggedIn(!!userId);
+        const checkAuth = async () => {
+            try {
+                const response = await fetch(
+                    "http://localhost:8000/api/auth/verify",
+                    {
+                        credentials: "include"
+                    }
+                );
+
+                setIsLoggedIn(response.ok);
+            } catch (error) {
+                setIsLoggedIn(false);
+            }
         };
 
         checkAuth();
-        window.addEventListener("storage", checkAuth);
-        return () => {
-            window.removeEventListener("storage", checkAuth);
-        };
     }, []);
 
     useEffect(() => {
