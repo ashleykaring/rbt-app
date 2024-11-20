@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Calendar from "react-calendar";
-import axios from "axios";
 import "react-calendar/dist/Calendar.css";
 import "./HomePage.css";
 import Modal from "react-modal";
@@ -8,30 +7,26 @@ import Modal from "react-modal";
 function HomePage() {
     const [date, setDate] = useState(new Date());
     const [selectedEntry, setSelectedEntry] = useState(null);
-    const [userId, setUserId] = useState(null);
     const [entryDates, setEntryDates] = useState([]);
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
-    useEffect(() => {
-        const user = localStorage.getItem("userId");
-        if (user) {
-            setUserId(user);
-        }
-    }, []);
+    const API_BASE_URL = "http://localhost:8000";
 
-    useEffect(() => {
-        if (userId) {
-            fetchEntryForDate(date, userId);
-            fetchAllEntryDates(userId);
-        }
-    }, [date, userId]);
-
-    const fetchEntryForDate = async (selectedDate, uid) => {
+    // Fetch entry for selected date
+    const fetchEntryForDate = async (selectedDate) => {
         try {
-            const response = await axios.get(
-                `http://localhost:8000/users/${uid}/entries`
+            const response = await fetch(
+                `${API_BASE_URL}/api/entries`,
+                {
+                    credentials: "include"
+                }
             );
-            const entries = response.data;
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch entries");
+            }
+
+            const entries = await response.json();
 
             const matchingEntry = entries.find((entry) => {
                 const entryDate = new Date(entry.date);
@@ -47,13 +42,21 @@ function HomePage() {
         }
     };
 
-    const fetchAllEntryDates = async (uid) => {
+    // Fetch all entry dates
+    const fetchAllEntryDates = async () => {
         try {
-            const response = await axios.get(
-                `http://localhost:8000/users/${uid}/entries`
+            const response = await fetch(
+                `${API_BASE_URL}/api/entries`,
+                {
+                    credentials: "include"
+                }
             );
-            const entries = response.data;
 
+            if (!response.ok) {
+                throw new Error("Failed to fetch entries");
+            }
+
+            const entries = await response.json();
             const datesWithEntries = entries.map((entry) =>
                 new Date(entry.date).toDateString()
             );
@@ -62,6 +65,11 @@ function HomePage() {
             console.error("Error fetching entry dates:", error);
         }
     };
+
+    useEffect(() => {
+        fetchEntryForDate(date);
+        fetchAllEntryDates();
+    }, [date]);
 
     const handleDateChange = (newDate) => {
         setDate(newDate);

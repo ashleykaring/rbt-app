@@ -46,33 +46,23 @@ function GroupsPage() {
     // Fetch groups for the user
     const fetchGroups = async () => {
         try {
-            // If they aren't logged in (kinda useless)
-            const userId = localStorage.getItem("userId");
-            if (!userId) {
-                throw new Error("User not logged in");
-            }
-
-            // API call
+            setIsLoading(true);
             const response = await fetch(
-                `${API_BASE_URL}/users/${userId}/groups`
+                `${API_BASE_URL}/api/groups`,
+                {
+                    credentials: "include" // Important for sending cookies
+                }
             );
 
             if (!response.ok) {
-                throw new Error("Failed to fetch groups");
+                const data = await response.json();
+                throw new Error(
+                    data.message || "Failed to fetch groups"
+                );
             }
 
-            // Parse the response
             const groups = await response.json();
-            console.log(
-                "Fetched groups with codes:",
-                groups.map((g) => ({
-                    id: g._id,
-                    name: g.name,
-                    code: g.group_code
-                }))
-            );
-
-            // Set the groups
+            console.log("Fetched groups:", groups);
             setUserGroups(groups);
         } catch (err) {
             console.error("Error fetching groups:", err);

@@ -6,7 +6,6 @@ import { FaEdit, FaTimes } from "react-icons/fa";
 
 function EntryPage() {
     const [entries, setEntries] = useState([]);
-    const [userId, setUserId] = useState("");
     const [hasSubmittedToday, setHasSubmittedToday] =
         useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -17,27 +16,30 @@ function EntryPage() {
         isPublic: true
     });
 
-    const fetchUserEntries = useCallback(async (userId) => {
+    const fetchUserEntries = useCallback(async () => {
         try {
-            const response = await axios.get(
-                `http://localhost:8000/users/${userId}/entries`
+            const response = await fetch(
+                "http://localhost:8000/api/entries",
+                {
+                    credentials: "include" // For JWT cookie
+                }
             );
-            console.log("Fetched entries:", response.data);
-            setEntries(response.data);
-            checkIfSubmittedToday(response.data);
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch entries");
+            }
+
+            const data = await response.json();
+            console.log("Fetched entries:", data);
+            setEntries(data);
+            checkIfSubmittedToday(data);
         } catch (error) {
             console.error("Error fetching entries:", error);
         }
     }, []);
 
     useEffect(() => {
-        const currentUserId = localStorage.getItem("userId");
-        if (currentUserId) {
-            setUserId(currentUserId);
-            fetchUserEntries(currentUserId);
-        } else {
-            console.error("No user ID found in localStorage");
-        }
+        fetchUserEntries();
     }, [fetchUserEntries]);
 
     const checkIfSubmittedToday = (entries) => {
@@ -97,30 +99,34 @@ function EntryPage() {
                 is_public: editableEntry.isPublic
             };
 
-            const response = await axios.patch(
-                `http://localhost:8000/entries/${entries[0]._id}`,
-                updateData
+            const response = await fetch(
+                `http://localhost:8000/api/entries/${entries[0]._id}`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "include",
+                    body: JSON.stringify(updateData)
+                }
             );
 
-            if (response.status === 200) {
-                const updatedEntry = response.data.entry;
-                setEntries((prevEntries) => [
-                    updatedEntry,
-                    ...prevEntries.slice(1)
-                ]);
-                setIsEditing(false);
+            if (!response.ok) {
+                throw new Error("Failed to update entry");
             }
+
+            const data = await response.json();
+            setEntries((prevEntries) => [
+                data.entry,
+                ...prevEntries.slice(1)
+            ]);
+            setIsEditing(false);
         } catch (error) {
             console.error("Error updating entry:", error);
         }
     };
 
     function handleSubmit(entry) {
-        if (!userId) {
-            console.error("No user ID available");
-            return;
-        }
-
         makePostCall(entry).then((result) => {
             if (result && result.status === 201) {
                 setEntries([result.data, ...entries]);
@@ -131,21 +137,29 @@ function EntryPage() {
 
     async function makePostCall(entry) {
         try {
-            const entryWithUser = {
-                ...entry,
-                user_id: userId
-            };
-
-            const response = await axios.post(
-                "http://localhost:8000/entries",
-                entryWithUser
+            const response = await fetch(
+                "http://localhost:8000/api/entries",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "include",
+                    body: JSON.stringify({
+                        rose_text: entry.rose,
+                        bud_text: entry.bud,
+                        thorn_text: entry.thorn,
+                        is_public: entry.isPublic
+                    })
+                }
             );
 
-            if (response.status === 201) {
-                await fetchUserEntries(userId);
+            if (!response.ok) {
+                throw new Error("Failed to create entry");
             }
 
-            return response;
+            const data = await response.json();
+            return { status: 201, data };
         } catch (error) {
             console.error("Error creating entry:", error);
             return false;
