@@ -12,7 +12,6 @@ const gradientAnimation = keyframes`
   100% { background-position: 0% 50%; }
 `;
 
-// Add these theme constants at the top to match group.styles.js
 const themeColors = {
     pink: {
         light: "#f5d8da",
@@ -260,8 +259,6 @@ export const LinkText = styled.p`
         margin-top: 0px;
     }
 `;
-
-// Add these exports at the end of the file
 
 export const AlertOverlay = styled.div`
     position: fixed;

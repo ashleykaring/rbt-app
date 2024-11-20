@@ -10,6 +10,7 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import cookieParser from "cookie-parser";
 
 // Models
 import {
@@ -31,6 +32,12 @@ import {
     findGroupById
 } from "./models/group-services.js";
 
+// JWT Utils
+import {
+    createToken,
+    setTokenCookie
+} from "./utils/jwt-utils.js";
+
 // File Paths
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -50,6 +57,7 @@ app.use(
     })
 );
 app.use(express.json());
+app.use(cookieParser());
 
 // After dotenv.config()
 console.log("MongoDB URI:", process.env.MONGODB_URI);
@@ -98,9 +106,12 @@ app.post("/api/register", async (req, res) => {
             });
         }
 
+        // Create and set JWT token
+        const token = createToken(savedUser._id);
+        setTokenCookie(res, token);
+
         res.status(201).json({
-            message: "Success!",
-            userId: savedUser._id
+            message: "Success!"
         });
     } catch (error) {
         res.status(500).json({
@@ -169,9 +180,12 @@ app.post("/api/login", async (req, res) => {
             });
         }
 
+        // Create and set JWT token
+        const token = createToken(user._id);
+        setTokenCookie(res, token);
+
         res.status(200).json({
-            message: "Success",
-            userId: user._id
+            message: "Success"
         });
     } catch (error) {
         res.status(500).json({

@@ -43,12 +43,10 @@ const STAGES = {
 COMPONENT
 */
 function AccountFlow({ setIsLoggedIn }) {
-    // Remove STAGES definition from here
+    // Form States
     const [currentStage, setCurrentStage] = useState(
         STAGES.EMAIL
     );
-
-    // Form States
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -57,8 +55,7 @@ function AccountFlow({ setIsLoggedIn }) {
     const [isFormValid, setIsFormValid] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState(0);
     const [userName, setUserName] = useState("");
-
-    // Add new state for success animation
+    const [showTooltip, setShowTooltip] = useState(false);
     const [showSuccessAnimation, setShowSuccessAnimation] =
         useState(false);
 
@@ -124,7 +121,7 @@ function AccountFlow({ setIsLoggedIn }) {
             // Wait for animation to complete before transitioning
             setTimeout(() => {
                 setIsLoggedIn(true);
-            }, 800); // Increased from 1000 to give a cleaner transition
+            }, 800);
         } else {
             setStatusMessage(result.message);
             setTimeout(() => setStatusMessage(""), 3000);
@@ -380,7 +377,7 @@ function AccountFlow({ setIsLoggedIn }) {
         }
     };
 
-    // Add this helper function for password requirements
+    // Password requirements helper
     const getPasswordRequirements = () => {
         const missing = [];
         if (password.length < 8) missing.push("8+ chars");
@@ -396,9 +393,6 @@ function AccountFlow({ setIsLoggedIn }) {
             ? `Missing: ${missing.join(" • ")}`
             : "Password strength: Excellent!";
     };
-
-    // Add tooltip state
-    const [showTooltip, setShowTooltip] = useState(false);
 
     return (
         <AccountContainer>
