@@ -29,15 +29,10 @@ function getDbConnection() {
 
 async function addUser(user) {
     const userModel = getDbConnection().model("users", uSchema);
-    try {
-        const userToAdd = new userModel(user);
-        userToAdd.entries = await addUserEntries(userToAdd._id);
-        const savedUser = await userToAdd.save();
-        return savedUser;
-    } catch (error) {
-        console.log(error);
-        return false;
-    }
+    const userToAdd = new userModel(user);
+    userToAdd.entries = await addUserEntries(userToAdd._id);
+    const savedUser = await userToAdd.save();
+    return savedUser;
 }
 
 async function addEntry(entry) {
@@ -62,15 +57,12 @@ async function addEntryToEntries(id, userid) {
         ueSchema
     );
 
-    const finalEntries =
-        await userEntriesModel.findOneAndUpdate(
-            { user_id: userid },
-            {
-                $push: { entries: id }
-            }
-        );
-
-    return finalEntries;
+    return await userEntriesModel.findOneAndUpdate(
+        { user_id: userid },
+        {
+            $push: { entries: id }
+        }
+    );
 }
 
 async function addUserEntries(id) {
@@ -82,21 +74,17 @@ async function addUserEntries(id) {
     const defaultEntries = {
         user_id: id
     };
-    try {
-        const userEntriesToAdd = new userEntriesModel(
-            defaultEntries
-        );
-        const savedEntries = await userEntriesToAdd.save();
-        return savedEntries._id;
-    } catch (error) {
-        console.log(error);
-        return false;
-    }
+    const userEntriesToAdd = new userEntriesModel(
+        defaultEntries
+    );
+    const savedEntries = await userEntriesToAdd.save();
+    return savedEntries._id;
 }
 
 async function findUserByUsername(username) {
     const userModel = getDbConnection().model("users", uSchema);
-    return await userModel.find({ username: username });
+    const users = await userModel.find({ username: username });
+    return users[0];
 }
 
 async function findUserById(id) {
@@ -168,5 +156,6 @@ export {
     addGroupToUser,
     getUserEntriesByUserId,
     getEntryById,
-    EntryModel
+    EntryModel,
+    addEntryToEntries
 };

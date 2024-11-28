@@ -10,7 +10,7 @@
 .pnp.js
 
 # testing
-/coverage
+/express-backend/coverage
 
 # production
 /build

@@ -5,7 +5,6 @@ import { addGroupToUser } from "./user-services.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-
 let dbConnection;
 
 function getDbConnection() {
@@ -22,7 +21,10 @@ function getDbConnection() {
 }
 
 async function createGroup(group) {
-    const groupModel = getDbConnection().model("groups", GroupSchema);
+    const groupModel = getDbConnection().model(
+        "groups",
+        GroupSchema
+    );
     const groupCreatorId = group.users[0];
     try {
         const groupToAdd = new groupModel(group);
@@ -36,35 +38,48 @@ async function createGroup(group) {
 }
 
 async function findGroupByCode(code) {
-    const groupModel = getDbConnection().model("groups", GroupSchema);
+    const groupModel = getDbConnection().model(
+        "groups",
+        GroupSchema
+    );
     return await groupModel.find({ group_code: code });
 }
 
 async function findGroupById(id) {
-    const groupModel = getDbConnection().model("groups", GroupSchema);
+    const groupModel = getDbConnection().model(
+        "groups",
+        GroupSchema
+    );
     return await groupModel.find({ _id: id });
 }
 
-
 async function joinGroup(userId, groupId) {
-    const groupModel = getDbConnection().model("groups", GroupSchema);
-    
-    try {
-        await groupModel.findOneAndUpdate(
-            { _id: groupId },
-            {
-                $push: { users: userId }
-            }
-        );   
+    const groupModel = getDbConnection().model(
+        "groups",
+        GroupSchema
+    );
 
+    try {
+        const updatedGroup = await groupModel.findOneAndUpdate(
+            { _id: groupId },
+            { $push: { users: userId } },
+            { new: true }
+        );
+
+        if (!updatedGroup) {
+            return false;
+        }
+
+        return await addGroupToUser(userId, groupId);
     } catch (error) {
         console.log(error);
         return false;
     }
-
-    return await addGroupToUser(userId, groupId);
-
 }
 
-
-export {createGroup, findGroupByCode, findGroupById, joinGroup}
+export {
+    createGroup,
+    findGroupByCode,
+    findGroupById,
+    joinGroup
+};
