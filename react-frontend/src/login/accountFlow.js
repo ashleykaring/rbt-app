@@ -350,7 +350,7 @@ function AccountFlow({ setIsLoggedIn }) {
             case STAGES.CREATE:
                 return (
                     <>
-                        Welcome to RBD
+                        Welcome to RBT
                         <SubTitle>
                             Let's get you set up
                         </SubTitle>

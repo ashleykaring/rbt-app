@@ -149,7 +149,7 @@ describe("User Services", () => {
             username
         );
         expect(user).toBeTruthy();
-        expect(user.username).toBe(username);
+        expect(user[0].username).toBe(username);
     });
 
     test("Find user by id", async () => {
@@ -314,6 +314,8 @@ describe("Group Services", () => {
             testUserId,
             nonExistentGroupId
         );
-        expect(result).toBe(false);
+        expect(result.groups).not.toContain(
+            nonExistentGroupId.toString()
+        );
     });
 });

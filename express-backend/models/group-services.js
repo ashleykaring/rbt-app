@@ -60,21 +60,18 @@ async function joinGroup(userId, groupId) {
     );
 
     try {
-        const updatedGroup = await groupModel.findOneAndUpdate(
+        await groupModel.findOneAndUpdate(
             { _id: groupId },
-            { $push: { users: userId } },
-            { new: true }
+            {
+                $push: { users: userId }
+            }
         );
-
-        if (!updatedGroup) {
-            return false;
-        }
-
-        return await addGroupToUser(userId, groupId);
     } catch (error) {
         console.log(error);
         return false;
     }
+
+    return await addGroupToUser(userId, groupId);
 }
 
 export {
