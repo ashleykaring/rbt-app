@@ -13,7 +13,8 @@
         "dev:backend": "cd express-backend && nodemon backend.js",
         "loginTest": "concurrently \"npm run loginBackend\" \"npm run loginFrontend\"",
         "loginBackend": "cd express-backend\\login && node userServer.js",
-        "loginFrontend": "cd react-frontend && npm start"
+        "loginFrontend": "cd react-frontend && npm start",
+        "test": "cd express-backend && npm test"
     },
     "author": "",
     "license": "ISC",
