@@ -229,6 +229,47 @@ describe("User Services", () => {
     });
 });
 
+describe("User Services Error Handling", () => {
+    test("addUser error handling - invalid schema", async () => {
+        const invalidUser = {
+            username: "testUser",
+            password: "testPass",
+            first_name: "Test",
+            entries: "invalid_id", // Invalid ObjectId
+            groups: ["invalid_id"] // Invalid ObjectId array
+        };
+        const result = await UserServices.addUser(invalidUser);
+        expect(result).toBe(false);
+    });
+
+    test("addEntry error handling - invalid schema", async () => {
+        const invalidEntry = {
+            user_id: "invalid_id", // Invalid ObjectId
+            date: "not a date", // Invalid date
+            is_public: "not a boolean", // Invalid boolean
+            rose_text: "",
+            bud_text: "",
+            thorn_text: ""
+        };
+        const result = await UserServices.addEntry(
+            invalidEntry
+        );
+        expect(result).toBe(false);
+    });
+
+    test("addUserEntries error handling - invalid id", async () => {
+        const result = await UserServices.addEntry({
+            user_id: "invalid_id",
+            date: Date.now(),
+            is_public: true,
+            rose_text: "Test rose",
+            bud_text: "Test bud",
+            thorn_text: "Test thorn"
+        });
+        expect(result).toBe(false);
+    });
+});
+
 /*
  * GROUP SERVICES TESTS
  */
