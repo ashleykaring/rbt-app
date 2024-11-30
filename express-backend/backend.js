@@ -155,58 +155,11 @@ app.post("/api/login", async (req, res) => {
 // /*
 //  * Need user_id, rose_text, bud_text, thorn_text, and is_public
 //  * Adds entry to database
-//  */
-// app.post("/entries", async (req, res) => {
-//     try {
-//         const {
-//             user_id,
-//             rose_text,
-//             bud_text,
-//             thorn_text,
-//             is_public
-//         } = req.body;
-//         if (
-//             !user_id ||
-//             !rose_text ||
-//             !bud_text ||
-//             !thorn_text
-//         ) {
-//             return res
-//                 .status(400)
-//                 .json({ error: "All fields are required" });
-//         }
-
-//         const entry = {
-//             user_id,
-//             rose_text,
-//             bud_text,
-//             thorn_text,
-//             is_public,
-//             date: Date.now()
-//         };
-
-//         const newEntry = await addEntry(entry);
-//         if (!newEntry) {
-//             return res
-//                 .status(500)
-//                 .json({ error: "Error creating entry" });
-//         }
-
-//         res.status(201).json(newEntry);
-//     } catch (err) {
-//         res.status(500).json({
-//             error: "Error creating journal entry"
-//         });
-//     }
-// });
-
-//updated ^^^^^
 const countWords = (text) => {
     if (!text || typeof text !== "string") return 0;
     return text.trim().split(/\s+/).length; // Count words separated by spaces
 };
 
-// Word count limit
 const WORD_COUNT_LIMIT = 25;
 
 app.post("/entries", async (req, res) => {
@@ -219,12 +172,10 @@ app.post("/entries", async (req, res) => {
             is_public
         } = req.body;
 
-        // Ensure all required fields are provided
         if (!user_id || !rose_text || !bud_text || !thorn_text) {
             return res.status(400).json({ error: "All fields are required" });
         }
-
-        // Validate word count for each text field
+        // validate word count for each text field
         if (
             countWords(rose_text) > WORD_COUNT_LIMIT ||
             countWords(bud_text) > WORD_COUNT_LIMIT ||
@@ -234,8 +185,6 @@ app.post("/entries", async (req, res) => {
                 error: `Each field must contain no more than ${WORD_COUNT_LIMIT} words.`,
             });
         }
-
-        // Create the entry object
         const entry = {
             user_id,
             rose_text,
@@ -245,7 +194,6 @@ app.post("/entries", async (req, res) => {
             date: Date.now(),
         };
 
-        // Save the entry to the database
         const newEntry = await addEntry(entry);
         if (!newEntry) {
             return res.status(500).json({ error: "Error creating entry" });
@@ -257,11 +205,6 @@ app.post("/entries", async (req, res) => {
         res.status(500).json({ error: "Error creating journal entry" });
     }
 });
-
-
-
-
-
 
 
 // GET USER ENTRIES
