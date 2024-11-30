@@ -51,30 +51,28 @@ function Login({ setIsLoggedIn }) {
         console.log("Login form submission initiated");
 
         if (isFormValid) {
-            console.log(
-                "Form validation passed, preparing login data"
-            );
             const credentials = {
                 email,
                 password
             };
 
-            console.log("Calling loginUser with email:", email);
             const result = await loginUser(credentials);
             console.log("Login result:", result);
 
-            if (!result.success) {
-                setStatusMessage(result.message);
-                // Clear error message after 3 seconds
-                setTimeout(() => setStatusMessage(""), 3000);
-            } else {
+            if (result.success && result.userId) {
                 console.log(
-                    "Login successful, preparing to redirect"
+                    "Login successful, userId:",
+                    result.userId
                 );
+                localStorage.setItem("userId", result.userId);
                 setIsLoggedIn(true);
+            } else {
+                console.error("Login failed:", result.message);
+                setStatusMessage(
+                    result.message || "Login failed"
+                );
+                setTimeout(() => setStatusMessage(""), 3000);
             }
-        } else {
-            console.log("Form validation failed");
         }
     };
 

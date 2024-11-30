@@ -1,49 +1,44 @@
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "http://localhost:8000/api";
 
 export const registerUser = async (userData) => {
-    console.log("Attempting to register user:", {
-        email: userData.email,
-        first_name: userData.first_name
-    });
-
     try {
         const response = await fetch(
             `${API_BASE_URL}/register`,
             {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    Accept: "application/json"
                 },
                 body: JSON.stringify(userData)
             }
         );
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.log("Server error response:", errorData);
+        const data = await response.json();
+        console.log("Register response:", data);
+
+        if (response.ok && data.userId) {
+            localStorage.setItem("userId", data.userId);
+            console.log(
+                "Stored userId in localStorage after registration:",
+                data.userId
+            );
             return {
-                success: false,
-                message: errorData.message
+                success: true,
+                userId: data.userId
             };
         }
 
-        const data = await response.json();
-        console.log("Registration response:", {
-            status: response.status,
-            success: response.ok,
-            message: data.message
-        });
-
         return {
-            success: true,
-            message: data.message
+            success: false,
+            message: data.message || "Registration failed"
         };
     } catch (error) {
         console.error("Registration error:", error);
         return {
             success: false,
             message:
-                "There was an error registering, please try again."
+                "Unable to connect to the server. Please check your connection and try again."
         };
     }
 };
@@ -62,25 +57,30 @@ export const loginUser = async (credentials) => {
             body: JSON.stringify(credentials)
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-            const errorData = await response.json();
-            console.log("Server error response:", errorData);
+            console.log("Server error response:", data);
             return {
                 success: false,
-                message: errorData.message
+                message: data.message || "Login failed"
             };
         }
 
-        const data = await response.json();
-        console.log("Login response:", {
-            status: response.status,
-            success: response.ok,
-            message: data.message
-        });
+        if (!data.userId) {
+            console.error(
+                "No userId received in login response"
+            );
+            return {
+                success: false,
+                message: "Server error: No user ID received"
+            };
+        }
 
         return {
             success: true,
-            message: data.message
+            message: "Login successful",
+            userId: data.userId
         };
     } catch (error) {
         console.error("Login error:", error);

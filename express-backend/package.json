@@ -1,19 +1,23 @@
 {
     "name": "express-backend",
     "version": "1.0.0",
+    "type": "module",
     "main": "backend.js",
     "scripts": {
         "start": "node backend.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "dev": "nodemon backend.js"
     },
     "author": "",
-    "type": "module",
     "license": "ISC",
     "description": "",
     "dependencies": {
         "bcryptjs": "^2.4.3",
         "cors": "^2.8.5",
-        "express": "^4.21.1",
-        "mongoose": "^8.7.3"
+        "dotenv": "^16.0.3",
+        "express": "^4.18.2",
+        "mongoose": "^7.0.3"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.22"
     }
 }

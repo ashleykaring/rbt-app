@@ -72,7 +72,7 @@ function CreateAccount({ setIsLoggedIn }) {
         );
     }, [firstName, email, password, passwordStrength]);
 
-    // Update the handleSubmit function with more logging
+    // Update the handleSubmit function
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log("Form submission initiated");
@@ -95,15 +95,14 @@ function CreateAccount({ setIsLoggedIn }) {
             const result = await registerUser(userData);
             console.log("Registration result:", result);
 
-            if (!result.success) {
-                setStatusMessage(result.message);
-                // Clear error message after 3 seconds
-                setTimeout(() => setStatusMessage(""), 3000);
-            } else {
+            if (result.success) {
                 console.log(
-                    "Registration successful, preparing to redirect"
+                    "Registration successful, setting logged in state"
                 );
                 setIsLoggedIn(true);
+            } else {
+                setStatusMessage(result.message);
+                setTimeout(() => setStatusMessage(""), 3000);
             }
         } else {
             console.log("Form validation failed");

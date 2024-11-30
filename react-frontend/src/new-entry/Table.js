@@ -1,4 +1,5 @@
 import React from 'react';
+import './Entry.css';
 
 function TableBody(props) {
     const rows = props.rbtData.map((row, index) => {

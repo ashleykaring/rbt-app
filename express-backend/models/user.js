@@ -5,7 +5,7 @@ const UserSchema = new mongoose.Schema({
     password: String,
     first_name: String,
     entries: mongoose.Types.ObjectId,
-
+    groups: [mongoose.Types.ObjectId],
 });
 
 const EntrySchema = new mongoose.Schema({

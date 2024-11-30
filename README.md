@@ -1,5 +1,13 @@
 # rbt-app
 
+# Code style
+
+## ES-LINT
+### In VSCode please enable the ESLint for Javascript extension, the IDE will automatically flag these on npm start and as warnings
+
+## Prettier
+### In VSCode please enable the Prettier extension. Also, in settings turn on Prettier as Default Formatter & enable "Format on Save" & "Format on Paste". THis will enforce the prettier using the config whenever you save code
+
 # Running
 
 ## NPM START
