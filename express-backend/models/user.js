@@ -14,7 +14,14 @@ const EntrySchema = new mongoose.Schema({
     is_public: Boolean,
     rose_text: String,
     bud_text: String,
-    thorn_text: String
+    thorn_text: String,
+    reaction: [
+        {
+            group_id: mongoose.Types.ObjectId,
+            user_reacting_id: mongoose.Types.ObjectId,
+            reaction: String,
+        }
+    ],
 });
 
 const UserEntriesSchema = new mongoose.Schema({
