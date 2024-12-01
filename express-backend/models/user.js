@@ -15,7 +15,7 @@ const EntrySchema = new mongoose.Schema({
     rose_text: String,
     bud_text: String,
     thorn_text: String,
-    reaction: [
+    reactions: [
         {
             group_id: mongoose.Types.ObjectId,
             user_reacting_id: mongoose.Types.ObjectId,

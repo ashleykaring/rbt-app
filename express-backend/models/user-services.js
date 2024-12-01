@@ -153,6 +153,23 @@ async function addGroupToUser(userId, groupId) {
     }
 }
 
+async function addReactionToEntry(entryId, reactionObject) {
+    const entryModel = getDbConnection().model("rbt_entries", eSchema);
+
+    try {
+        // Find the entry object in the database and push the reaction
+        return await entryModel.findOneAndUpdate({_id: entryId},
+            {
+                $push: { reactions: reactionObject}
+        });
+
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+
 // Define the entry model
 const EntryModel = getDbConnection().model(
     "rbt_entries",
@@ -168,5 +185,6 @@ export {
     addGroupToUser,
     getUserEntriesByUserId,
     getEntryById,
+    addReactionToEntry,
     EntryModel
 };
