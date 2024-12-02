@@ -530,18 +530,11 @@ app.patch("/entries/:entryId", async (req, res) => {
 
 // ADD REACTION TO ENTRY
 app.put("/entries/reaction", async (req, res) => {
-
-
     try {
-
-    
         // What request object will look like
-        const {
-            entry_id,
-            user_id,
-            group_id,
-            reaction_string,
-        } = req.body;
+
+        const { entry_id, user_id, group_id, reaction_string } =
+            req.body;
         if (
             !user_id ||
             !entry_id ||
@@ -553,35 +546,30 @@ app.put("/entries/reaction", async (req, res) => {
                 .json({ error: "All fields are required" });
         }
 
-
         const reaction = {
             group_id: group_id,
             user_reacting_id: user_id,
-            reaction: reaction_string,
+            reaction: reaction_string
         };
 
-        const updatedEntry = await addReactionToEntry(entry_id, reaction);
+        const updatedEntry = await addReactionToEntry(
+            entry_id,
+            reaction
+        );
         if (!updatedEntry) {
             return res
                 .status(500)
                 .json({ error: "Error creating entry" });
         }
 
-            res.status(201).json(newEntry);
-        } catch (err) {
-            res.status(500).json({
-                error: "Error creating journal entry"
-            });
-        }
+        res.status(201).json(newEntry);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            error: "Error creating journal entry"
+        });
     }
-    
-
-
-
-
-);
-
-
+});
 
 // LISTEN
 app.listen(port, () => {

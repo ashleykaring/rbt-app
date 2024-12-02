@@ -2,6 +2,7 @@
 IMPORTS
 */
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
     useParams,
     useNavigate,
@@ -34,7 +35,10 @@ import {
     EntrySection,
     EntryText,
     EntryHeader,
-    EntryDate
+    EntryDate,
+    EntryReactions,
+    Reaction,
+    ReactionCount
 } from "./group.styles";
 
 /*
@@ -51,6 +55,7 @@ function GroupEntries() {
     const [showCode, setShowCode] = useState(false);
     const [entries, setEntries] = useState([]);
     const [theme, setTheme] = useState({ mode: "light-mode" });
+    const [reactionCounts, setReactionCounts] = useState({});
 
     useEffect(() => {
         const currentTheme = localStorage.getItem("theme");
@@ -137,7 +142,9 @@ function GroupEntries() {
                                     thorn_text:
                                         data.currentEntry
                                             .thorn_text,
-                                    date: data.currentEntry.date
+                                    date: data.currentEntry
+                                        .date,
+                                    id: data.currentEntry._id
                                 };
                             }
 
@@ -167,6 +174,127 @@ function GroupEntries() {
             fetchEntries();
         }
     }, [groupUsers]);
+
+    // add new reaction
+    const newReaction = async (emoji, user, entry) => {
+        // make reaction object
+        const reactionData = {
+            entry_id: entry,
+            user_id: user,
+            group_id: groupId,
+            reaction_string: emoji
+        };
+
+        console.log(reactionData);
+
+        try {
+            // post new reaction
+            const response = await axios.put(
+                `http://localhost:8000/entries/reaction`,
+                reactionData
+            );
+
+            if (response && response.status === 201) {
+                console.log(
+                    "Reaction recorded: ",
+                    response.data
+                );
+
+                setReactionCounts((prev) => {
+                    const updated = { ...prev };
+                    if (!updated[user]) {
+                        updated[user] = {
+                            thumb: 0,
+                            heart: 0,
+                            smile: 0,
+                            laugh: 0,
+                            cry: 0
+                        };
+                    }
+                    updated[user][emoji] += 1;
+
+                    return updated;
+                });
+            } else {
+                console.log(
+                    "Reaction response posting not ok: ",
+                    response
+                );
+            }
+        } catch (err) {
+            console.error("Error saving reaction: ", err);
+        }
+    };
+
+    // fetch reaction counts for entries
+    useEffect(() => {
+        const fetchReactions = async () => {
+            try {
+                const reactionData = await Promise.all(
+                    groupUsers.map(async (user) => {
+                        const response = await axios.get(
+                            // get most recent entry for each user
+                            `http://localhost:8000/users/${user}/recent`
+                        );
+
+                        if (
+                            response.status === 200 &&
+                            response.data.currentEntry &&
+                            response.data.reactions
+                        ) {
+                            // extract reactions
+                            const reactions =
+                                response.data.reactions;
+                            // initialize to 0
+                            const counts = {
+                                thumb: 0,
+                                heart: 0,
+                                smile: 0,
+                                laugh: 0,
+                                cry: 0
+                            };
+
+                            // count each reaction number
+                            reactions.forEach((rxn) => {
+                                if (rxn.reaction === "thumb")
+                                    counts.thumb += 1;
+                                if (rxn.reaction === "heart")
+                                    counts.heart += 1;
+                                if (rxn.reaction === "smile")
+                                    counts.smile += 1;
+                                if (rxn.reaction === "laugh")
+                                    counts.laugh += 1;
+                                if (rxn.reaction === "cry")
+                                    counts.cry += 1;
+                            });
+
+                            return {
+                                userId: user,
+                                counts
+                            };
+                        }
+                        return null;
+                    })
+                );
+
+                const validReactionData = reactionData.filter(
+                    (rxns) => rxns !== null
+                );
+                setReactionCounts(validReactionData);
+            } catch (err) {
+                console.error("Error fetching reactions:", err);
+            }
+        };
+
+        if (
+            entries.length > 0 &&
+            groupUsers &&
+            groupUsers.length > 0
+        ) {
+            fetchReactions();
+        }
+        // fetch numbers on change of:
+    }, [entries, groupUsers]);
 
     return (
         <ThemeProvider theme={theme}>
@@ -257,6 +385,44 @@ function GroupEntries() {
                                         {entry.thorn_text}
                                     </EntryText>
                                 </EntrySection>
+                                <EntryReactions>
+                                    {[
+                                        "thumb",
+                                        "heart",
+                                        "smile",
+                                        "laugh",
+                                        "cry"
+                                    ].map((emoji) => (
+                                        <Reaction
+                                            key={emoji}
+                                            onClick={() =>
+                                                // send emoji and entry reaction is for
+                                                newReaction(
+                                                    emoji,
+                                                    entry.userId,
+                                                    entry.id
+                                                )
+                                            }
+                                        >
+                                            {/* render emojis */}
+                                            {emoji ===
+                                                "thumb" && "👍"}
+                                            {emoji ===
+                                                "heart" && "❤️"}
+                                            {emoji ===
+                                                "smile" && "🙂"}
+                                            {emoji ===
+                                                "laugh" && "😂"}
+                                            {emoji === "cry" &&
+                                                "😭"}
+                                            <ReactionCount>
+                                                {reactionCounts[
+                                                    entry.userId
+                                                ]?.[emoji] || 0}
+                                            </ReactionCount>
+                                        </Reaction>
+                                    ))}
+                                </EntryReactions>
                             </EntryCard>
                         ))}
                     </EntriesContainer>

@@ -968,3 +968,51 @@ export const EntryPageTitle = styled.h1`
     -webkit-text-fill-color: transparent;
     background-clip: text;
 `;
+
+export const EntryReactions = styled.div`
+    width: 100%;
+    max-width: 480px;
+    height: 100%;
+    background: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? "#2d1f1f" // darker pink for dark mode
+            : "#fdf2f1"};
+    padding: 0.5em;
+    padding-left: 0;
+    position: relative;
+    justify-content: space-evenly;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 0.2em;
+    margin-right: 0.2em;
+    border-radius: 16px;
+`;
+
+export const Reaction = styled.span`
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0.3em; 
+
+    &:hover {
+        transform: scale(1.2);
+    }
+`;
+
+export const ReactionCount = styled.div`
+    position: absolute;
+    top: 0.2em;
+    right: 0.05em;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 5px;
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 50%;
+    display: flex;
+`;
