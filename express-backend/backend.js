@@ -562,7 +562,7 @@ app.put("/entries/reaction", async (req, res) => {
                 .json({ error: "Error creating entry" });
         }
 
-        res.status(201).json(newEntry);
+        res.status(201).json(updatedEntry);
     } catch (err) {
         console.log(err);
         res.status(500).json({
