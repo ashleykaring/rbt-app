@@ -82,16 +82,12 @@ async function addUserEntries(id) {
     const defaultEntries = {
         user_id: id
     };
-    try {
-        const userEntriesToAdd = new userEntriesModel(
-            defaultEntries
-        );
-        const savedEntries = await userEntriesToAdd.save();
-        return savedEntries._id;
-    } catch (error) {
-        console.log(error);
-        return false;
-    }
+
+    const userEntriesToAdd = new userEntriesModel(
+        defaultEntries
+    );
+    const savedEntries = await userEntriesToAdd.save();
+    return savedEntries._id;
 }
 
 async function findUserByUsername(username) {

@@ -38,10 +38,25 @@ function Settings({ setIsLoggedIn }) {
     }, [darkMode]);
 
     // Add logout handler
-    const handleLogout = () => {
-        localStorage.removeItem("userId");
-        setIsLoggedIn(false); // Update the auth state
-        navigate("/login");
+    const handleLogout = async () => {
+        try {
+            const response = await fetch(
+                "http://localhost:8000/api/logout",
+                {
+                    method: "POST",
+                    credentials: "include"
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Logout failed");
+            }
+
+            setIsLoggedIn(false); // Update the auth state
+            navigate("/account");
+        } catch (error) {
+            console.error("Error logging out:", error);
+        }
     };
 
     return (

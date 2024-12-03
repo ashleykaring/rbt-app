@@ -82,29 +82,21 @@ function CreateGroup({ onGroupUpdate }) {
 
     // Creates the group with the backend
     const createGroup = async (name, code) => {
-        const userId = localStorage.getItem("userId");
-        console.log("Creating group with userId:", userId);
-
-        if (!userId) {
-            throw new Error("User not logged in");
-        }
-
-        // Creates the group with the backend
         try {
             console.log("Making create group request", {
                 name,
-                code,
-                userId
+                code
             });
 
-            // Makes post request to the backend
+            // Fix the URL to match backend route
             const response = await fetch(
-                `${API_BASE_URL}/groups/${userId}`,
+                `${API_BASE_URL}/api/groups`, // Changed from /groups to /api/groups
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
+                    credentials: "include",
                     body: JSON.stringify({
                         name,
                         group_code: code

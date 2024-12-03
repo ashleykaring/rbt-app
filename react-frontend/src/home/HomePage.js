@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Calendar from "react-calendar";
-import axios from "axios";
 import "react-calendar/dist/Calendar.css";
 import "./HomePage.css";
 import Modal from "react-modal";
@@ -10,34 +9,32 @@ import { useSwipeable } from "react-swipeable";
 function HomePage() {
     const [date, setDate] = useState(new Date());
     const [selectedEntry, setSelectedEntry] = useState(null);
-    const [userId, setUserId] = useState(null);
     const [entryDates, setEntryDates] = useState([]);
     // add
     const [streakCount, setStreakCount] = useState(0);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     // add
-    const [activeStartDate, setActiveStartDate] = useState(new Date());
+    const [activeStartDate, setActiveStartDate] = useState(
+        new Date()
+    );
 
-    useEffect(() => {
-        const user = localStorage.getItem("userId");
-        if (user) {
-            setUserId(user);
-        }
-    }, []);
+    const API_BASE_URL = "http://localhost:8000";
 
-    useEffect(() => {
-        if (userId) {
-            fetchEntryForDate(date, userId);
-            fetchAllEntryDates(userId);
-        }
-    }, [date, userId]);
-
-    const fetchEntryForDate = async (selectedDate, uid) => {
+    // Fetch entry for selected date
+    const fetchEntryForDate = async (selectedDate) => {
         try {
-            const response = await axios.get(
-                `http://localhost:8000/users/${uid}/entries`
+            const response = await fetch(
+                `${API_BASE_URL}/api/entries`,
+                {
+                    credentials: "include"
+                }
             );
-            const entries = response.data;
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch entries");
+            }
+
+            const entries = await response.json();
 
             const matchingEntry = entries.find((entry) => {
                 const entryDate = new Date(entry.date);
@@ -53,13 +50,21 @@ function HomePage() {
         }
     };
 
-    const fetchAllEntryDates = async (uid) => {
+    // Fetch all entry dates
+    const fetchAllEntryDates = async () => {
         try {
-            const response = await axios.get(
-                `http://localhost:8000/users/${uid}/entries`
+            const response = await fetch(
+                `${API_BASE_URL}/api/entries`,
+                {
+                    credentials: "include"
+                }
             );
-            const entries = response.data;
 
+            if (!response.ok) {
+                throw new Error("Failed to fetch entries");
+            }
+
+            const entries = await response.json();
             const datesWithEntries = entries.map((entry) =>
                 new Date(entry.date).toDateString()
             );
@@ -67,31 +72,36 @@ function HomePage() {
 
             // streak count add
             calculateStreakCount(datesWithEntries);
-
         } catch (error) {
             console.error("Error fetching entry dates:", error);
         }
     };
 
-    // add function to do streak count 
+    // add function to do streak count
     const calculateStreakCount = (dates) => {
         const sortedDates = [...dates]
             .map((date) => new Date(date))
             .sort((a, b) => b - a);
-        
+
         let streak = 0;
         for (let i = 0; i < sortedDates.length; i++) {
             const current = sortedDates[i];
             const next = new Date(sortedDates[i + 1]);
-            if (i === 0 || (current - next) / (1000 * 60 * 60 * 24) === 1) {
+            if (
+                i === 0 ||
+                (current - next) / (1000 * 60 * 60 * 24) === 1
+            ) {
                 streak++;
             } else {
                 break;
             }
         }
         setStreakCount(streak);
-
     };
+    useEffect(() => {
+        fetchEntryForDate(date);
+        fetchAllEntryDates();
+    }, [date]);
 
     const handleDateChange = (newDate) => {
         setDate(newDate);
@@ -112,7 +122,7 @@ function HomePage() {
         return null;
     };
 
-    // add swipe function 
+    // add swipe function
     const handleSwipe = (direction) => {
         const newDate = new Date(activeStartDate);
         if (direction === "left") {
@@ -125,7 +135,7 @@ function HomePage() {
 
     const swipeHandlers = useSwipeable({
         onSwipedLeft: () => handleSwipe("left"),
-        onSwipedRight: () => handleSwipe("right"),
+        onSwipedRight: () => handleSwipe("right")
     });
 
     return (
@@ -138,9 +148,9 @@ function HomePage() {
                     className="custom-calendar"
                     tileClassName={tileClassName}
                     activeStartDate={activeStartDate}
-                    onActiveStartDateChange={({activeStartDate}) =>
-                        setActiveStartDate(activeStartDate)
-                    }
+                    onActiveStartDateChange={({
+                        activeStartDate
+                    }) => setActiveStartDate(activeStartDate)}
                 />
                 <Modal
                     isOpen={modalIsOpen}

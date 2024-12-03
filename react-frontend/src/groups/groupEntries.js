@@ -50,13 +50,15 @@ function GroupEntries() {
     const navigate = useNavigate();
     const location = useLocation();
     const groupCode = location.state?.group_code;
-    const groupUsers = location.state?.users;
     const [showToast, setShowToast] = useState(false);
     const [showCode, setShowCode] = useState(false);
     const [entries, setEntries] = useState([]);
     const [theme, setTheme] = useState({ mode: "light-mode" });
     const [reactionCounts, setReactionCounts] = useState({});
     const [reactionNumbers, setReactionNumbers] = useState({});
+    const groupUsers = location.state?.users;
+
+    const API_BASE_URL = "http://localhost:8000";
 
     useEffect(() => {
         const currentTheme = localStorage.getItem("theme");
@@ -102,79 +104,32 @@ function GroupEntries() {
     };
 
     // Fetch entries for the group
-    useEffect(() => {
-        const fetchEntries = async () => {
-            try {
-                if (!Array.isArray(groupUsers)) {
-                    console.error(
-                        "groupUsers is not an array:",
-                        groupUsers
-                    );
-                    return;
+    const fetchEntries = async () => {
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/api/groups/${groupId}/entries`,
+                {
+                    credentials: "include" // For JWT cookie
                 }
+            );
 
-                // Fetch entries for each user in the group
-                const recentEntries = await Promise.all(
-                    groupUsers.map(async (user) => {
-                        try {
-                            const response = await fetch(
-                                `http://localhost:8000/users/${user}/recent`
-                            );
-
-                            if (!response.ok) {
-                                throw new Error(
-                                    `HTTP error! status: ${response.status}`
-                                );
-                            }
-
-                            const data = await response.json();
-
-                            // If there's a currentEntry, return the processed entry
-                            if (data.currentEntry) {
-                                return {
-                                    userId: user,
-                                    userName: data.userName,
-                                    rose_text:
-                                        data.currentEntry
-                                            .rose_text,
-                                    bud_text:
-                                        data.currentEntry
-                                            .bud_text,
-                                    thorn_text:
-                                        data.currentEntry
-                                            .thorn_text,
-                                    date: data.currentEntry
-                                        .date,
-                                    id: data.currentEntry._id
-                                };
-                            }
-
-                            // If no entries or no public entries, return null
-                            return null;
-                        } catch (err) {
-                            console.error(
-                                `Failed to fetch for user ${user}:`,
-                                err
-                            );
-                            return null;
-                        }
-                    })
-                );
-
-                // Filter out null entries (users with no entries or no public entries)
-                const validEntries = recentEntries.filter(
-                    (entry) => entry !== null
-                );
-                setEntries(validEntries);
-            } catch (error) {
-                console.error("Error in fetchEntries:", error);
+            if (!response.ok) {
+                throw new Error("Failed to fetch entries");
             }
-        };
 
-        if (groupUsers && groupUsers.length > 0) {
+            const entries = await response.json();
+            setEntries(entries);
+        } catch (error) {
+            console.error("Error in fetchEntries:", error);
+        }
+    };
+
+    // Update useEffect to remove groupUsers dependency
+    useEffect(() => {
+        if (groupId) {
             fetchEntries();
         }
-    }, [groupUsers]);
+    }, [groupId]);
 
     // add new reaction
     const newReaction = async (emoji, user, entry) => {

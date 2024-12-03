@@ -33,22 +33,18 @@ function JoinGroup({ onGroupUpdate }) {
 
     // Join group API call
     const joinGroup = async (groupCode) => {
-        const userId = localStorage.getItem("userId");
-        console.log("Joining group:", { groupCode, userId });
-
-        if (!userId) {
-            throw new Error("User not logged in");
-        }
+        console.log("Joining group:", { groupCode });
 
         // API call to join group
         try {
             const response = await fetch(
-                `${API_BASE_URL}/groups/${groupCode}/${userId}`,
+                `${API_BASE_URL}/api/groups/${groupCode}`,
                 {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json"
-                    }
+                    },
+                    credentials: "include"
                 }
             );
 
