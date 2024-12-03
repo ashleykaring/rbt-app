@@ -37,18 +37,22 @@ function GroupsPage() {
     const navigate = useNavigate();
     const [theme, setTheme] = useState({ mode: "light-mode" });
 
+    // Set the theme
     useEffect(() => {
         const currentTheme = localStorage.getItem("theme");
         setTheme({ mode: currentTheme || "light-mode" });
     }, []);
 
+    // Fetch groups for the user
     const fetchGroups = async () => {
         try {
+            // If they aren't logged in (kinda useless)
             const userId = localStorage.getItem("userId");
             if (!userId) {
                 throw new Error("User not logged in");
             }
 
+            // API call
             const response = await fetch(
                 `${API_BASE_URL}/users/${userId}/groups`
             );
@@ -57,6 +61,7 @@ function GroupsPage() {
                 throw new Error("Failed to fetch groups");
             }
 
+            // Parse the response
             const groups = await response.json();
             console.log(
                 "Fetched groups with codes:",
@@ -66,6 +71,8 @@ function GroupsPage() {
                     code: g.group_code
                 }))
             );
+
+            // Set the groups
             setUserGroups(groups);
         } catch (err) {
             console.error("Error fetching groups:", err);
@@ -127,6 +134,7 @@ function GroupsPage() {
         </>
     );
 
+    // Loading spinner
     if (isLoading) {
         return (
             <LoadingContainer>
@@ -140,6 +148,7 @@ function GroupsPage() {
         );
     }
 
+    // Fall back if there's an error
     if (error) {
         return <PageContainer>Error: {error}</PageContainer>;
     }

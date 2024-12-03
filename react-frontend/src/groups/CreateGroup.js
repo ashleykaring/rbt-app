@@ -32,7 +32,7 @@ function CreateGroup({ onGroupUpdate }) {
     const [toastMessage, setToastMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    const API_BASE_URL = "http://localhost:8000"; // Match your backend port
+    const API_BASE_URL = "http://localhost:8000";
 
     // Generates and verifies a unique group code
     const generateUniqueCode = async () => {
@@ -42,6 +42,7 @@ function CreateGroup({ onGroupUpdate }) {
         let isUnique = false;
         let code;
 
+        // Generates a random code until it is unique
         while (!isUnique) {
             code = "";
             for (let i = 0; i < 6; i++) {
@@ -54,6 +55,7 @@ function CreateGroup({ onGroupUpdate }) {
             console.log("Trying code:", code);
 
             try {
+                // Verifies the code with the backend
                 const response = await fetch(
                     `${API_BASE_URL}/api/groups/verify/${code}`
                 );
@@ -66,6 +68,7 @@ function CreateGroup({ onGroupUpdate }) {
                 console.log("Verification response:", data);
                 isUnique = data.isAvailable;
             } catch (error) {
+                // Waits for 1 second before trying again
                 console.error("Error verifying code:", error);
                 await new Promise((resolve) =>
                     setTimeout(resolve, 1000)
@@ -86,6 +89,7 @@ function CreateGroup({ onGroupUpdate }) {
             throw new Error("User not logged in");
         }
 
+        // Creates the group with the backend
         try {
             console.log("Making create group request", {
                 name,
@@ -93,6 +97,7 @@ function CreateGroup({ onGroupUpdate }) {
                 userId
             });
 
+            // Makes post request to the backend
             const response = await fetch(
                 `${API_BASE_URL}/groups/${userId}`,
                 {
@@ -144,6 +149,7 @@ function CreateGroup({ onGroupUpdate }) {
 
         setIsLoading(true);
         try {
+            // Generates a unique code
             console.log("Starting group creation process");
             const code = await generateUniqueCode();
             console.log("Generated code:", code);
@@ -154,11 +160,13 @@ function CreateGroup({ onGroupUpdate }) {
             );
             console.log("Group created:", newGroup);
 
+            // Sets the group code and stage
             setGroupCode(code);
             setStage("code");
             setToastMessage("Group created successfully!");
             setShowToast(true);
 
+            // Updates the groups
             onGroupUpdate();
         } catch (error) {
             console.error("Error in handleConfirmName:", error);
@@ -189,6 +197,7 @@ function CreateGroup({ onGroupUpdate }) {
     // Render content based on current stage
     const renderContent = () => {
         switch (stage) {
+            // Initial view (not opened)
             case "initial":
                 return (
                     <InitialView>
@@ -198,6 +207,7 @@ function CreateGroup({ onGroupUpdate }) {
                         <CreateText>Create Group</CreateText>
                     </InitialView>
                 );
+            // Naming view (group name input)
             case "naming":
                 return (
                     <>
@@ -229,6 +239,7 @@ function CreateGroup({ onGroupUpdate }) {
                         </CreateButton>
                     </>
                 );
+            // Code view (group code display) - * THIS IS BROKEN BC THE PAGE REFRESHES ON CREATION *
             case "code":
                 return (
                     <>

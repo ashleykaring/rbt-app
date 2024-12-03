@@ -40,6 +40,7 @@ function JoinGroup({ onGroupUpdate }) {
             throw new Error("User not logged in");
         }
 
+        // API call to join group
         try {
             const response = await fetch(
                 `${API_BASE_URL}/groups/${groupCode}/${userId}`,
@@ -163,6 +164,7 @@ function JoinGroup({ onGroupUpdate }) {
     // Render content based on current stage
     const renderContent = () => {
         switch (stage) {
+            // Initial view (not opened)
             case "initial":
                 return (
                     <InitialView>
@@ -172,9 +174,11 @@ function JoinGroup({ onGroupUpdate }) {
                         <JoinText>Join Group</JoinText>
                     </InitialView>
                 );
+            // Code input view
             case "code":
                 return (
                     <>
+                        {/* Close button */}
                         <CloseButton
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -186,6 +190,7 @@ function JoinGroup({ onGroupUpdate }) {
                         <JoinHeader>
                             Enter group code:
                         </JoinHeader>
+                        {/* Code input */}
                         <CodeInput>
                             {code.map((digit, index) => (
                                 <Digit
@@ -208,6 +213,7 @@ function JoinGroup({ onGroupUpdate }) {
                                 />
                             ))}
                         </CodeInput>
+                        {/* Join button */}
                         <JoinButton
                             type="button"
                             onClick={(e) => {
@@ -228,6 +234,7 @@ function JoinGroup({ onGroupUpdate }) {
         }
     };
 
+    // Render the join group & toast component
     return (
         <>
             <JoinContainer
