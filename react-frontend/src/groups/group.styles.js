@@ -975,7 +975,7 @@ export const EntryReactions = styled.div`
     height: 100%;
     background: ${(props) =>
         props.theme.mode === "dark-mode"
-            ? "#2d1f1f" // darker pink for dark mode
+            ? "#2d1f1f"
             : "#fdf2f1"};
     padding: 0.5em;
     padding-left: 0;
@@ -997,10 +997,11 @@ export const Reaction = styled.span`
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 0.3em; 
+    margin: 0 0.3em;
 
     &:hover {
         transform: scale(1.2);
+        cursor: pointer;
     }
 `;
 
@@ -1008,11 +1009,16 @@ export const ReactionCount = styled.div`
     position: absolute;
     top: 0.2em;
     right: 0.05em;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: #736f6e;
     color: white;
     font-size: 5px;
     font-weight: bold;
     padding: 2px 4px;
     border-radius: 50%;
     display: flex;
+
+    &:hover {
+        font-size: 7px;
+        cursor: pointer;
+    }
 `;

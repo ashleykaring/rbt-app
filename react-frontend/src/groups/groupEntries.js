@@ -177,52 +177,65 @@ function GroupEntries() {
 
     // add new reaction
     const newReaction = async (emoji, user, entry) => {
-        // make reaction object
-        const reactionData = {
-            entry_id: entry,
-            user_id: user,
-            group_id: groupId,
-            reaction_string: emoji
-        };
+        let exists = false;
 
-        console.log(reactionData);
+        if (reactionCounts[user][emoji] !== 0) {
+            exists = true;
+        }
 
-        try {
-            // post new reaction
-            const response = await axios.put(
-                `http://localhost:8000/entries/reaction`,
-                reactionData
-            );
+        if (
+            user !== localStorage.getItem("userId") &&
+            !exists
+        ) {
+            // make reaction object
+            const reactionData = {
+                entry_id: entry,
+                user_id: user,
+                group_id: groupId,
+                reaction_string: emoji
+            };
 
-            if (response && response.status === 201) {
-                console.log(
-                    "Reaction recorded: ",
-                    response.data
+            console.log(reactionData);
+
+            try {
+                // post new reaction
+                const response = await axios.put(
+                    `http://localhost:8000/entries/reaction`,
+                    reactionData
                 );
 
-                setReactionCounts((prev) => {
-                    const updated = { ...prev };
-                    if (!updated[user]) {
-                        updated[user] = {
-                            thumb: 0,
-                            heart: 0,
-                            smile: 0,
-                            laugh: 0,
-                            cry: 0
-                        };
-                    }
-                    updated[user][emoji] += 1;
+                if (response && response.status === 201) {
+                    console.log(
+                        "Reaction recorded: ",
+                        response.data
+                    );
 
-                    return updated;
-                });
-            } else {
-                console.log(
-                    "Reaction response posting not ok: ",
-                    response
-                );
+                    setReactionCounts((prev) => {
+                        const updated = { ...prev };
+                        if (!updated[user]) {
+                            updated[user] = {
+                                thumb: 0,
+                                heart: 0,
+                                smile: 0,
+                                laugh: 0,
+                                cry: 0
+                            };
+                        }
+                        updated[user][emoji] += 1;
+
+                        console.log(updated);
+                        return updated;
+                    });
+                } else {
+                    console.log(
+                        "Reaction response posting not ok: ",
+                        response
+                    );
+                    return null;
+                }
+            } catch (err) {
+                console.error("Error saving reaction: ", err);
             }
-        } catch (err) {
-            console.error("Error saving reaction: ", err);
         }
     };
 
@@ -230,57 +243,105 @@ function GroupEntries() {
     useEffect(() => {
         const fetchReactions = async () => {
             try {
+                if (!Array.isArray(groupUsers)) {
+                    console.error(
+                        "groupUsers is not an array:",
+                        groupUsers
+                    );
+                    return;
+                }
+
                 const reactionData = await Promise.all(
                     groupUsers.map(async (user) => {
-                        const response = await axios.get(
-                            // get most recent entry for each user
-                            `http://localhost:8000/users/${user}/recent`
-                        );
+                        try {
+                            const resp = await fetch(
+                                // get most recent entry for each user
+                                `http://localhost:8000/users/${user}/recent`
+                            );
 
-                        if (
-                            response.status === 200 &&
-                            response.data.currentEntry &&
-                            response.data.reactions
-                        ) {
-                            // extract reactions
-                            const reactions =
-                                response.data.reactions;
-                            // initialize to 0
-                            const counts = {
-                                thumb: 0,
-                                heart: 0,
-                                smile: 0,
-                                laugh: 0,
-                                cry: 0
-                            };
+                            if (!resp.ok) {
+                                throw new Error(
+                                    `HTTP error! status: ${resp.status}`
+                                );
+                            }
 
-                            // count each reaction number
-                            reactions.forEach((rxn) => {
-                                if (rxn.reaction === "thumb")
-                                    counts.thumb += 1;
-                                if (rxn.reaction === "heart")
-                                    counts.heart += 1;
-                                if (rxn.reaction === "smile")
-                                    counts.smile += 1;
-                                if (rxn.reaction === "laugh")
-                                    counts.laugh += 1;
-                                if (rxn.reaction === "cry")
-                                    counts.cry += 1;
-                            });
+                            const data = await resp.json();
 
-                            return {
-                                userId: user,
-                                counts
-                            };
+                            if (
+                                data.currentEntry &&
+                                Array.isArray(
+                                    data.currentEntry.reactions
+                                )
+                            ) {
+                                // extract reactions
+                                const reacts =
+                                    data.currentEntry.reactions;
+                                console.log(reacts);
+
+                                // initialize to 0
+                                const counts = {
+                                    thumb: 0,
+                                    heart: 0,
+                                    smile: 0,
+                                    laugh: 0,
+                                    cry: 0
+                                };
+
+                                // count each reaction number
+                                reacts.forEach((rxn) => {
+                                    console.log(rxn.reaction);
+                                    if (
+                                        rxn.reaction === "thumb"
+                                    )
+                                        counts.thumb += 1;
+                                    if (
+                                        rxn.reaction === "heart"
+                                    )
+                                        counts.heart += 1;
+                                    if (
+                                        rxn.reaction === "smile"
+                                    )
+                                        counts.smile += 1;
+                                    if (
+                                        rxn.reaction === "laugh"
+                                    )
+                                        counts.laugh += 1;
+                                    if (rxn.reaction === "cry")
+                                        counts.cry += 1;
+                                });
+
+                                console.log(counts);
+
+                                return {
+                                    userId: user,
+                                    counts
+                                };
+                            }
+
+                            return null;
+                        } catch (err) {
+                            console.error(
+                                `Failed to fetch reactions for user ${user}:`,
+                                err
+                            );
+                            return null;
                         }
-                        return null;
                     })
                 );
 
                 const validReactionData = reactionData.filter(
                     (rxns) => rxns !== null
                 );
-                setReactionCounts(validReactionData);
+
+                setReactionCounts((prev) => {
+                    const updated = { ...prev };
+
+                    validReactionData.forEach((data) => {
+                        updated[data.userId] = data.counts;
+                    });
+
+                    return updated;
+                });
             } catch (err) {
                 console.error("Error fetching reactions:", err);
             }
