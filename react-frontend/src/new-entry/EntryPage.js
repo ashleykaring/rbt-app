@@ -115,6 +115,23 @@ function EntryPage() {
         }
     };
 
+    const togglePrivacy = async (entryId, groupId) => {
+        try {
+            const response = await axios.patch(
+                `http://localhost:8000/groups/${groupId}/entries/${entryId}/toggle-privacy`,
+                { user_id: userId } // sends user ID for authorization
+            );
+            const updatedEntry = response.data.entry;
+            setEntries((prevEntries) =>
+                prevEntries.map((entry) =>
+                    entry._id === entryId ? { ...entry, is_public: updatedEntry.is_public } : entry
+                )
+            );
+        } catch (error) {
+            console.error("Error toggling privacy status:", error);
+        }
+    };
+    
     function handleSubmit(entry) {
         if (!userId) {
             console.error("No user ID available");
@@ -280,24 +297,30 @@ function EntryPage() {
             {entries.length > 0 && !hasSubmittedToday && (
                 <div className="recent-entry">
                     <h2>Most Recent Entry</h2>
-                    <div className="entry-card">
-                        <div className="entry-item">
-                            <h3>Rose</h3>
-                            <p>{entries[0].rose_text}</p>
+                    {entries.map((entry) => (
+                        <div key={entry._id} className="entry-card">
+                            <div className="entry-item">
+                                <h3>Rose</h3>
+                                <p>{entry.rose_text}</p>
+                            </div>
+                            <div className="entry-item">
+                                <h3>Bud</h3>
+                                <p>{entry.bud_text}</p>
+                            </div>
+                            <div className="entry-item">
+                                <h3>Thorn</h3>
+                                <p>{entry.thorn_text}</p>
+                            </div>
+                            <button onClick={() => togglePrivacy(entry._id, entry.group_id)}>
+                                {entry.is_public ? "Make Private" : "Make Public"}
+                            </button>
                         </div>
-                        <div className="entry-item">
-                            <h3>Bud</h3>
-                            <p>{entries[0].bud_text}</p>
-                        </div>
-                        <div className="entry-item">
-                            <h3>Thorn</h3>
-                            <p>{entries[0].thorn_text}</p>
-                        </div>
-                    </div>
+                    ))}
                 </div>
             )}
         </div>
     );
+    
 }
 
 export default EntryPage;

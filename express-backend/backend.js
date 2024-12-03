@@ -20,7 +20,8 @@ import {
     findUserById,
     getUserEntriesByUserId,
     getEntryById,
-    EntryModel
+    EntryModel,
+    addReactionToEntry
 } from "./models/user-services.js";
 
 // Services
@@ -524,6 +525,49 @@ app.patch("/entries/:entryId", async (req, res) => {
     } catch (error) {
         console.error("Error updating entry:", error);
         res.status(500).json({ error: "Error updating entry" });
+    }
+});
+
+// ADD REACTION TO ENTRY
+app.put("/entries/reaction", async (req, res) => {
+    try {
+        // What request object will look like
+
+        const { entry_id, user_id, group_id, reaction_string } =
+            req.body;
+        if (
+            !user_id ||
+            !entry_id ||
+            !group_id ||
+            !reaction_string
+        ) {
+            return res
+                .status(400)
+                .json({ error: "All fields are required" });
+        }
+
+        const reaction = {
+            group_id: group_id,
+            user_reacting_id: user_id,
+            reaction: reaction_string
+        };
+
+        const updatedEntry = await addReactionToEntry(
+            entry_id,
+            reaction
+        );
+        if (!updatedEntry) {
+            return res
+                .status(500)
+                .json({ error: "Error creating entry" });
+        }
+
+        res.status(201).json(updatedEntry);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            error: "Error creating journal entry"
+        });
     }
 });
 
