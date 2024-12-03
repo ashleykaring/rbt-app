@@ -5,7 +5,6 @@ import "react-calendar/dist/Calendar.css";
 import "./HomePage.css";
 import Modal from "react-modal";
 
-
 function HomePage() {
     const [date, setDate] = useState(new Date());
     const [selectedEntry, setSelectedEntry] = useState(null);
@@ -55,7 +54,9 @@ function HomePage() {
             );
             const entries = response.data;
 
-            const datesWithEntries = entries.map((entry) => new Date(entry.date).toDateString());
+            const datesWithEntries = entries.map((entry) =>
+                new Date(entry.date).toDateString()
+            );
             setEntryDates(datesWithEntries);
         } catch (error) {
             console.error("Error fetching entry dates:", error);
@@ -72,15 +73,14 @@ function HomePage() {
     };
 
     const tileClassName = ({ date, view }) => {
-        if (view === 'month') {
+        if (view === "month") {
             const dateStr = date.toDateString();
             if (entryDates.includes(dateStr)) {
-                return 'entry-date';
+                return "entry-date";
             }
         }
         return null;
     };
-
 
     return (
         <div className="home-page">
@@ -111,7 +111,9 @@ function HomePage() {
                             </div>
                             <div className="entry-item">
                                 <h3>Thorn</h3>
-                                <p>{selectedEntry.thorn_text}</p>
+                                <p>
+                                    {selectedEntry.thorn_text}
+                                </p>
                             </div>
                         </div>
                     ) : (
@@ -122,8 +124,6 @@ function HomePage() {
                 </Modal>
             </div>
 
-            
-
             <div className="selected-date">
                 <span className="date-label">
                     Selected Date:
@@ -132,10 +132,6 @@ function HomePage() {
                     {date.toDateString()}
                 </span>
             </div>
-
-            
-
-            
         </div>
     );
 }

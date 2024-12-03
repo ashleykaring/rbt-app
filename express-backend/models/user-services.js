@@ -5,7 +5,6 @@ import {
     userEntriesSchema
 } from "./user.js";
 
-
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -124,18 +123,22 @@ async function getAllEntries(userid) {
 }
 
 async function getUserEntriesByUserId(userId) {
-    const userEntriesModel = getDbConnection().model("user_entries", ueSchema);
-    return await userEntriesModel.find({user_id: userId});
-
+    const userEntriesModel = getDbConnection().model(
+        "user_entries",
+        ueSchema
+    );
+    return await userEntriesModel.find({ user_id: userId });
 }
 
 async function getEntryById(entryId) {
-    const entryModel = getDbConnection().model("rbt_entries", eSchema);
-    return await entryModel.find({_id: entryId});
+    const entryModel = getDbConnection().model(
+        "rbt_entries",
+        eSchema
+    );
+    return await entryModel.find({ _id: entryId });
 }
 
 async function addGroupToUser(userId, groupId) {
-
     const userModel = getDbConnection().model("users", uSchema);
     try {
         return await userModel.findOneAndUpdate(
@@ -144,15 +147,34 @@ async function addGroupToUser(userId, groupId) {
                 $push: { groups: groupId }
             }
         );
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+async function addReactionToEntry(entryId, reactionObject) {
+    const entryModel = getDbConnection().model("rbt_entries", eSchema);
+
+    try {
+        // Find the entry object in the database and push the reaction
+        return await entryModel.findOneAndUpdate({_id: entryId},
+            {
+                $push: { reactions: reactionObject}
+        });
 
     } catch (error) {
         console.log(error);
         return false;
     }
-
 }
 
 
+// Define the entry model
+const EntryModel = getDbConnection().model(
+    "rbt_entries",
+    eSchema
+);
 
 export {
     addUser,
@@ -163,4 +185,6 @@ export {
     addGroupToUser,
     getUserEntriesByUserId,
     getEntryById,
+    addReactionToEntry,
+    EntryModel
 };

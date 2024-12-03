@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 import "./Entry.css";
 import axios from "axios";
 
-
 function NewEntry(props) {
     const [entry, setEntry] = useState({
         rose: "",
         bud: "",
-        thorn: ""
+        thorn: "",
+        isPublic: true
     });
     const [errorMessage, setErrorMessage] = useState("");
     const [existingEntry, setExistingEntry] = useState(null);
-   
+
     useEffect(() => {
         // fetch today's entry when the component mounts
         async function fetchTodayEntry() {
@@ -22,23 +22,31 @@ function NewEntry(props) {
             }
 
             try {
-                const response = await axios.get(`/users/${userId}/entries`);
+                const response = await axios.get(
+                    `/users/${userId}/entries`
+                );
                 const entries = response.data;
-                const today = new Date().toISOString().split("T")[0];
-                const todayEntry = entries.find((entry) => entry.date === today);
+                const today = new Date()
+                    .toISOString()
+                    .split("T")[0];
+                const todayEntry = entries.find(
+                    (entry) => entry.date === today
+                );
 
                 if (todayEntry) {
-                    setExistingEntry(todayEntry); 
+                    setExistingEntry(todayEntry);
                 }
             } catch (error) {
-                console.error("Error fetching today's entry:", error);
+                console.error(
+                    "Error fetching today's entry:",
+                    error
+                );
                 setErrorMessage("Failed to load today's entry");
             }
         }
 
         fetchTodayEntry();
     }, []);
-
 
     function handleChange(event) {
         const { name, value } = event.target;
@@ -62,11 +70,16 @@ function NewEntry(props) {
                 bud_text: entry.bud,
                 thorn_text: entry.thorn,
                 user_id: userId,
-                is_public: true
+                is_public: entry.isPublic
             };
 
             props.handleSubmit(newEntry);
-            setEntry({ rose: "", bud: "", thorn: "" });
+            setEntry({
+                rose: "",
+                bud: "",
+                thorn: "",
+                isPublic: true
+            });
         } else {
             setErrorMessage("Please fill in all fields");
         }
@@ -76,12 +89,23 @@ function NewEntry(props) {
         <div>
             {existingEntry ? (
                 <div>
-                    <p>You have already created an entry today:</p>
-                    <p><strong>Rose:</strong> {existingEntry.rose_text}</p>
-                    <p><strong>Bud:</strong> {existingEntry.bud_text}</p>
-                    <p><strong>Thorn:</strong> {existingEntry.thorn_text}</p>
+                    <p>
+                        You have already created an entry today:
+                    </p>
+                    <p>
+                        <strong>Rose:</strong>{" "}
+                        {existingEntry.rose_text}
+                    </p>
+                    <p>
+                        <strong>Bud:</strong>{" "}
+                        {existingEntry.bud_text}
+                    </p>
+                    <p>
+                        <strong>Thorn:</strong>{" "}
+                        {existingEntry.thorn_text}
+                    </p>
                 </div>
-            ) : (    
+            ) : (
                 <form>
                     <label htmlFor="rose">Rose</label>
                     <input
@@ -108,19 +132,37 @@ function NewEntry(props) {
                         id="thorn"
                         placeholder="What could have been better?"
                         value={entry.thorn}
-                    onChange={handleChange}
+                        onChange={handleChange}
                     />
+                    <div className="toggle-container">
+                        <label className="toggle-switch">
+                            <input
+                                type="checkbox"
+                                checked={entry.isPublic}
+                                onChange={(e) =>
+                                    setEntry((prev) => ({
+                                        ...prev,
+                                        isPublic:
+                                            e.target.checked
+                                    }))
+                                }
+                            />
+                            <span className="toggle-slider"></span>
+                        </label>
+                        <span className="toggle-label">
+                            {entry.isPublic
+                                ? "Public Entry"
+                                : "Private Entry"}
+                        </span>
+                    </div>
                     {errorMessage && (
-                        <p className="error-message">{errorMessage}</p>
+                        <p className="error-message">
+                            {errorMessage}
+                        </p>
                     )}
-                    <input
-                        type="button"
-                        value="Submit Entry"
-                        onClick={submitEntry}
-                    />
                 </form>
             )}
-        </div>    
+        </div>
     );
 }
 

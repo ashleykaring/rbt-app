@@ -1,13 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import NewEntry from "./NewEntry";
 import axios from "axios";
 import "./Entry.css";
+import { FaEdit, FaTimes } from "react-icons/fa";
 
 function EntryPage() {
     const [entries, setEntries] = useState([]);
     const [userId, setUserId] = useState("");
-    const [todayEntryExists, setTodayEntryExists] = useState(false);
+    const [hasSubmittedToday, setHasSubmittedToday] =
+        useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editableEntry, setEditableEntry] = useState({
+        rose: "",
+        bud: "",
+        thorn: "",
+        isPublic: true
+    });
 
+    const fetchUserEntries = useCallback(async (userId) => {
+        try {
+            const response = await axios.get(
+                `http://localhost:8000/users/${userId}/entries`
+            );
+            console.log("Fetched entries:", response.data);
+            setEntries(response.data);
+            checkIfSubmittedToday(response.data);
+        } catch (error) {
+            console.error("Error fetching entries:", error);
+        }
+    }, []);
 
     useEffect(() => {
         const currentUserId = localStorage.getItem("userId");
@@ -17,63 +38,96 @@ function EntryPage() {
         } else {
             console.error("No user ID found in localStorage");
         }
-    }, []);
+    }, [fetchUserEntries]);
 
-    const fetchUserEntries = async (userId) => {
-        try {
-            const response = await axios.get(`http://localhost:8000/users/${userId}/entries`);
-            
-            const fetchedEntries = response.data;
-            setEntries(response.data);
-            const today = new Date().toISOString().split("T")[0];
-    
-            // Check if an entry already exists for today
-        const hasTodayEntry = fetchedEntries.some((entry) => {
-            const entryDate = new Date().toISOString().split("T")[0];
-            return entryDate === today; 
+    const checkIfSubmittedToday = (entries) => {
+        if (entries.length > 0) {
+            const mostRecentEntry = entries[0];
+            const today = new Date()
+                .toISOString()
+                .split("T")[0];
 
-        });
-            setTodayEntryExists(hasTodayEntry);          
-        } catch (error) {
-            console.error("Error fetching entries:", error);
+            const entryDate = new Date(mostRecentEntry.date)
+                .toISOString()
+                .split("T")[0];
+
+            console.log("Today's date:", today);
+            console.log("Most recent entry date:", entryDate);
+
+            setHasSubmittedToday(today === entryDate);
+            if (today === entryDate) {
+                setEditableEntry({
+                    rose: mostRecentEntry.rose_text,
+                    bud: mostRecentEntry.bud_text,
+                    thorn: mostRecentEntry.thorn_text,
+                    isPublic: mostRecentEntry.is_public
+                });
+            }
         }
     };
 
-    // const togglePrivacy = async (entryId, groupId) => {
-    //     try {
-    //         const response = await axios.patch(
-    //             `http://localhost:8000/groups/${groupId}/entries/${entryId}/toggle-privacy`,
-    //             { user_id: userId } // sends user ID for authorization
-    //         );
-    //         const updatedEntry = response.data.entry;
-    //         setEntries((prevEntries) =>
-    //             prevEntries.map((entry) =>
-    //                 entry._id === entryId ? { ...entry, is_public: updatedEntry.is_public } : entry
-    //             )
-    //         );
-    //     } catch (error) {
-    //         console.error("Error toggling privacy status:", error);
-    //     }
-    // };
-    const togglePrivacy = async (entryId) => {
+    const handleEditClick = () => {
+        setIsEditing(!isEditing);
+        if (isEditing) {
+            // Reset to original values if canceling
+            const mostRecentEntry = entries[0];
+            setEditableEntry({
+                rose: mostRecentEntry.rose_text,
+                bud: mostRecentEntry.bud_text,
+                thorn: mostRecentEntry.thorn_text,
+                isPublic: mostRecentEntry.is_public
+            });
+        }
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setEditableEntry((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleUpdate = async () => {
         try {
+            const updateData = {
+                rose_text: editableEntry.rose,
+                bud_text: editableEntry.bud,
+                thorn_text: editableEntry.thorn,
+                is_public: editableEntry.isPublic
+            };
+
             const response = await axios.patch(
-                `http://localhost:8000/entries/${entryId}/toggle-privacy`,
-                { user_id: userId } // Sends user ID for authorization
+                `http://localhost:8000/entries/${entries[0]._id}`,
+                updateData
             );
-            const updatedEntry = response.data.entry;
-    
-            // Update the entry in state with its new privacy status
-            setEntries((prevEntries) =>
-                prevEntries.map((entry) =>
-                    entry._id === entryId ? { ...entry, is_public: updatedEntry.is_public } : entry
-                )
-            );
+
+            if (response.status === 200) {
+                const updatedEntry = response.data.entry;
+                setEntries((prevEntries) => [
+                    updatedEntry,
+                    ...prevEntries.slice(1)
+                ]);
+                setIsEditing(false);
+            }
         } catch (error) {
-            console.error("Error toggling privacy status:", error);
+            console.error("Error updating entry:", error);
         }
     };
-      
+
+    function handleSubmit(entry) {
+        if (!userId) {
+            console.error("No user ID available");
+            return;
+        }
+
+        makePostCall(entry).then((result) => {
+            if (result && result.status === 201) {
+                setEntries([result.data, ...entries]);
+                setHasSubmittedToday(true);
+            }
+        });
+    }
 
     async function makePostCall(entry) {
         try {
@@ -98,83 +152,132 @@ function EntryPage() {
         }
     }
 
-    async function handleSubmit(entry) {
-        try {
-            const response = await axios.post("http://localhost:8000/entries", entry);
-            
-            if (response.status === 201) {
-                // Successfully created a new entry
-                setEntries([response.data, ...entries]);
-                setTodayEntryExists(true); // Hide form or show message that entry exists
-            }
-        } catch (error) {
-            if (error.response && error.response.status === 409) {
-                // Entry already exists for today
-                setTodayEntryExists(true); // Update state to hide form or show message
-                console.log(error.response.data.message); // "You already started an entry today"
-            } else {
-                console.error("Error creating entry:", error);
-            }
-        }
-    }    
-
-    // return (
-    //     <div className="entry-page">
-    //         <h1 className="entry-header">New Journal Entry</h1>
-            
-    //         {!todayEntryExists? (
-    //             <NewEntry handleSubmit={handleSubmit} />
-    //         ) : (
-    //             <div className="existing-entry-message">
-    //                  <p>You have already created an entry for today.</p>
-    //             </div>
-    //         )}
-
-    //         {entries.length > 0 && (
-    //             <div className="recent-entry">
-    //                 <h2>Most Recent Entry</h2>
-    //                 {entries.map((entry) => (
-    //                     <div key={entry._id} className="entry-card">
-    //                     <div className="entry-item">
-    //                         <h3>Rose</h3>
-    //                         <p>{entry.rose_text}</p>
-    //                     </div>
-    //                     <div className="entry-item">
-    //                         <h3>Bud</h3>
-    //                         <p>{entry.bud_text}</p>
-    //                     </div>
-    //                     <div className="entry-item">
-    //                         <h3>Thorn</h3>
-    //                         <p>{entry.thorn_text}</p>
-    //                     </div>
-    //                     <button onClick={()=> togglePrivacy(entry._id, entry.group_id)}>
-    //                         {entry.is_public ? "Make Private" : "Make Public"}
-    //                     </button>
-    //                 </div>
-    //               ))}
-    //             </div>
-    //         )}
-    //     </div>
-    // );
-
-
-
     return (
         <div className="entry-page">
-            {/* Conditionally render the "New Journal Entry" header and form */}
-            {!todayEntryExists ? (
-                <>
-                    <h1 className="entry-header">New Journal Entry</h1>
-                    <NewEntry handleSubmit={handleSubmit} />
-                </>
-            ) : (
-                <div className="existing-entry-message">
-                    <p>You have already created an entry for today.</p>
-                </div>
+            {!hasSubmittedToday && (
+                <h1 className="entry-header">Journal Entry</h1>
             )}
-    
-            {/* Recent entries section remains visible */}
-            {entries.length > 0 && (
+            {hasSubmittedToday ? (
+                <div className="recent-entry">
+                    <div className="entry-header">
+                        <h2>Today's Entry</h2>
+                        <button
+                            className="edit-button"
+                            onClick={handleEditClick}
+                        >
+                            {isEditing ? (
+                                <>
+                                    <FaTimes /> Cancel
+                                </>
+                            ) : (
+                                <>
+                                    <FaEdit /> Edit
+                                </>
+                            )}
+                        </button>
+                    </div>
+                    <div className="entry-card">
+                        {isEditing ? (
+                            <>
+                                <div className="entry-item">
+                                    <h3>Rose</h3>
+                                    <input
+                                        type="text"
+                                        name="rose"
+                                        value={
+                                            editableEntry.rose
+                                        }
+                                        onChange={
+                                            handleInputChange
+                                        }
+                                    />
+                                </div>
+                                <div className="entry-item">
+                                    <h3>Bud</h3>
+                                    <input
+                                        type="text"
+                                        name="bud"
+                                        value={
+                                            editableEntry.bud
+                                        }
+                                        onChange={
+                                            handleInputChange
+                                        }
+                                    />
+                                </div>
+                                <div className="entry-item">
+                                    <h3>Thorn</h3>
+                                    <input
+                                        type="text"
+                                        name="thorn"
+                                        value={
+                                            editableEntry.thorn
+                                        }
+                                        onChange={
+                                            handleInputChange
+                                        }
+                                    />
+                                </div>
+                                <div className="toggle-container">
+                                    <label className="toggle-switch">
+                                        <input
+                                            type="checkbox"
+                                            checked={
+                                                editableEntry.isPublic
+                                            }
+                                            onChange={(e) =>
+                                                setEditableEntry(
+                                                    (prev) => ({
+                                                        ...prev,
+                                                        isPublic:
+                                                            e
+                                                                .target
+                                                                .checked
+                                                    })
+                                                )
+                                            }
+                                        />
+                                        <span className="toggle-slider"></span>
+                                    </label>
+                                    <span className="toggle-label">
+                                        {editableEntry.isPublic
+                                            ? "Public Entry"
+                                            : "Private Entry"}
+                                    </span>
+                                </div>
+                                <button
+                                    className="update-button"
+                                    onClick={handleUpdate}
+                                >
+                                    Update
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <div className="entry-item">
+                                    <h3>Rose</h3>
+                                    <p>
+                                        {entries[0].rose_text}
+                                    </p>
+                                </div>
+                                <div className="entry-item">
+                                    <h3>Bud</h3>
+                                    <p>{entries[0].bud_text}</p>
+                                </div>
+                                <div className="entry-item">
+                                    <h3>Thorn</h3>
+                                    <p>
+                                        {entries[0].thorn_text}
+                                    </p>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            ) : (
+                <NewEntry handleSubmit={handleSubmit} />
+            )}
+            {entries.length > 0 && !hasSubmittedToday && (
                 <div className="recent-entry">
                     <h2>Most Recent Entry</h2>
                     {entries.map((entry) => (
