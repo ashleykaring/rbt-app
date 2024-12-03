@@ -56,6 +56,7 @@ function GroupEntries() {
     const [entries, setEntries] = useState([]);
     const [theme, setTheme] = useState({ mode: "light-mode" });
     const [reactionCounts, setReactionCounts] = useState({});
+    const [reactionNumbers, setReactionNumbers] = useState({});
 
     useEffect(() => {
         const currentTheme = localStorage.getItem("theme");
@@ -177,16 +178,13 @@ function GroupEntries() {
 
     // add new reaction
     const newReaction = async (emoji, user, entry) => {
-        let exists = false;
-
-        if (reactionCounts[user][emoji] !== 0) {
-            exists = true;
+        const currentUser = localStorage.getItem("userId");
+        // check if type of reaction already made by that user
+        if (reactionCounts[entry]?.[currentUser] === emoji) {
+            return;
         }
 
-        if (
-            user !== localStorage.getItem("userId") &&
-            !exists
-        ) {
+        if (user !== currentUser) {
             // make reaction object
             const reactionData = {
                 entry_id: entry,
@@ -212,8 +210,22 @@ function GroupEntries() {
 
                     setReactionCounts((prev) => {
                         const updated = { ...prev };
-                        if (!updated[user]) {
-                            updated[user] = {
+
+                        if (!updated[entry]) {
+                            updated[entry] = {};
+                        }
+
+                        // increment new emoji
+                        updated[entry][currentUser] = emoji;
+
+                        console.log(updated);
+                        return updated;
+                    });
+
+                    setReactionNumbers((prev) => {
+                        const update = { ...prev };
+                        if (!update[user]) {
+                            update[user] = {
                                 thumb: 0,
                                 heart: 0,
                                 smile: 0,
@@ -221,10 +233,10 @@ function GroupEntries() {
                                 cry: 0
                             };
                         }
-                        updated[user][emoji] += 1;
+                        update[entry][emoji] += 1;
 
-                        console.log(updated);
-                        return updated;
+                        console.log(update);
+                        return update;
                     });
                 } else {
                     console.log(
@@ -267,6 +279,7 @@ function GroupEntries() {
 
                             const data = await resp.json();
 
+                            // check for entry and reactions
                             if (
                                 data.currentEntry &&
                                 Array.isArray(
@@ -279,6 +292,20 @@ function GroupEntries() {
                                 console.log(reacts);
 
                                 // initialize to 0
+                                const userReacts = {};
+
+                                // count each reaction number
+                                reacts.forEach((rxn) => {
+                                    console.log(rxn.reaction);
+                                    userReacts[
+                                        rxn.user_reacting_id
+                                    ] = rxn.reaction;
+                                });
+                                console.log(userReacts);
+                                console.log(
+                                    data.currentEntry._id
+                                );
+
                                 const counts = {
                                     thumb: 0,
                                     heart: 0,
@@ -287,7 +314,6 @@ function GroupEntries() {
                                     cry: 0
                                 };
 
-                                // count each reaction number
                                 reacts.forEach((rxn) => {
                                     console.log(rxn.reaction);
                                     if (
@@ -310,10 +336,10 @@ function GroupEntries() {
                                         counts.cry += 1;
                                 });
 
-                                console.log(counts);
-
                                 return {
-                                    userId: user,
+                                    entryId:
+                                        data.currentEntry._id,
+                                    userReacts,
                                     counts
                                 };
                             }
@@ -337,10 +363,23 @@ function GroupEntries() {
                     const updated = { ...prev };
 
                     validReactionData.forEach((data) => {
-                        updated[data.userId] = data.counts;
+                        console.log(data.entryId);
+                        console.log(data.userReacts);
+                        updated[data.entryId] = data.userReacts;
                     });
 
+                    console.log(updated);
                     return updated;
+                });
+
+                setReactionNumbers((prev) => {
+                    const update = { ...prev };
+
+                    validReactionData.forEach((data) => {
+                        update[data.entryId] = data.counts;
+                    });
+
+                    return update;
                 });
             } catch (err) {
                 console.error("Error fetching reactions:", err);
@@ -410,6 +449,10 @@ function GroupEntries() {
 
                     {/* Map through the entries */}
                     <EntriesContainer>
+                        {entries.map((entry) => {
+                            console.log(entry); // Log the current entry to the console
+                            return <></>; // Return an empty fragment for each entry
+                        })}
                         {entries.map((entry) => (
                             <EntryCard key={entry.userId}>
                                 <EntryHeader>
@@ -477,8 +520,8 @@ function GroupEntries() {
                                             {emoji === "cry" &&
                                                 "😭"}
                                             <ReactionCount>
-                                                {reactionCounts[
-                                                    entry.userId
+                                                {reactionNumbers[
+                                                    entry.id
                                                 ]?.[emoji] || 0}
                                             </ReactionCount>
                                         </Reaction>
