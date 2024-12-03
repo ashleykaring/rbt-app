@@ -15,6 +15,7 @@ import {
     FiChevronLeft
 } from "react-icons/fi";
 import { ThemeProvider } from "styled-components";
+import { getCurrentUserId } from "../utils/auth";
 
 // Styles
 import {
@@ -133,7 +134,12 @@ function GroupEntries() {
 
     // add new reaction
     const newReaction = async (emoji, user, entry) => {
-        const currentUser = localStorage.getItem("userId");
+        const currentUser = await getCurrentUserId();
+        if (!currentUser) {
+            console.error("No user ID found");
+            return;
+        }
+
         // check if type of reaction already made by that user
         if (reactionCounts[entry]?.[currentUser] === emoji) {
             return;
@@ -143,18 +149,20 @@ function GroupEntries() {
             // make reaction object
             const reactionData = {
                 entry_id: entry,
-                user_id: user,
                 group_id: groupId,
                 reaction_string: emoji
             };
 
-            console.log(reactionData);
+            console.log("Sending reaction data:", reactionData);
 
             try {
-                // post new reaction
+                // post new reaction with credentials
                 const response = await axios.put(
                     `http://localhost:8000/entries/reaction`,
-                    reactionData
+                    reactionData,
+                    {
+                        withCredentials: true
+                    }
                 );
 
                 if (response && response.status === 201) {
@@ -165,15 +173,10 @@ function GroupEntries() {
 
                     setReactionCounts((prev) => {
                         const updated = { ...prev };
-
                         if (!updated[entry]) {
                             updated[entry] = {};
                         }
-
-                        // increment new emoji
                         updated[entry][currentUser] = emoji;
-
-                        console.log(updated);
                         return updated;
                     });
 
@@ -189,16 +192,8 @@ function GroupEntries() {
                             };
                         }
                         update[entry][emoji] += 1;
-
-                        console.log(update);
                         return update;
                     });
-                } else {
-                    console.log(
-                        "Reaction response posting not ok: ",
-                        response
-                    );
-                    return null;
                 }
             } catch (err) {
                 console.error("Error saving reaction: ", err);
@@ -405,7 +400,7 @@ function GroupEntries() {
                     {/* Map through the entries */}
                     <EntriesContainer>
                         {entries.map((entry) => {
-                            console.log(entry); // Log the current entry to the console
+                            console.log("Entry object:", entry);
                             return <></>; // Return an empty fragment for each entry
                         })}
                         {entries.map((entry) => (
@@ -454,14 +449,23 @@ function GroupEntries() {
                                     ].map((emoji) => (
                                         <Reaction
                                             key={emoji}
-                                            onClick={() =>
-                                                // send emoji and entry reaction is for
+                                            onClick={() => {
+                                                console.log(
+                                                    "Reaction click params:",
+                                                    {
+                                                        emoji,
+                                                        userId: entry.userId,
+                                                        entryId:
+                                                            entry._id,
+                                                        entry
+                                                    }
+                                                );
                                                 newReaction(
                                                     emoji,
                                                     entry.userId,
-                                                    entry.id
-                                                )
-                                            }
+                                                    entry._id
+                                                );
+                                            }}
                                         >
                                             {/* render emojis */}
                                             {emoji ===
@@ -476,7 +480,7 @@ function GroupEntries() {
                                                 "😭"}
                                             <ReactionCount>
                                                 {reactionNumbers[
-                                                    entry.id
+                                                    entry._id
                                                 ]?.[emoji] || 0}
                                             </ReactionCount>
                                         </Reaction>

@@ -34,8 +34,6 @@ const MainAppFlow = ({ setIsLoggedIn }) => {
         } else {
             document.body.classList.remove("dark-mode");
         }
-        const userId = localStorage.getItem("userId");
-        console.log("MainAppFlow - Current userId:", userId);
     }, []);
 
     return (
@@ -83,22 +81,13 @@ const App = () => {
                         credentials: "include"
                     }
                 );
-
                 setIsLoggedIn(response.ok);
             } catch (error) {
                 setIsLoggedIn(false);
             }
         };
-
         checkAuth();
     }, []);
-
-    useEffect(() => {
-        console.log("App - Authentication Status:", {
-            isLoggedIn,
-            userId: localStorage.getItem("userId") || "none"
-        });
-    }, [isLoggedIn]);
 
     if (BYPASS_AUTH) {
         return (

@@ -710,51 +710,78 @@ app.post("/api/logout", authMiddleware, async (req, res) => {
 });
 
 // ADD REACTION TO ENTRY
-app.put("/entries/reaction", async (req, res) => {
-    try {
-        // What request object will look like
+app.put(
+    "/entries/reaction",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            console.log("Received reaction request:", {
+                body: req.body,
+                userId: req.userId
+            });
 
-        const { entry_id, user_id, group_id, reaction_string } =
-            req.body;
-        if (
-            !user_id ||
-            !entry_id ||
-            !group_id ||
-            !reaction_string
-        ) {
-            return res
-                .status(400)
-                .json({ error: "All fields are required" });
+            const { entry_id, group_id, reaction_string } =
+                req.body;
+            // Get user_id from middleware instead of request body
+            const user_id = req.userId;
+
+            console.log("Parsed data:", {
+                entry_id,
+                group_id,
+                reaction_string,
+                user_id
+            });
+
+            if (!entry_id || !group_id || !reaction_string) {
+                console.log("Missing required fields:", {
+                    hasEntryId: !!entry_id,
+                    hasGroupId: !!group_id,
+                    hasReactionString: !!reaction_string
+                });
+                return res.status(400).json({
+                    error: "All fields are required",
+                    missing: {
+                        entry_id: !entry_id,
+                        group_id: !group_id,
+                        reaction_string: !reaction_string
+                    }
+                });
+            }
+
+            const reaction = {
+                group_id: group_id,
+                user_reacting_id: user_id,
+                reaction: reaction_string
+            };
+
+            const updatedEntry = await addReactionToEntry(
+                entry_id,
+                reaction
+            );
+            if (!updatedEntry) {
+                return res
+                    .status(500)
+                    .json({ error: "Error creating entry" });
+            }
+
+            res.status(201).json(updatedEntry);
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                error: "Error creating journal entry"
+            });
         }
-
-        const reaction = {
-            group_id: group_id,
-            user_reacting_id: user_id,
-            reaction: reaction_string
-        };
-
-        const updatedEntry = await addReactionToEntry(
-            entry_id,
-            reaction
-        );
-        if (!updatedEntry) {
-            return res
-                .status(500)
-                .json({ error: "Error creating entry" });
-        }
-
-        res.status(201).json(updatedEntry);
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({
-            error: "Error creating journal entry"
-        });
     }
-});
+);
 
 // VERIFY AUTH
 app.get("/api/auth/verify", authMiddleware, (req, res) => {
     res.status(200).json({ authenticated: true });
+});
+
+// Add this with your other routes
+app.get("/api/user/current", authMiddleware, (req, res) => {
+    res.json({ userId: req.userId });
 });
 
 // LISTEN

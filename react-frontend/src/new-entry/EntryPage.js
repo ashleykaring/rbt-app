@@ -6,7 +6,6 @@ import { FaEdit, FaTimes } from "react-icons/fa";
 
 function EntryPage() {
     const [entries, setEntries] = useState([]);
-    const [userId, setUserId] = useState("");
     const [hasSubmittedToday, setHasSubmittedToday] =
         useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -127,42 +126,35 @@ function EntryPage() {
         }
     };
 
-    const togglePrivacy = async (entryId, groupId) => {
-        try {
-            const response = await axios.patch(
-                `http://localhost:8000/groups/${groupId}/entries/${entryId}/toggle-privacy`,
-                { user_id: userId } // sends user ID for authorization
-            );
-            const updatedEntry = response.data.entry;
-            setEntries((prevEntries) =>
-                prevEntries.map((entry) =>
-                    entry._id === entryId
-                        ? {
-                              ...entry,
-                              is_public: updatedEntry.is_public
-                          }
-                        : entry
-                )
-            );
-        } catch (error) {
-            console.error(
-                "Error toggling privacy status:",
-                error
-            );
-        }
-    };
-
     function handleSubmit(entry) {
+        console.log(
+            "EntryPage handleSubmit called with:",
+            entry
+        );
         makePostCall(entry).then((result) => {
+            console.log("makePostCall result:", result);
             if (result && result.status === 201) {
-                setEntries([result.data, ...entries]);
+                setEntries((prevEntries) => [
+                    result.data,
+                    ...prevEntries
+                ]);
                 setHasSubmittedToday(true);
+                setEditableEntry({
+                    rose: result.data.rose_text,
+                    bud: result.data.bud_text,
+                    thorn: result.data.thorn_text,
+                    isPublic: result.data.is_public
+                });
             }
         });
     }
 
     async function makePostCall(entry) {
         try {
+            console.log(
+                "Making POST request with data:",
+                entry
+            );
             const response = await fetch(
                 "http://localhost:8000/api/entries",
                 {
@@ -180,11 +172,20 @@ function EntryPage() {
                 }
             );
 
+            console.log(
+                "POST response status:",
+                response.status
+            );
             if (!response.ok) {
-                throw new Error("Failed to create entry");
+                const errorData = await response.text();
+                console.error("Error response:", errorData);
+                throw new Error(
+                    `Failed to create entry: ${errorData}`
+                );
             }
 
             const data = await response.json();
+            console.log("POST response data:", data);
             return { status: 201, data };
         } catch (error) {
             console.error("Error creating entry:", error);
@@ -320,37 +321,20 @@ function EntryPage() {
             {entries.length > 0 && !hasSubmittedToday && (
                 <div className="recent-entry">
                     <h2>Most Recent Entry</h2>
-                    {entries.map((entry) => (
-                        <div
-                            key={entry._id}
-                            className="entry-card"
-                        >
-                            <div className="entry-item">
-                                <h3>Rose</h3>
-                                <p>{entry.rose_text}</p>
-                            </div>
-                            <div className="entry-item">
-                                <h3>Bud</h3>
-                                <p>{entry.bud_text}</p>
-                            </div>
-                            <div className="entry-item">
-                                <h3>Thorn</h3>
-                                <p>{entry.thorn_text}</p>
-                            </div>
-                            <button
-                                onClick={() =>
-                                    togglePrivacy(
-                                        entry._id,
-                                        entry.group_id
-                                    )
-                                }
-                            >
-                                {entry.is_public
-                                    ? "Make Private"
-                                    : "Make Public"}
-                            </button>
+                    <div className="entry-card">
+                        <div className="entry-item">
+                            <h3>Rose</h3>
+                            <p>{entries[0].rose_text}</p>
                         </div>
-                    ))}
+                        <div className="entry-item">
+                            <h3>Bud</h3>
+                            <p>{entries[0].bud_text}</p>
+                        </div>
+                        <div className="entry-item">
+                            <h3>Thorn</h3>
+                            <p>{entries[0].thorn_text}</p>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
