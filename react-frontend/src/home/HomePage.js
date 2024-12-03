@@ -4,14 +4,19 @@ import axios from "axios";
 import "react-calendar/dist/Calendar.css";
 import "./HomePage.css";
 import Modal from "react-modal";
-
+// add and install!
+import { useSwipeable } from "react-swipeable";
 
 function HomePage() {
     const [date, setDate] = useState(new Date());
     const [selectedEntry, setSelectedEntry] = useState(null);
     const [userId, setUserId] = useState(null);
     const [entryDates, setEntryDates] = useState([]);
+    // add
+    const [streakCount, setStreakCount] = useState(0);
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    // add
+    const [activeStartDate, setActiveStartDate] = useState(new Date());
 
     useEffect(() => {
         const user = localStorage.getItem("userId");
@@ -55,11 +60,37 @@ function HomePage() {
             );
             const entries = response.data;
 
-            const datesWithEntries = entries.map((entry) => new Date(entry.date).toDateString());
+            const datesWithEntries = entries.map((entry) =>
+                new Date(entry.date).toDateString()
+            );
             setEntryDates(datesWithEntries);
+
+            // streak count add
+            calculateStreakCount(datesWithEntries);
+
         } catch (error) {
             console.error("Error fetching entry dates:", error);
         }
+    };
+
+    // add function to do streak count 
+    const calculateStreakCount = (dates) => {
+        const sortedDates = [...dates]
+            .map((date) => new Date(date))
+            .sort((a, b) => b - a);
+        
+        let streak = 0;
+        for (let i = 0; i < sortedDates.length; i++) {
+            const current = sortedDates[i];
+            const next = new Date(sortedDates[i + 1]);
+            if (i === 0 || (current - next) / (1000 * 60 * 60 * 24) === 1) {
+                streak++;
+            } else {
+                break;
+            }
+        }
+        setStreakCount(streak);
+
     };
 
     const handleDateChange = (newDate) => {
@@ -72,18 +103,33 @@ function HomePage() {
     };
 
     const tileClassName = ({ date, view }) => {
-        if (view === 'month') {
+        if (view === "month") {
             const dateStr = date.toDateString();
             if (entryDates.includes(dateStr)) {
-                return 'entry-date';
+                return "entry-date";
             }
         }
         return null;
     };
 
+    // add swipe function 
+    const handleSwipe = (direction) => {
+        const newDate = new Date(activeStartDate);
+        if (direction === "left") {
+            newDate.setMonth(newDate.getMonth() + 1);
+        } else if (direction === "right") {
+            newDate.setMonth(newDate.getMonth() - 1);
+        }
+        setActiveStartDate(newDate);
+    };
+
+    const swipeHandlers = useSwipeable({
+        onSwipedLeft: () => handleSwipe("left"),
+        onSwipedRight: () => handleSwipe("right"),
+    });
 
     return (
-        <div className="home-page">
+        <div className="home-page" {...swipeHandlers}>
             <h1>Rose Garden</h1>
             <div className="calendar-container">
                 <Calendar
@@ -91,6 +137,10 @@ function HomePage() {
                     value={date}
                     className="custom-calendar"
                     tileClassName={tileClassName}
+                    activeStartDate={activeStartDate}
+                    onActiveStartDateChange={({activeStartDate}) =>
+                        setActiveStartDate(activeStartDate)
+                    }
                 />
                 <Modal
                     isOpen={modalIsOpen}
@@ -111,7 +161,9 @@ function HomePage() {
                             </div>
                             <div className="entry-item">
                                 <h3>Thorn</h3>
-                                <p>{selectedEntry.thorn_text}</p>
+                                <p>
+                                    {selectedEntry.thorn_text}
+                                </p>
                             </div>
                         </div>
                     ) : (
@@ -121,8 +173,9 @@ function HomePage() {
                     )}
                 </Modal>
             </div>
-
-            
+            <div className="streak-counter">
+                <h2>Current Streak: {streakCount} days!</h2>
+            </div>
 
             <div className="selected-date">
                 <span className="date-label">
@@ -132,10 +185,6 @@ function HomePage() {
                     {date.toDateString()}
                 </span>
             </div>
-
-            
-
-            
         </div>
     );
 }

@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaSun, FaMoon, FaSignOutAlt } from "react-icons/fa"; // Sun and Moon icons, and FaSignOutAlt
+import {
+    //FaSun,
+    FaMoon,
+    FaSignOutAlt
+} from "react-icons/fa"; // Sun and Moon icons, and FaSignOutAlt
 import "./settings.css";
 
 function Settings({ setIsLoggedIn }) {

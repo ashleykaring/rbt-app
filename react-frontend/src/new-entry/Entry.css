@@ -70,7 +70,8 @@ input[type="text"] {
     background-color: var(--input-color);
 }
 
-input[type="button"] {
+input[type="button"],
+.update-button {
     background-color: var(--fill-color);
     color: #333;
     border: none;
@@ -83,7 +84,8 @@ input[type="button"] {
     margin-top: 10px;
 }
 
-input[type="button"]:hover {
+input[type="button"]:hover,
+.update-button:hover {
     background-color: var(--button-color);
 }
 
@@ -98,8 +100,8 @@ input[type="button"]:hover {
 }
 
 .recent-entry h2 {
-    font-size: 20px;
-    margin-bottom: 15px;
+    font-size: 30px;
+    margin-bottom: 5px;
     color: var(--text-color);
 }
 
@@ -160,4 +162,60 @@ input[type="button"]:hover {
     input[type="button"] {
         font-size: 1em;
     }
+}
+
+.entry-page {
+    padding: 5px;
+}
+
+.entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.edit-button {
+    background-color: var(--button-color);
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.2s;
+}
+
+.edit-button:hover {
+    background-color: var(--fill-color);
+}
+
+.entry-card {
+    background-color: var(--past-background);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.entry-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.entry-item:last-child {
+    border-bottom: none;
+}
+
+.entry-item h3 {
+    font-size: 16px;
+    color: var(--text-color);
+    margin-bottom: 5px;
+}
+
+.entry-item p {
+    font-size: 16px;
+    color: var(--text-color);
 }

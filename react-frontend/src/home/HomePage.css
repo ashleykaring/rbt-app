@@ -80,6 +80,10 @@ body.dark-mode {
     margin-right: 8px;
 }
 
+.streak-counter {
+    color: #ec0202;
+}
+
 .date-value {
     color: var(--font-color);
 }
