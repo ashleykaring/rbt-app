@@ -299,27 +299,28 @@ function EntryPage() {
                     <h2>Most Recent Entry</h2>
                     {entries.map((entry) => (
                         <div key={entry._id} className="entry-card">
-                        <div className="entry-item">
-                            <h3>Rose</h3>
-                            <p>{entry.rose_text}</p>
+                            <div className="entry-item">
+                                <h3>Rose</h3>
+                                <p>{entry.rose_text}</p>
+                            </div>
+                            <div className="entry-item">
+                                <h3>Bud</h3>
+                                <p>{entry.bud_text}</p>
+                            </div>
+                            <div className="entry-item">
+                                <h3>Thorn</h3>
+                                <p>{entry.thorn_text}</p>
+                            </div>
+                            <button onClick={() => togglePrivacy(entry._id, entry.group_id)}>
+                                {entry.is_public ? "Make Private" : "Make Public"}
+                            </button>
                         </div>
-                        <div className="entry-item">
-                            <h3>Bud</h3>
-                            <p>{entry.bud_text}</p>
-                        </div>
-                        <div className="entry-item">
-                            <h3>Thorn</h3>
-                            <p>{entry.thorn_text}</p>
-                        </div>
-                        <button onClick={()=> togglePrivacy(entry._id, entry.group_id)}>
-                            {entry.is_public ? "Make Private" : "Make Public"}
-                        </button>
-                    </div>
-                  ))}
+                    ))}
                 </div>
             )}
         </div>
     );
+    
 }
 
 export default EntryPage;
