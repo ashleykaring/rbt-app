@@ -227,6 +227,60 @@ describe("User Services", () => {
         );
         expect(result).toBe(false);
     });
+
+    test("Add and verify reaction to entry", async () => {
+        const entry = {
+            user_id: testUserId,
+            date: Date.now(),
+            is_public: true,
+            rose_text: "Test rose",
+            bud_text: "Test bud",
+            thorn_text: "Test thorn"
+        };
+
+        const addedEntry = await UserServices.addEntry(entry);
+        expect(addedEntry).toBeTruthy();
+
+        const reaction = {
+            group_id: new mongoose.Types.ObjectId(),
+            user_reacting_id: testUserId,
+            reaction: "like"
+        };
+
+        const result = await UserServices.addReactionToEntry(
+            addedEntry._id,
+            reaction
+        );
+        expect(result).toBeTruthy();
+
+        const updatedEntry = await UserServices.getEntryById(
+            addedEntry._id
+        );
+        expect(updatedEntry[0].reactions).toBeDefined();
+
+        // Check that at least one reaction matches our expected properties
+        const matchingReaction = updatedEntry[0].reactions.find(
+            (r) =>
+                r.user_reacting_id.toString() ===
+                    reaction.user_reacting_id.toString() &&
+                r.reaction === reaction.reaction
+        );
+        expect(matchingReaction).toBeTruthy();
+    });
+
+    test("Add reaction error handling - invalid entry id", async () => {
+        const reaction = {
+            group_id: new mongoose.Types.ObjectId(),
+            user_reacting_id: testUserId,
+            reaction: "like"
+        };
+
+        const result = await UserServices.addReactionToEntry(
+            "invalid_id",
+            reaction
+        );
+        expect(result).toBe(false);
+    });
 });
 
 describe("User Services Error Handling", () => {
