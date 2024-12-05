@@ -140,7 +140,7 @@ function HomePage() {
 
     return (
         <div className="home-page" {...swipeHandlers}>
-            <h1>Rose Garden</h1>
+            <h1 className="home-header">Rose Garden</h1>
             <div className="calendar-container">
                 <Calendar
                     onChange={handleDateChange}

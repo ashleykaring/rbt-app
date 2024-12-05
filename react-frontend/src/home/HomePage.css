@@ -17,16 +17,34 @@ body.dark-mode {
     padding: 20px;
 }
 
-.home-page h1 {
+.home-header {
+    font-size: 2.2rem;
+    font-weight: 700;
     color: var(--font-color);
-    font-size: 24px;
-    margin-bottom: 20px;
+    margin: 1rem 0 2rem;
+    position: relative;
+    padding-left: 1rem;
+    text-align: center;
+    width: 100%;
+}
+
+.home-header::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 70%;
+    width: 4px;
+    background: #f0c5bc;
+    border-radius: 2px;
 }
 
 .calendar-container {
     width: 100%;
     max-width: 350px;
     margin-bottom: 20px;
+    padding: 0 5px;
 }
 
 .overlay {
@@ -55,9 +73,55 @@ body.dark-mode {
 .custom-calendar {
     width: 100%;
     border: none !important;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    background-color: #f8e3e3;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    background-color: #fdf2f1;
+    padding: 10px;
+}
+
+.react-calendar__navigation {
+    margin-bottom: 15px;
+}
+
+.react-calendar__navigation button {
+    min-width: 44px;
+    background: none;
+    font-size: 16px;
+    color: var(--font-color);
+}
+
+.react-calendar__navigation button:disabled {
+    background-color: transparent;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+    background-color: transparent;
+}
+
+.react-calendar__navigation__label {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--font-color);
+}
+
+.react-calendar__month-view__weekdays {
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 0.75em;
+    color: var(--date-labelc);
+}
+
+.react-calendar__month-view__days__day {
+    padding: 8px;
+    color: var(--font-color);
+}
+
+.react-calendar__tile {
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 500;
 }
 
 .react-calendar__tile--active {
@@ -66,12 +130,30 @@ body.dark-mode {
 }
 
 .react-calendar__tile--now {
-    background: #f8f8f8 !important;
+    background: rgba(240, 197, 188, 0.3) !important;
+    color: var(--font-color) !important;
+    font-weight: 600;
+}
+
+.entry-date {
+    position: relative;
+}
+
+.entry-date::after {
+    content: "";
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background-color: #d66c84;
+    opacity: 0.8;
+    border-radius: 50%;
 }
 
 .selected-date {
-    margin: 20px 0;
-    text-align: center;
+    display: none;
 }
 
 .date-label {
@@ -81,7 +163,15 @@ body.dark-mode {
 }
 
 .streak-counter {
-    color: #ec0202;
+    color: #d66c84;
+    font-weight: 600;
+    font-size: 1.2rem;
+    text-align: center;
+    margin: 1rem 0;
+    background: rgba(240, 197, 188, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    display: inline-block;
 }
 
 .date-value {
@@ -123,9 +213,4 @@ body.dark-mode {
     text-align: center;
     margin-top: 20px;
     font-style: italic;
-}
-.entry-date {
-    background-color: #f62727;
-    color: #eca3a3;
-    border-radius: 50%;
 }
