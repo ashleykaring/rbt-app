@@ -28,7 +28,7 @@
 After setup:
 
 1. Create an account
-2. Join a group with code: XXXXXX (test group for grading)
+2. Join a group with code: 3L1A3G (test group for grading)
 3. Share your RBT for the day!
 
 # Testing
