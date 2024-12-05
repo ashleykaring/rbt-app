@@ -66,7 +66,7 @@ function Settings({ setIsLoggedIn }) {
                 <div className="theme-setting">
                     <h2 className="item">Dark Mode</h2>
                     <div className="switch-container">
-                        <label className="toggle"> //switch 
+                        <label className="toggle">
                             <input
                                 type="checkbox"
                                 checked={darkMode}
