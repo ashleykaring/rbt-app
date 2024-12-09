@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+// USER SCHEMA
+
 const UserSchema = new mongoose.Schema({
     username: String,
     password: String,
@@ -7,6 +9,8 @@ const UserSchema = new mongoose.Schema({
     entries: mongoose.Types.ObjectId,
     groups: [mongoose.Types.ObjectId],
 });
+
+// ENTRY SCHEMA
 
 const EntrySchema = new mongoose.Schema({
     user_id: mongoose.Types.ObjectId,
@@ -24,10 +28,14 @@ const EntrySchema = new mongoose.Schema({
     ],
 });
 
+// USER ENTRIES SCHEMA
+
 const UserEntriesSchema = new mongoose.Schema({
     user_id: mongoose.Types.ObjectId,
     entries: [mongoose.Types.ObjectId],
 });
+
+// GROUP SCHEMA
 
 const GroupSchema = new mongoose.Schema({
     group_code: String,
@@ -35,6 +43,6 @@ const GroupSchema = new mongoose.Schema({
     users: [mongoose.Types.ObjectId],
 });
 
-
+// export all schemas
 
 export {UserSchema as userSchema, EntrySchema as entrySchema, UserEntriesSchema as userEntriesSchema, GroupSchema};
