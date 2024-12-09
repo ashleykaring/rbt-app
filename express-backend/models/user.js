@@ -29,5 +29,12 @@ const UserEntriesSchema = new mongoose.Schema({
     entries: [mongoose.Types.ObjectId],
 });
 
+const GroupSchema = new mongoose.Schema({
+    group_code: String,
+    name: String,
+    users: [mongoose.Types.ObjectId],
+});
 
-export {UserSchema as userSchema, EntrySchema as entrySchema, UserEntriesSchema as userEntriesSchema};
+
+
+export {UserSchema as userSchema, EntrySchema as entrySchema, UserEntriesSchema as userEntriesSchema, GroupSchema};

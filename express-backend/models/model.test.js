@@ -4,7 +4,7 @@ import {
     entrySchema,
     userEntriesSchema
 } from "./user.js";
-import { GroupSchema } from "./groups.js";
+import { GroupSchema } from "./user.js";
 import * as UserServices from "./user-services.js";
 import * as GroupServices from "./group-services.js";
 import dotenv from "dotenv";

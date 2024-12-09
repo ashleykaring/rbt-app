@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { GroupSchema } from "./groups.js";
+import { GroupSchema } from "./user.js";
 import { addGroupToUser } from "./user-services.js";
 
 import dotenv from "dotenv";
