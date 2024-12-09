@@ -34,13 +34,13 @@ body {
 
 .container {
     margin: auto;
-    padding: 20px;
+    padding: 1.25em;
     margin-top: 0;
 }
 
 h1 {
     font-size: 1.5em;
-    margin: 20px;
+    margin: 1.25em;
 }
 
 form {

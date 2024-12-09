@@ -43,39 +43,3 @@ body {
         box-shadow: none;
     }
 }
-
-/* Update header styles */
-.header {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    max-width: 480px;
-    height: 85px;
-    z-index: 100;
-}
-
-/* Update footer styles */
-footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    max-width: 480px;
-    height: 80px;
-    z-index: 100;
-}
-
-.footer-links {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
-
-.footer-links a {
-    color: #333;
-    text-decoration: none;
-    font-weight: 500;
-    padding: 10px 20px;
-}
