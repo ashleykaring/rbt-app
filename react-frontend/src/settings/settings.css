@@ -55,7 +55,7 @@ body {
     transform: translateY(-11px);
 }
 
-/* moon and sun icons */
+/* moon icon */
 .switch-container svg {
     margin-left: 7px;
     font-size: 1.2rem;
@@ -64,7 +64,6 @@ body {
 
 .toggle {
     position: relative;
-    /* display: inline-block; */
     width: 70px;
     height: 34px;
 }

@@ -241,10 +241,10 @@ function GroupEntries() {
                                     data.currentEntry.reactions;
                                 console.log(reacts);
 
-                                // initialize to 0
+                                // initialize to empty
                                 const userReacts = {};
 
-                                // count each reaction number
+                                // relate reaction type to user
                                 reacts.forEach((rxn) => {
                                     console.log(rxn.reaction);
                                     userReacts[
@@ -264,6 +264,7 @@ function GroupEntries() {
                                     cry: 0
                                 };
 
+                                // get total reaction counts
                                 reacts.forEach((rxn) => {
                                     console.log(rxn.reaction);
                                     if (
@@ -309,19 +310,19 @@ function GroupEntries() {
                     (rxns) => rxns !== null
                 );
 
+                // reaction type based on reacting user
                 setReactionCounts((prev) => {
                     const updated = { ...prev };
 
                     validReactionData.forEach((data) => {
-                        console.log(data.entryId);
                         console.log(data.userReacts);
                         updated[data.entryId] = data.userReacts;
                     });
 
-                    console.log(updated);
                     return updated;
                 });
 
+                // tally of types of reactions
                 setReactionNumbers((prev) => {
                     const update = { ...prev };
 
@@ -439,6 +440,7 @@ function GroupEntries() {
                                         {entry.thorn_text}
                                     </EntryText>
                                 </EntrySection>
+                                {/* map through reactions for given entry */}
                                 <EntryReactions>
                                     {[
                                         "thumb",

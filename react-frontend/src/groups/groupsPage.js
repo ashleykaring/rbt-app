@@ -2,10 +2,10 @@
 IMPORTS
  */
 import React, { useState, useEffect } from "react";
-import { IoChevronForward } from "react-icons/io5";
 import { BiLoaderAlt } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
+import { IoChevronForward } from "react-icons/io5";
 
 // Styles
 import {
