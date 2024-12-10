@@ -1,6 +1,9 @@
+/*
+IMPORTS
+*/
 import React, { useState, useEffect } from "react";
-import RBDLogo from "./RBDLogo.png";
 import { Helmet } from "react-helmet";
+import RBDLogo from "./RBDLogo.png";
 
 // Styles
 import {

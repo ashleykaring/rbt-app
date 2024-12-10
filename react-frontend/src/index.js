@@ -21,9 +21,12 @@ import Settings from "./settings/SettingsPage.js";
 // Navigation
 import Header from "./navigation/Header.js";
 import Footer from "./navigation/Footer.js";
+
+// Styles
 import "./index.css";
 
-const BYPASS_AUTH = false; // this is what i change!!
+// bypass login variable for testing
+const BYPASS_AUTH = false;
 
 const MainAppFlow = ({ setIsLoggedIn }) => {
     useEffect(() => {

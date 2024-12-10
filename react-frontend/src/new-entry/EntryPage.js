@@ -1,8 +1,12 @@
+/*
+IMPORTS
+*/
 import React, { useState, useEffect, useCallback } from "react";
-import NewEntry from "./NewEntry";
-import axios from "axios";
-import "./Entry.css";
 import { FaEdit, FaTimes } from "react-icons/fa";
+import NewEntry from "./NewEntry";
+
+// Styles
+import "./Entry.css";
 
 function EntryPage() {
     const [entries, setEntries] = useState([]);

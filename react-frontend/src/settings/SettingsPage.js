@@ -1,10 +1,14 @@
+/*
+IMPORTS
+*/
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-    //FaSun,
     FaMoon,
     FaSignOutAlt
-} from "react-icons/fa"; // Sun and Moon icons, and FaSignOutAlt
+} from "react-icons/fa"; // Moon and SignOut icons
+
+// Styles
 import "./settings.css";
 
 function Settings({ setIsLoggedIn }) {
@@ -79,7 +83,7 @@ function Settings({ setIsLoggedIn }) {
                     </div>
                 </div>
 
-                {/* Add Logout Section */}
+                {/* Logout Section */}
                 <div className="logout-section">
                     <button
                         className="logout-button"
