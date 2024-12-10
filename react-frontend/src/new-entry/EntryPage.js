@@ -9,6 +9,7 @@ function EntryPage() {
     const [hasSubmittedToday, setHasSubmittedToday] =
         useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [editableEntry, setEditableEntry] = useState({
         rose: "",
         bud: "",
@@ -33,8 +34,10 @@ function EntryPage() {
             console.log("Fetched entries:", data);
             setEntries(data);
             checkIfSubmittedToday(data);
+            setIsLoading(false);
         } catch (error) {
             console.error("Error fetching entries:", error);
+            setIsLoading(false);
         }
     }, []);
 
@@ -44,20 +47,23 @@ function EntryPage() {
 
     const checkIfSubmittedToday = (entries) => {
         if (entries.length > 0) {
-            const mostRecentEntry = entries[0];
-            const today = new Date()
-                .toISOString()
-                .split("T")[0];
+            const mostRecentEntry = entries[entries.length - 1];
+            const today = new Date();
+            const entryDate = new Date(mostRecentEntry.date);
 
-            const entryDate = new Date(mostRecentEntry.date)
-                .toISOString()
-                .split("T")[0];
+            // Compare year, month, and day only
+            const isToday =
+                today.getFullYear() ===
+                    entryDate.getFullYear() &&
+                today.getMonth() === entryDate.getMonth() &&
+                today.getDate() === entryDate.getDate();
 
             console.log("Today's date:", today);
             console.log("Most recent entry date:", entryDate);
+            console.log("Is today?", isToday);
 
-            setHasSubmittedToday(today === entryDate);
-            if (today === entryDate) {
+            setHasSubmittedToday(isToday);
+            if (isToday) {
                 setEditableEntry({
                     rose: mostRecentEntry.rose_text,
                     bud: mostRecentEntry.bud_text,
@@ -72,7 +78,7 @@ function EntryPage() {
         setIsEditing(!isEditing);
         if (isEditing) {
             // Reset to original values if canceling
-            const mostRecentEntry = entries[0];
+            const mostRecentEntry = entries[entries.length - 1];
             setEditableEntry({
                 rose: mostRecentEntry.rose_text,
                 bud: mostRecentEntry.bud_text,
@@ -134,17 +140,12 @@ function EntryPage() {
         makePostCall(entry).then((result) => {
             console.log("makePostCall result:", result);
             if (result && result.status === 201) {
-                setEntries((prevEntries) => [
+                const updatedEntries = [
                     result.data,
-                    ...prevEntries
-                ]);
-                setHasSubmittedToday(true);
-                setEditableEntry({
-                    rose: result.data.rose_text,
-                    bud: result.data.bud_text,
-                    thorn: result.data.thorn_text,
-                    isPublic: result.data.is_public
-                });
+                    ...entries
+                ];
+                setEntries(updatedEntries);
+                checkIfSubmittedToday(updatedEntries);
             }
         });
     }
@@ -195,147 +196,200 @@ function EntryPage() {
 
     return (
         <div className="entry-page">
-            {!hasSubmittedToday && (
-                <h1 className="entry-header">Journal Entry</h1>
-            )}
-            {hasSubmittedToday ? (
-                <div className="recent-entry">
-                    <div className="entry-header">
-                        <h2>Today's Entry</h2>
-                        <button
-                            className="edit-button"
-                            onClick={handleEditClick}
-                        >
-                            {isEditing ? (
-                                <>
-                                    <FaTimes /> Cancel
-                                </>
-                            ) : (
-                                <>
-                                    <FaEdit /> Edit
-                                </>
-                            )}
-                        </button>
-                    </div>
-                    <div className="entry-card">
-                        {isEditing ? (
-                            <>
-                                <div className="entry-item">
-                                    <h3>Rose</h3>
-                                    <input
-                                        type="text"
-                                        name="rose"
-                                        value={
-                                            editableEntry.rose
-                                        }
-                                        onChange={
-                                            handleInputChange
-                                        }
-                                    />
-                                </div>
-                                <div className="entry-item">
-                                    <h3>Bud</h3>
-                                    <input
-                                        type="text"
-                                        name="bud"
-                                        value={
-                                            editableEntry.bud
-                                        }
-                                        onChange={
-                                            handleInputChange
-                                        }
-                                    />
-                                </div>
-                                <div className="entry-item">
-                                    <h3>Thorn</h3>
-                                    <input
-                                        type="text"
-                                        name="thorn"
-                                        value={
-                                            editableEntry.thorn
-                                        }
-                                        onChange={
-                                            handleInputChange
-                                        }
-                                    />
-                                </div>
-                                <div className="toggle-container">
-                                    <label className="toggle-switch">
-                                        <input
-                                            type="checkbox"
-                                            checked={
-                                                editableEntry.isPublic
-                                            }
-                                            onChange={(e) =>
-                                                setEditableEntry(
-                                                    (prev) => ({
-                                                        ...prev,
-                                                        isPublic:
-                                                            e
-                                                                .target
-                                                                .checked
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <span className="toggle-slider"></span>
-                                    </label>
-                                    <span className="toggle-label">
-                                        {editableEntry.isPublic
-                                            ? "Public Entry"
-                                            : "Private Entry"}
-                                    </span>
-                                </div>
-                                <button
-                                    className="update-button"
-                                    onClick={handleUpdate}
-                                >
-                                    Update
-                                </button>
-                            </>
-                        ) : (
-                            <>
-                                <div className="entry-item">
-                                    <h3>Rose</h3>
-                                    <p>
-                                        {entries[0].rose_text}
-                                    </p>
-                                </div>
-                                <div className="entry-item">
-                                    <h3>Bud</h3>
-                                    <p>{entries[0].bud_text}</p>
-                                </div>
-                                <div className="entry-item">
-                                    <h3>Thorn</h3>
-                                    <p>
-                                        {entries[0].thorn_text}
-                                    </p>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
+            {isLoading ? (
+                <div></div> // Empty div for loading state
             ) : (
-                <NewEntry handleSubmit={handleSubmit} />
-            )}
-            {entries.length > 0 && !hasSubmittedToday && (
-                <div className="recent-entry">
-                    <h2>Most Recent Entry</h2>
-                    <div className="entry-card">
-                        <div className="entry-item">
-                            <h3>Rose</h3>
-                            <p>{entries[0].rose_text}</p>
+                <>
+                    {!hasSubmittedToday && (
+                        <h1 className="entry-header">
+                            Journal Entry
+                        </h1>
+                    )}
+                    {hasSubmittedToday ? (
+                        <div className="recent-entry">
+                            <div className="entry-header">
+                                <h2>Today's Entry</h2>
+                                <button
+                                    className="edit-button"
+                                    onClick={handleEditClick}
+                                >
+                                    {isEditing ? (
+                                        <>
+                                            <FaTimes /> Cancel
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FaEdit /> Edit
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                            <div className="entry-card">
+                                {isEditing ? (
+                                    <>
+                                        <div className="entry-item">
+                                            <h3>Rose</h3>
+                                            <input
+                                                type="text"
+                                                name="rose"
+                                                value={
+                                                    editableEntry.rose
+                                                }
+                                                onChange={
+                                                    handleInputChange
+                                                }
+                                            />
+                                        </div>
+                                        <div className="entry-item">
+                                            <h3>Bud</h3>
+                                            <input
+                                                type="text"
+                                                name="bud"
+                                                value={
+                                                    editableEntry.bud
+                                                }
+                                                onChange={
+                                                    handleInputChange
+                                                }
+                                            />
+                                        </div>
+                                        <div className="entry-item">
+                                            <h3>Thorn</h3>
+                                            <input
+                                                type="text"
+                                                name="thorn"
+                                                value={
+                                                    editableEntry.thorn
+                                                }
+                                                onChange={
+                                                    handleInputChange
+                                                }
+                                            />
+                                        </div>
+                                        <div className="toggle-container">
+                                            <label className="toggle-switch">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={
+                                                        editableEntry.isPublic
+                                                    }
+                                                    onChange={(
+                                                        e
+                                                    ) =>
+                                                        setEditableEntry(
+                                                            (
+                                                                prev
+                                                            ) => ({
+                                                                ...prev,
+                                                                isPublic:
+                                                                    e
+                                                                        .target
+                                                                        .checked
+                                                            })
+                                                        )
+                                                    }
+                                                />
+                                                <span className="toggle-slider"></span>
+                                            </label>
+                                            <span className="toggle-label">
+                                                {editableEntry.isPublic
+                                                    ? "Public Entry"
+                                                    : "Private Entry"}
+                                            </span>
+                                        </div>
+                                        <button
+                                            className="update-button"
+                                            onClick={
+                                                handleUpdate
+                                            }
+                                        >
+                                            Update
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="entry-item">
+                                            <h3>Rose</h3>
+                                            <p>
+                                                {
+                                                    entries[
+                                                        entries.length -
+                                                            1
+                                                    ].rose_text
+                                                }
+                                            </p>
+                                        </div>
+                                        <div className="entry-item">
+                                            <h3>Bud</h3>
+                                            <p>
+                                                {
+                                                    entries[
+                                                        entries.length -
+                                                            1
+                                                    ].bud_text
+                                                }
+                                            </p>
+                                        </div>
+                                        <div className="entry-item">
+                                            <h3>Thorn</h3>
+                                            <p>
+                                                {
+                                                    entries[
+                                                        entries.length -
+                                                            1
+                                                    ].thorn_text
+                                                }
+                                            </p>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         </div>
-                        <div className="entry-item">
-                            <h3>Bud</h3>
-                            <p>{entries[0].bud_text}</p>
-                        </div>
-                        <div className="entry-item">
-                            <h3>Thorn</h3>
-                            <p>{entries[0].thorn_text}</p>
-                        </div>
-                    </div>
-                </div>
+                    ) : (
+                        <NewEntry handleSubmit={handleSubmit} />
+                    )}
+                    {entries.length > 0 &&
+                        !hasSubmittedToday && (
+                            <div className="recent-entry">
+                                <h2>Most Recent Entry</h2>
+                                <div className="entry-card">
+                                    <div className="entry-item">
+                                        <h3>Rose</h3>
+                                        <p>
+                                            {
+                                                entries[
+                                                    entries.length -
+                                                        1
+                                                ].rose_text
+                                            }
+                                        </p>
+                                    </div>
+                                    <div className="entry-item">
+                                        <h3>Bud</h3>
+                                        <p>
+                                            {
+                                                entries[
+                                                    entries.length -
+                                                        1
+                                                ].bud_text
+                                            }
+                                        </p>
+                                    </div>
+                                    <div className="entry-item">
+                                        <h3>Thorn</h3>
+                                        <p>
+                                            {
+                                                entries[
+                                                    entries.length -
+                                                        1
+                                                ].thorn_text
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                </>
             )}
         </div>
     );
