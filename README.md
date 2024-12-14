@@ -2,6 +2,11 @@
 
 # Getting Started
 
+## Product Spec
+
+Viewable at the following link:
+https://cpslo-my.sharepoint.com/:b:/g/personal/pjones15_calpoly_edu/EW_O0ofp7f9Cpm9mq8KCwU8BgxeyUlGi8LrXj0IQUS_bwA?e=JT287A
+
 ## Setup
 
 1. Clone the repository
