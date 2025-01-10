@@ -34,11 +34,11 @@ const BYPASS_AUTH = false;
 const PhoneContainer = styled.div`
     width: 100%;
     max-width: 450px;
-    height: calc(100vh - 20px);
-    margin: 10px 0;
+    height: calc(100vh - 28px);
+    margin: 14px 0;
     background: var(--background-color);
     position: relative;
-    border: 3px solid #000000;
+    border: 0px solid #000000;
     border-radius: 40px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
     display: flex;
