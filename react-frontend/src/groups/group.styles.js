@@ -38,11 +38,11 @@ export const getGradient = (groupId) => {
 };
 
 export const Container = styled.div`
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    right: 0;
+    bottom: 0;
     background: white;
     z-index: 2000;
     display: flex;
@@ -52,16 +52,16 @@ export const Container = styled.div`
 
 export const ContentContainer = styled.div`
     width: 100%;
-    max-width: 480px;
     height: 100%;
     background: ${(props) =>
         props.theme.mode === "dark-mode"
-            ? "#2d1f1f" // darker pink for dark mode
+            ? "#2d1f1f"
             : "#fdf2f1"};
-    padding: 20px;
+    padding: 20px 20px 0 20px;
     position: relative;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 `;
 
 export const Title = styled.h1`
@@ -428,6 +428,7 @@ export const Icon = styled.button`
 
 export const PageContainer = styled.div`
     margin-horizontal: 5px;
+    margin-top: 20px;
     margin-bottom: 50px;
     background: ${(props) =>
         props.theme.mode === "dark-mode"

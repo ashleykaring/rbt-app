@@ -12,10 +12,11 @@ body.dark-mode {
 }
 
 .footer {
-    position: fixed;
+    position: absolute;
     bottom: 0;
-    width: 100%;
-    max-width: 480px;
+    left: 0;
+    right: 0;
+    width: auto;
     height: 80px;
     background-color: var(--fill-color);
     padding: 15px 0;
@@ -26,12 +27,11 @@ body.dark-mode {
 .circle {
     position: fixed;
     bottom: -10px;
-    background-color: var(--fill-color);
-    /* center circle */
     left: 50%;
     transform: translateX(-50%);
     width: 125px;
     height: 125px;
+    background-color: var(--fill-color);
     border-radius: 50%;
     z-index: 1000;
 }
@@ -51,9 +51,8 @@ body.dark-mode {
     list-style: none;
     height: 100%;
     margin: 0;
-    padding: 0;
+    padding: 0 10px;
     transform: translateY(-12px);
-    gap: 50px;
 }
 
 .footer-links a {
@@ -70,6 +69,7 @@ body.dark-mode {
     text-decoration: none;
     color: #333;
     transition: color 0.2s ease;
+    padding: 8px 12px;
 }
 
 .footer-link:hover {

@@ -3,10 +3,7 @@ IMPORTS
 */
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-    FaMoon,
-    FaSignOutAlt
-} from "react-icons/fa"; // Moon and SignOut icons
+import { FaMoon, FaSignOutAlt } from "react-icons/fa"; // Moon and SignOut icons
 
 // Styles
 import "./settings.css";
@@ -65,7 +62,6 @@ function Settings({ setIsLoggedIn }) {
 
     return (
         <>
-            <h1 className="title">Settings</h1>
             <div className="settings-container">
                 <div className="theme-setting">
                     <h2 className="item">Dark Mode</h2>

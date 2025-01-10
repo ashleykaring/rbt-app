@@ -22,24 +22,17 @@ body {
     width: 100%;
     display: flex;
     justify-content: center;
-}
-
-.mobile-container {
-    width: 100%;
-    max-width: 480px;
+    align-items: center;
     min-height: 100vh;
-    background: var(--background-color);
-    position: relative;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
 .main-content {
-    padding: 100px 20px 80px;
-    min-height: calc(100vh - 180px);
+    flex: 1;
+    overflow-y: auto;
+    padding: 80px 20px 80px;
+    position: relative;
 }
 
-@media (max-width: 480px) {
-    .mobile-container {
-        box-shadow: none;
-    }
+.main-content > * {
+    flex: 1;
 }

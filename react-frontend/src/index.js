@@ -7,6 +7,7 @@ import {
     Route,
     Navigate
 } from "react-router-dom";
+import styled from "styled-components";
 
 // Account Flow
 import AccountFlow from "./login/accountFlow.js";
@@ -17,6 +18,7 @@ import NewEntry from "./new-entry/EntryPage.js";
 import GroupsPage from "./groups/groupsPage.js";
 import GroupEntries from "./groups/groupEntries.js";
 import Settings from "./settings/SettingsPage.js";
+import SearchPage from "./search/SearchPage.js";
 
 // Navigation
 import Header from "./navigation/Header.js";
@@ -27,6 +29,30 @@ import "./index.css";
 
 // bypass login variable for testing
 const BYPASS_AUTH = false;
+
+// Forces a phone look to the website
+const PhoneContainer = styled.div`
+    width: 100%;
+    max-width: 450px;
+    height: calc(100vh - 20px);
+    margin: 10px 0;
+    background: var(--background-color);
+    position: relative;
+    border: 3px solid #000000;
+    border-radius: 40px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    @media (max-width: 400px) {
+        margin: 0;
+        height: 100vh;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+`;
 
 const MainAppFlow = ({ setIsLoggedIn }) => {
     useEffect(() => {
@@ -40,14 +66,22 @@ const MainAppFlow = ({ setIsLoggedIn }) => {
     }, []);
 
     return (
-        <div className="mobile-container">
+        <>
             <Header />
             <main className="main-content">
                 <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route
+                        path="/search"
+                        element={<SearchPage />}
+                    />
+                    <Route
                         path="/new-entry"
                         element={<NewEntry />}
+                    />
+                    <Route
+                        path="/groups"
+                        element={<GroupsPage />}
                     />
                     <Route
                         path="/settings"
@@ -58,17 +92,13 @@ const MainAppFlow = ({ setIsLoggedIn }) => {
                         }
                     />
                     <Route
-                        path="/groups"
-                        element={<GroupsPage />}
-                    />
-                    <Route
                         path="/groups/:groupId/:groupName"
                         element={<GroupEntries />}
                     />
                 </Routes>
             </main>
             <Footer />
-        </div>
+        </>
     );
 };
 
@@ -143,7 +173,9 @@ const App = () => {
 
 ReactDOM.render(
     <Router>
-        <App />
+        <PhoneContainer>
+            <App />
+        </PhoneContainer>
     </Router>,
     document.getElementById("root")
 );

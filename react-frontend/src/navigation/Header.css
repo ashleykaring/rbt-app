@@ -12,10 +12,11 @@ body.dark-mode {
 }
 
 .header {
-    position: fixed;
+    position: absolute;
     top: 0;
-    width: 100%;
-    max-width: 480px;
+    left: 0;
+    right: 0;
+    width: auto;
     height: 85px;
     display: flex;
     justify-content: space-between;

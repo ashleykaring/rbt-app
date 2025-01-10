@@ -2,56 +2,126 @@
 IMPORTS
 */
 import React from "react";
-import { Link } from "react-router-dom";
-import { MdHome, MdAddCircle, MdGroups } from "react-icons/md";
+import { useLocation } from "react-router-dom";
+import {
+    MdOutlineHome,
+    MdHome,
+    MdOutlineSearch,
+    MdSearch,
+    MdOutlineGroups,
+    MdGroups,
+    MdOutlineSettings,
+    MdSettings
+} from "react-icons/md";
+import { IoRose, IoRoseOutline } from "react-icons/io5";
 
-// Styles
-import "./Footer.css";
+import {
+    FooterContainer,
+    TabBarContainer,
+    WhiteCircle,
+    ActionButton,
+    Nav,
+    TabList,
+    TabItem,
+    TabLink,
+    NewEntryButton
+} from "./Footer.styles";
 
 function Footer() {
+    const location = useLocation();
+    const currentPath = location.pathname;
+
+    const renderIcon = (path, OutlinedIcon, FilledIcon) => {
+        return currentPath === path ? (
+            <FilledIcon />
+        ) : (
+            <OutlinedIcon />
+        );
+    };
+
     return (
-        <footer className="footer">
-            <nav>
-                <ul className="footer-links">
-                    <li>
-                        <Link 
-                            to="/" 
-                            className="footer-link"
-                        >
-                            <MdHome className="footer-icon" />
-                            <span className="footer-text">
-                                Home
-                            </span>
-                        </Link>
-                    </li>
-                    <div className="circle">
-                        <li>
-                            <Link 
-                                to="/new-entry" 
-                                className="footer-link"
-                                id="new-entry"
+        <FooterContainer>
+            <TabBarContainer>
+                <Nav>
+                    <TabList>
+                        <TabItem>
+                            <TabLink
+                                to="/"
+                                $isActive={currentPath === "/"}
                             >
-                                <MdAddCircle className="footer-icon" id="new-icon" />
-                                <span className="footer-text">
-                                    New Entry
-                                </span>
-                            </Link>
-                        </li>
-                    </div>
-                    <li>
-                        <Link
-                            to="/groups"
-                            className="footer-link"
+                                {renderIcon(
+                                    "/",
+                                    MdOutlineHome,
+                                    MdHome
+                                )}
+                            </TabLink>
+                        </TabItem>
+                        <TabItem>
+                            <TabLink
+                                to="/search"
+                                $isActive={
+                                    currentPath === "/search"
+                                }
+                            >
+                                {renderIcon(
+                                    "/search",
+                                    MdOutlineSearch,
+                                    MdSearch
+                                )}
+                            </TabLink>
+                        </TabItem>
+                        <TabItem
+                            style={{ visibility: "hidden" }}
                         >
-                            <MdGroups className="footer-icon" />
-                            <span className="footer-text">
-                                Groups
-                            </span>
-                        </Link>
-                    </li>
-                </ul>
-            </nav>
-        </footer>
+                            <TabLink to="/new-entry">
+                                <IoRoseOutline />
+                            </TabLink>
+                        </TabItem>
+                        <TabItem>
+                            <TabLink
+                                to="/groups"
+                                $isActive={
+                                    currentPath === "/groups"
+                                }
+                            >
+                                {renderIcon(
+                                    "/groups",
+                                    MdOutlineGroups,
+                                    MdGroups
+                                )}
+                            </TabLink>
+                        </TabItem>
+                        <TabItem>
+                            <TabLink
+                                to="/settings"
+                                $isActive={
+                                    currentPath === "/settings"
+                                }
+                            >
+                                {renderIcon(
+                                    "/settings",
+                                    MdOutlineSettings,
+                                    MdSettings
+                                )}
+                            </TabLink>
+                        </TabItem>
+                    </TabList>
+                </Nav>
+                <WhiteCircle />
+            </TabBarContainer>
+            <ActionButton>
+                <NewEntryButton
+                    to="/new-entry"
+                    $isActive={currentPath === "/new-entry"}
+                >
+                    {renderIcon(
+                        "/new-entry",
+                        IoRoseOutline,
+                        IoRose
+                    )}
+                </NewEntryButton>
+            </ActionButton>
+        </FooterContainer>
     );
 }
 
