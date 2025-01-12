@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 import {
     userSchema,
     entrySchema,
-    userEntriesSchema
+    userEntriesSchema,
+    TagSchema
 } from "./user.js";
 
 import dotenv from "dotenv";
@@ -189,12 +190,40 @@ async function addReactionToEntry(entryId, reactionObject) {
     }
 }
 
+// Create a tag object and add to tags list
+async function addTagObject(tagObject) {
+    const tagModel = getDbConnection().model("tags", TagSchema);
+
+    try {
+        const tagToAdd = new tagModel(tagObject);
+        const savedTag = await tagToAdd.save();
+        return savedTag._id;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+
+
+// Get a tag by its Id
+async function findTagById(tagId) {
+    const tagModel = getDbConnection().model(
+        "tags",
+        TagSchema
+    );
+    return await tagModel.find({ _id: tagId });
+
+}
+
 
 // Define the entry model
 const EntryModel = getDbConnection().model(
     "rbt_entries",
     eSchema
 );
+
+
 
 export {
     addUser,
