@@ -26,6 +26,7 @@ const EntrySchema = new mongoose.Schema({
             reaction: String,
         }
     ],
+    tags: [mongoose.Types.ObjectId],
 });
 
 // USER ENTRIES SCHEMA
@@ -43,6 +44,13 @@ const GroupSchema = new mongoose.Schema({
     users: [mongoose.Types.ObjectId],
 });
 
+// TAG SCHEMA
+const TagSchema = new mongoose.Schema({
+    tag_name: String,
+    user_id: mongoose.Types.ObjectId,
+    entries: [mongoose.Types.ObjectId]
+})
+
 // export all schemas
 
-export {UserSchema as userSchema, EntrySchema as entrySchema, UserEntriesSchema as userEntriesSchema, GroupSchema};
+export {UserSchema as userSchema, EntrySchema as entrySchema, UserEntriesSchema as userEntriesSchema, GroupSchema, TagSchema};
