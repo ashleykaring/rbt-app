@@ -798,6 +798,26 @@ app.put(
     }
 );
 
+// GET ALL TAGS BY USER
+
+app.get("/api/entries/tags/:userId", authMiddleware, async (req, res) => {
+    try {
+        const userId = new mongoose.Types.ObjectId(req.params.userId);
+        console.log("Fetching all tags for userId:", userId);
+        const tags = await getAllTagsByUserId(userId);
+        console.log("Retrieved entries:", tags);
+        res.json(tags);
+
+    } catch (err) {
+        console.error("Error fetching tags:", err);
+        res.status(500).json({
+            error: "Error fetching tags"
+        });
+    }
+
+
+});
+
 // VERIFY AUTH
 app.get("/api/auth/verify", authMiddleware, (req, res) => {
     res.status(200).json({ authenticated: true });
