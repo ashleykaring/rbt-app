@@ -1,6 +1,8 @@
 /*
 IMPORTS
 */
+
+// Libraries
 import React from "react";
 import { useLocation } from "react-router-dom";
 import {
@@ -15,6 +17,7 @@ import {
 } from "react-icons/md";
 import { IoRose, IoRoseOutline } from "react-icons/io5";
 
+// Styles
 import {
     FooterContainer,
     TabBarContainer,
@@ -27,10 +30,13 @@ import {
     NewEntryButton
 } from "./Footer.styles";
 
+// Footer component render
 function Footer() {
+    // Used for navigation
     const location = useLocation();
     const currentPath = location.pathname;
 
+    // Change icon based on selected tab
     const renderIcon = (path, OutlinedIcon, FilledIcon) => {
         return currentPath === path ? (
             <FilledIcon />
@@ -43,6 +49,7 @@ function Footer() {
         <FooterContainer>
             <TabBarContainer>
                 <Nav>
+                    {/* Tab bar w/ Navigation */}
                     <TabList>
                         <TabItem>
                             <TabLink
@@ -125,4 +132,5 @@ function Footer() {
     );
 }
 
+// Used in index.js
 export default Footer;

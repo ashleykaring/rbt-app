@@ -1,3 +1,6 @@
+/* 
+LIBRARY & STYLE IMPORTS
+ */
 // Libraries
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
@@ -9,17 +12,6 @@ import {
 } from "react-router-dom";
 import styled from "styled-components";
 
-// Account Flow
-import AccountFlow from "./login/accountFlow.js";
-
-// Main Pages
-import HomePage from "./home/HomePage.js";
-import NewEntry from "./new-entry/EntryPage.js";
-import GroupsPage from "./groups/groupsPage.js";
-import GroupEntries from "./groups/groupEntries.js";
-import Settings from "./settings/SettingsPage.js";
-import SearchPage from "./search/SearchPage.js";
-
 // Navigation
 import Header from "./navigation/Header.js";
 import Footer from "./navigation/Footer.js";
@@ -27,8 +19,21 @@ import Footer from "./navigation/Footer.js";
 // Styles
 import "./index.css";
 
-// bypass login variable for testing
-const BYPASS_AUTH = false;
+/* 
+PAGE IMPORTS
+ */
+// Account Flow
+import AccountFlow from "./login/accountFlow.js";
+
+// Main Tab Pages
+import HomePage from "./home/HomePage.js";
+import SearchPage from "./search/SearchPage.js";
+import NewEntry from "./new-entry/EntryPage.js";
+import GroupsPage from "./groups/groupsPage.js";
+import Settings from "./settings/SettingsPage.js";
+
+// Full Screen Pages
+import GroupEntries from "./groups/groupEntries.js";
 
 // Forces a phone look to the website
 const PhoneContainer = styled.div`
@@ -54,57 +59,92 @@ const PhoneContainer = styled.div`
     }
 `;
 
-const MainAppFlow = ({ setIsLoggedIn }) => {
+// Tab views are the 5 main views with header and footer
+const TabView = ({ children }) => (
+    <>
+        <Header />
+        <main className="main-content">{children}</main>
+        <Footer />
+    </>
+);
+
+// Full screen views do not show header or footer
+const FullScreenView = ({ children }) => (
+    <main className="main-content">{children}</main>
+);
+
+const MainAppRoutes = ({ setIsLoggedIn }) => {
+    // Check for dark mode and pass through
     useEffect(() => {
         const darkMode =
             localStorage.getItem("theme") === "dark-mode";
-        if (darkMode) {
-            document.body.classList.add("dark-mode");
-        } else {
-            document.body.classList.remove("dark-mode");
-        }
+        document.body.classList.toggle("dark-mode", darkMode);
     }, []);
 
     return (
-        <>
-            <Header />
-            <main className="main-content">
-                <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route
-                        path="/search"
-                        element={<SearchPage />}
-                    />
-                    <Route
-                        path="/new-entry"
-                        element={<NewEntry />}
-                    />
-                    <Route
-                        path="/groups"
-                        element={<GroupsPage />}
-                    />
-                    <Route
-                        path="/settings"
-                        element={
-                            <Settings
-                                setIsLoggedIn={setIsLoggedIn}
-                            />
-                        }
-                    />
-                    <Route
-                        path="/groups/:groupId/:groupName"
-                        element={<GroupEntries />}
-                    />
-                </Routes>
-            </main>
-            <Footer />
-        </>
+        <Routes>
+            {/* Tab Routes - with Header & Footer */}
+            <Route
+                path="/"
+                element={
+                    <TabView>
+                        <HomePage />
+                    </TabView>
+                }
+            />
+            <Route
+                path="/search"
+                element={
+                    <TabView>
+                        <SearchPage />
+                    </TabView>
+                }
+            />
+            <Route
+                path="/new-entry"
+                element={
+                    <TabView>
+                        <NewEntry />
+                    </TabView>
+                }
+            />
+            <Route
+                path="/groups"
+                element={
+                    <TabView>
+                        <GroupsPage />
+                    </TabView>
+                }
+            />
+            <Route
+                path="/settings"
+                element={
+                    <TabView>
+                        <Settings
+                            setIsLoggedIn={setIsLoggedIn}
+                        />
+                    </TabView>
+                }
+            />
+
+            {/* Full Screen Routes - no Header & Footer */}
+            <Route
+                path="/groups/:groupId/:groupName"
+                element={
+                    <FullScreenView>
+                        <GroupEntries />
+                    </FullScreenView>
+                }
+            />
+        </Routes>
     );
 };
 
+// Protects the main app routes by checking if the user is logged in and routing to the account flow if not
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+    // Checks if the user is logged in
     useEffect(() => {
         const checkAuth = async () => {
             try {
@@ -122,27 +162,10 @@ const App = () => {
         checkAuth();
     }, []);
 
-    if (BYPASS_AUTH) {
-        return (
-            <Routes>
-                <Route
-                    path="/*"
-                    element={
-                        <MainAppFlow
-                            setIsLoggedIn={setIsLoggedIn}
-                        />
-                    }
-                />
-                <Route
-                    path="/groups/:groupId/:groupName"
-                    element={<GroupEntries />}
-                />
-            </Routes>
-        );
-    }
-
+    // Render the route accordingly
     return (
         <Routes>
+            {/* Account Flow */}
             <Route
                 path="/account"
                 element={
@@ -155,11 +178,13 @@ const App = () => {
                     )
                 }
             />
+
+            {/* Protected Routes */}
             <Route
                 path="/*"
                 element={
                     isLoggedIn ? (
-                        <MainAppFlow
+                        <MainAppRoutes
                             setIsLoggedIn={setIsLoggedIn}
                         />
                     ) : (
@@ -171,6 +196,7 @@ const App = () => {
     );
 };
 
+// Renders the app and forces a phone look to the website
 ReactDOM.render(
     <Router>
         <PhoneContainer>

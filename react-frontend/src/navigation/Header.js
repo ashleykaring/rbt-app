@@ -1,3 +1,8 @@
+/*
+IMPORTS
+*/
+
+// Libraries
 import React from "react";
 import { useLocation } from "react-router-dom";
 import {
@@ -7,12 +12,15 @@ import {
     MdSettings
 } from "react-icons/md";
 import { IoRose } from "react-icons/io5";
+
+// Styles
 import {
     HeaderContainer,
     ViewInfo,
     ViewTitle
 } from "./Header.styles";
 
+// Header component render
 function Header() {
     const location = useLocation();
     const path = location.pathname;
@@ -25,7 +33,7 @@ function Header() {
         "/settings": { icon: <MdSettings />, title: "Settings" }
     };
 
-    // Handle nested routes (like group entries)
+    // Hide for full screen view
     const currentView = path.startsWith("/groups/")
         ? viewConfigs["/groups"]
         : viewConfigs[path] || viewConfigs["/"];
