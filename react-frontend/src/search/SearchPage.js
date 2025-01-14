@@ -37,7 +37,7 @@ function SearchPage() {
             const userId = await getCurrentUserId();
 
             const response = await fetch(
-                `${API_BASE_URL}/${userId}/tags`,
+                `${API_BASE_URL}/api/entries/tags/${userId}`,
                 {
                     credentials: "include"
                 }

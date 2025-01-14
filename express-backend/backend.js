@@ -802,6 +802,7 @@ app.put(
 
 app.get("/api/entries/tags/:userId", authMiddleware, async (req, res) => {
     try {
+        console.log("TESTING");
         const userId = new mongoose.Types.ObjectId(req.params.userId);
         console.log("Fetching all tags for userId:", userId);
         const tags = await getAllTagsByUserId(userId);
