@@ -18,6 +18,7 @@ import GroupsPage from "./groups/groupsPage.js";
 import GroupEntries from "./groups/groupEntries.js";
 import Settings from "./settings/SettingsPage.js";
 import SearchPage from "./search/SearchPage.js";
+import TagEntries from "./search/tagEntries.js";
 
 // Navigation
 import Header from "./navigation/Header.js";
@@ -65,6 +66,10 @@ const MainAppFlow = ({ setIsLoggedIn }) => {
                     <Route
                         path="/groups/:groupId/:groupName"
                         element={<GroupEntries />}
+                    />
+                    <Route
+                        path="/search/:tagId/:tagName"
+                        element={<TagEntries />}
                     />
                 </Routes>
             </main>
