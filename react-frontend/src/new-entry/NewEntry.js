@@ -22,20 +22,20 @@ function NewEntry(props) {
 
     function submitEntry() {
         // filter the tags before submission
-        let tagsArray = [];
-        if (entry.tags.trim().length > 0) {
-            // split by commas
-            tagsArray = entry.tags.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
-        }
+        // let tagsArray = [];
+        // if (entry.tags.trim().length > 0) {
+        //     // split by commas
+        //     tagsArray = entry.tags.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+        // }
 
-        const taggedEntry = {
-            ...entry,
-            tags: tagsArray // still include if empty
-        };
+        // const taggedEntry = {
+        //     ...entry,
+        //     tags: tagsArray // still include if empty
+        // };
 
-        console.log("Submitting entry:", taggedEntry);
-        if (taggedEntry.rose && taggedEntry.bud && taggedEntry.thorn) {
-            props.handleSubmit(taggedEntry);
+        console.log("Submitting entry:", entry);
+        if (entry.rose && entry.bud && entry.thorn) {
+            props.handleSubmit(entry);
         } else {
             setErrorMessage("Please fill in all fields");
         }
