@@ -23,7 +23,8 @@ import {
     getEntryById,
     EntryModel,
     addReactionToEntry,
-    updateUser
+    updateUser,
+    removeGroupFromUser
 } from "./models/user-services.js";
 
 // Services
@@ -856,6 +857,40 @@ app.get(
             );
             res.status(500).json({
                 message: "Error fetching user details"
+            });
+        }
+    }
+);
+
+// Leave group
+app.delete(
+    "/api/groups/:groupId/leave",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            const groupId = new mongoose.Types.ObjectId(
+                req.params.groupId
+            );
+            const userId = req.userId;
+
+            const updatedUser = await removeGroupFromUser(
+                userId,
+                groupId
+            );
+
+            if (!updatedUser) {
+                return res.status(500).json({
+                    message: "Error leaving group"
+                });
+            }
+
+            res.status(200).json({
+                message: "Successfully left group"
+            });
+        } catch (error) {
+            console.error("Error leaving group:", error);
+            res.status(500).json({
+                message: "Error leaving group"
             });
         }
     }

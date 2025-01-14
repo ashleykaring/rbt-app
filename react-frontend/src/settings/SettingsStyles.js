@@ -222,3 +222,123 @@ export const ErrorMessage = styled.div`
     font-size: 0.9rem;
     margin-top: 0.5rem;
 `;
+
+export const GroupsList = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+`;
+
+export const GroupItem = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: var(--background-color);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+
+    &:hover {
+        transform: translateX(2px);
+        border-color: var(--text-secondary);
+    }
+`;
+
+export const GroupName = styled.span`
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+`;
+
+export const RemoveButton = styled.button`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+
+    &:hover {
+        color: #ff4757;
+        background: rgba(255, 71, 87, 0.1);
+    }
+
+    svg {
+        font-size: 18px;
+    }
+`;
+
+export const EmptyMessage = styled.div`
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.9rem;
+`;
+
+export const ModalOverlay = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+`;
+
+export const ModalContent = styled.div`
+    background: var(--card-background);
+    padding: 1.5rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 320px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+`;
+
+export const ModalTitle = styled.h3`
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+`;
+
+export const ModalButtons = styled.div`
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+`;
+
+export const ModalButton = styled.button`
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+
+    ${(props) =>
+        props.variant === "confirm"
+            ? `
+        background: #ff4757;
+        color: white;
+        &:hover {
+            background: #e74c3c;
+        }
+    `
+            : `
+        background: var(--border-color);
+        color: var(--text-primary);
+        &:hover {
+            background: var(--text-secondary);
+            color: var(--card-background);
+        }
+    `}
+`;

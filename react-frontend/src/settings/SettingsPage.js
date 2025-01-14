@@ -7,7 +7,9 @@ import {
     FaMoon,
     FaSun,
     FaSignOutAlt,
-    FaSync
+    FaSync,
+    FaTimes,
+    FaSignOutAlt as FaLeaveGroup
 } from "react-icons/fa";
 import * as S from "./SettingsStyles";
 import { createGlobalStyle } from "styled-components";
@@ -35,6 +37,10 @@ function Settings({ setIsLoggedIn }) {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const [saveStatus, setSaveStatus] = useState("");
+    const [groups, setGroups] = useState([]);
+    const [groupsError, setGroupsError] = useState("");
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedGroup, setSelectedGroup] = useState(null);
 
     // Fetch user details on mount
     useEffect(() => {
@@ -160,6 +166,66 @@ function Settings({ setIsLoggedIn }) {
         }
     };
 
+    // Add new useEffect to fetch groups
+    useEffect(() => {
+        const fetchGroups = async () => {
+            try {
+                const response = await fetch(
+                    "http://localhost:8000/api/groups",
+                    {
+                        credentials: "include"
+                    }
+                );
+
+                if (!response.ok)
+                    throw new Error("Failed to fetch groups");
+
+                const data = await response.json();
+                setGroups(data);
+            } catch (error) {
+                setGroupsError("Failed to load groups");
+                console.error("Error fetching groups:", error);
+            }
+        };
+
+        fetchGroups();
+    }, []);
+
+    const handleLeaveClick = (group) => {
+        setSelectedGroup(group);
+        setModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setModalOpen(false);
+        setSelectedGroup(null);
+    };
+
+    const handleLeaveGroup = async (groupId) => {
+        try {
+            const response = await fetch(
+                `http://localhost:8000/api/groups/${groupId}/leave`,
+                {
+                    method: "DELETE",
+                    credentials: "include"
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to leave group");
+            }
+
+            // Remove group from local state
+            setGroups(groups.filter((g) => g._id !== groupId));
+            setModalOpen(false);
+            setSelectedGroup(null);
+        } catch (error) {
+            setGroupsError("Failed to leave group");
+            console.error("Error leaving group:", error);
+            setModalOpen(false);
+        }
+    };
+
     if (isLoading) {
         return <S.LoadingSpinner>Loading...</S.LoadingSpinner>;
     }
@@ -250,7 +316,35 @@ function Settings({ setIsLoggedIn }) {
             <S.SectionContainer>
                 <S.SectionHeader>Groups</S.SectionHeader>
                 <S.ContentCard>
-                    Groups placeholder
+                    {groupsError ? (
+                        <S.ErrorMessage>
+                            {groupsError}
+                        </S.ErrorMessage>
+                    ) : groups.length === 0 ? (
+                        <S.EmptyMessage>
+                            No groups joined yet
+                        </S.EmptyMessage>
+                    ) : (
+                        <S.GroupsList>
+                            {groups.map((group) => (
+                                <S.GroupItem key={group._id}>
+                                    <S.GroupName>
+                                        {group.name}
+                                    </S.GroupName>
+                                    <S.RemoveButton
+                                        onClick={() =>
+                                            handleLeaveClick(
+                                                group
+                                            )
+                                        }
+                                        aria-label="Leave group"
+                                    >
+                                        <FaLeaveGroup />
+                                    </S.RemoveButton>
+                                </S.GroupItem>
+                            ))}
+                        </S.GroupsList>
+                    )}
                 </S.ContentCard>
             </S.SectionContainer>
 
@@ -258,6 +352,38 @@ function Settings({ setIsLoggedIn }) {
                 <FaSignOutAlt />
                 Sign Out
             </S.LogoutButton>
+
+            {modalOpen && (
+                <S.ModalOverlay onClick={handleCloseModal}>
+                    <S.ModalContent
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <S.ModalTitle>
+                            Leaving Group.
+                        </S.ModalTitle>
+                        <div>
+                            Are you sure you want to leave?
+                        </div>
+                        <S.ModalButtons>
+                            <S.ModalButton
+                                onClick={handleCloseModal}
+                            >
+                                Cancel
+                            </S.ModalButton>
+                            <S.ModalButton
+                                variant="confirm"
+                                onClick={() =>
+                                    handleLeaveGroup(
+                                        selectedGroup._id
+                                    )
+                                }
+                            >
+                                Leave
+                            </S.ModalButton>
+                        </S.ModalButtons>
+                    </S.ModalContent>
+                </S.ModalOverlay>
+            )}
         </S.SettingsContainer>
     );
 }

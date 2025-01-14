@@ -221,6 +221,23 @@ const EntryModel = getDbConnection().model(
     eSchema
 );
 
+async function removeGroupFromUser(userId, groupId) {
+    const userModel = getDbConnection().model("users", uSchema);
+    try {
+        const updatedUser = await userModel.findByIdAndUpdate(
+            userId,
+            {
+                $pull: { groups: groupId }
+            },
+            { new: true }
+        );
+        return updatedUser;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
 export {
     addUser,
     findUserByUsername,
@@ -232,5 +249,6 @@ export {
     getEntryById,
     addReactionToEntry,
     EntryModel,
-    updateUser
+    updateUser,
+    removeGroupFromUser
 };
