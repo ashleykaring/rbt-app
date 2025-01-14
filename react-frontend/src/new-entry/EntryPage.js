@@ -151,8 +151,10 @@ function EntryPage() {
             entry
         );
 
+        // filter tags before submission
         let tagsArray = [];
         if (entry.tags.trim().length > 0) {
+            // split by commas
             tagsArray = entry.tags.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
         }
 

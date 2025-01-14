@@ -65,7 +65,7 @@ function SearchPage() {
     // navigates to the tag's folder and passes in tag id and entries
     const navigateToTag = (tag) => {
         navigate(
-            `/search/${tag._id}/${encodeURIComponent(tag.name)}`,
+            `/search/${tag._id}/${encodeURIComponent(tag.tag_name)}`,
             {
                 state: {
                     tag_id: tag._id,
@@ -107,7 +107,7 @@ function SearchPage() {
                                 </Folder>
                                 <TagContent>
                                     <TagName>
-                                        {tag.name}
+                                        {tag.tag_name}
                                     </TagName>
                                     {/* ADD NUMBER OF ENTRIES HERE */}
                                 </TagContent>
