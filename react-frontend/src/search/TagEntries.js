@@ -17,12 +17,17 @@ import {
     EntryPageTitle
 } from "./search.styles"
 
+const API_BASE_URL = "http://localhost:8000";
+
 function TagEntries() {
     const navigate = useNavigate();
     // to access the state
     const location = useLocation();
     // use location.state or none if no entries
-    const { tagId, tagEntries } = location.state || {};
+    const tagId = location.state.tag_id;
+    const tagEntries = location.state.entries;
+    console.log(tagEntries);
+    const tagName = location.state.tag_name;
     const [theme, setTheme] = useState({ mode: "light-mode" });
 
     // set theme
@@ -58,14 +63,18 @@ function TagEntries() {
                                     <FiChevronLeft />
                                 </BackButton>
                                 <EntryPageTitle>
-                                    Entries for {tagId}
+                                    Entries for {tagName}
                                 </EntryPageTitle>
                             </HeaderRow>
                         </HeaderContainer>
 
                         {/* display all entries in the tag */}
                         <EntriesContainer>
-                            {tagEntries.map((entry) => (
+                            {tagEntries.map((entry) => {
+
+
+                                
+                                return ( 
                                 <EntryCard key={entry._id}>
                                     <EntryHeader>
                                         <EntryDate>
@@ -92,7 +101,8 @@ function TagEntries() {
                                         </EntryText>
                                     </EntrySection>
                                 </EntryCard>
-                            ))}
+                            )}
+                        )}
                         </EntriesContainer>
                     </ContentContainer>
                 </Container>

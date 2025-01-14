@@ -64,11 +64,13 @@ function SearchPage() {
 
     // navigates to the tag's folder and passes in tag id and entries
     const navigateToTag = (tag) => {
+
         navigate(
             `/search/${tag._id}/${encodeURIComponent(tag.tag_name)}`,
             {
                 state: {
                     tag_id: tag._id,
+                    tag_name: tag.tag_name,
                     entries: tag.entries
                 }
             }

@@ -18,7 +18,7 @@ import GroupsPage from "./groups/groupsPage.js";
 import GroupEntries from "./groups/groupEntries.js";
 import Settings from "./settings/SettingsPage.js";
 import SearchPage from "./search/SearchPage.js";
-import TagEntries from "./search/tagEntries.js";
+import TagEntries from "./search/TagEntries.js";
 
 // Navigation
 import Header from "./navigation/Header.js";
