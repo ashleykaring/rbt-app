@@ -94,7 +94,7 @@ function GroupsPage() {
     // Shown if the user is not in any groups
     const NoGroupsView = () => (
         <>
-            <Title>Join a Group!</Title>
+            <Subtitle>Join a Group!</Subtitle>
             <CreateGroup onGroupUpdate={fetchGroups} />
             <JoinGroup onGroupUpdate={fetchGroups} />
         </>

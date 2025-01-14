@@ -430,14 +430,8 @@ export const PageContainer = styled.div`
     margin-horizontal: 5px;
     margin-top: 20px;
     margin-bottom: 50px;
-    background: ${(props) =>
-        props.theme.mode === "dark-mode"
-            ? darkTheme.background
-            : lightTheme.background};
-    color: ${(props) =>
-        props.theme.mode === "dark-mode"
-            ? darkTheme.text
-            : lightTheme.text};
+    background-color: var(--background-color);
+    color: var(--text-primary);
 `;
 
 export const Toast = styled.div`
