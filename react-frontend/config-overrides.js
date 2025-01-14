@@ -5,8 +5,11 @@ module.exports = override(
         "babel-plugin-styled-components",
         {
             displayName: true,
-            fileName: false,
-            pure: true
+            fileName: true,
+            meaninglessFileNames: ["index", "styles"],
+            minify: false,
+            pure: true,
+            transpileTemplateLiterals: false
         }
     ])
 );
