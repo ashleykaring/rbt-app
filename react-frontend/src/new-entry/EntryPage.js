@@ -2,8 +2,8 @@
 IMPORTS
 */
 import React, { useState, useEffect, useCallback } from "react";
-import NewEntry from "./NewEntry";
 import { FaEdit, FaTimes } from "react-icons/fa";
+import NewEntry from "./NewEntry";
 
 // Styles
 import "./Entry.css";
@@ -226,7 +226,9 @@ function EntryPage() {
             ) : (
                 <>
                     {!hasSubmittedToday && (
-                        <h1 className="entry-header">Journal Entry</h1>
+                        <h1 className="entry-header">
+                            Journal Entry
+                        </h1>
                     )}
                     {hasSubmittedToday ? (
                         <div className="recent-entry">
@@ -310,9 +312,13 @@ function EntryPage() {
                                                     checked={
                                                         editableEntry.isPublic
                                                     }
-                                                    onChange={(e) =>
+                                                    onChange={(
+                                                        e
+                                                    ) =>
                                                         setEditableEntry(
-                                                            (prev) => ({
+                                                            (
+                                                                prev
+                                                            ) => ({
                                                                 ...prev,
                                                                 isPublic:
                                                                     e
@@ -332,7 +338,9 @@ function EntryPage() {
                                         </div>
                                         <button
                                             className="update-button"
-                                            onClick={handleUpdate}
+                                            onClick={
+                                                handleUpdate
+                                            }
                                         >
                                             Update
                                         </button>
@@ -342,17 +350,34 @@ function EntryPage() {
                                         <div className="entry-item">
                                             <h3>Rose</h3>
                                             <p>
-                                                {entries[entries.length - 1].rose_text}
+                                                {
+                                                    entries[
+                                                        entries.length -
+                                                        1
+                                                    ].rose_text
+                                                }
                                             </p>
                                         </div>
                                         <div className="entry-item">
                                             <h3>Bud</h3>
-                                            <p>{entries[entries.length - 1].bud_text}</p>
+                                            <p>
+                                                {
+                                                    entries[
+                                                        entries.length -
+                                                        1
+                                                    ].bud_text
+                                                }
+                                            </p>
                                         </div>
                                         <div className="entry-item">
                                             <h3>Thorn</h3>
                                             <p>
-                                                {entries[entries.length - 1].thorn_text}
+                                                {
+                                                    entries[
+                                                        entries.length -
+                                                        1
+                                                    ].thorn_text
+                                                }
                                             </p>
                                         </div>
                                         <div className="entry-item">
@@ -411,7 +436,7 @@ function EntryPage() {
                         )}
                 </>
             )}
-        </div >
+        </div>
     );
 }
 
