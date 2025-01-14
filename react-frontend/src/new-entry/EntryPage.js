@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import NewEntry from "./NewEntry";
-import axios from "axios";
 import "./Entry.css";
 import { FaEdit, FaTimes } from "react-icons/fa";
 
@@ -13,6 +12,7 @@ function EntryPage() {
         rose: "",
         bud: "",
         thorn: "",
+        tags: "",
         isPublic: true
     });
 
@@ -62,6 +62,7 @@ function EntryPage() {
                     rose: mostRecentEntry.rose_text,
                     bud: mostRecentEntry.bud_text,
                     thorn: mostRecentEntry.thorn_text,
+                    tags: mostRecentEntry.tags,
                     isPublic: mostRecentEntry.is_public
                 });
             }
@@ -77,6 +78,7 @@ function EntryPage() {
                 rose: mostRecentEntry.rose_text,
                 bud: mostRecentEntry.bud_text,
                 thorn: mostRecentEntry.thorn_text,
+                tags: mostRecentEntry.tags,
                 isPublic: mostRecentEntry.is_public
             });
         }
@@ -92,10 +94,16 @@ function EntryPage() {
 
     const handleUpdate = async () => {
         try {
+            let tagsArray = [];
+            if (editableEntry.tags.trim().length > 0) {
+                tagsArray = editableEntry.tags.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+            }
+
             const updateData = {
                 rose_text: editableEntry.rose,
                 bud_text: editableEntry.bud,
                 thorn_text: editableEntry.thorn,
+                tags: tagsArray,
                 is_public: editableEntry.isPublic
             };
 
@@ -131,7 +139,18 @@ function EntryPage() {
             "EntryPage handleSubmit called with:",
             entry
         );
-        makePostCall(entry).then((result) => {
+
+        let tagsArray = [];
+        if (entry.tags.trim().length > 0) {
+            tagsArray = entry.tags.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+        }
+
+        const taggedEntry = {
+            ...entry,
+            tags: tagsArray // still include if empty
+        };
+
+        makePostCall(taggedEntry).then((result) => {
             console.log("makePostCall result:", result);
             if (result && result.status === 201) {
                 setEntries((prevEntries) => [
@@ -143,6 +162,7 @@ function EntryPage() {
                     rose: result.data.rose_text,
                     bud: result.data.bud_text,
                     thorn: result.data.thorn_text,
+                    tags: result.data.tags,
                     isPublic: result.data.is_public
                 });
             }
@@ -167,6 +187,7 @@ function EntryPage() {
                         rose_text: entry.rose,
                         bud_text: entry.bud,
                         thorn_text: entry.thorn,
+                        tags: entry.tags,
                         is_public: entry.isPublic
                     })
                 }
@@ -259,6 +280,20 @@ function EntryPage() {
                                         }
                                     />
                                 </div>
+                                <div className="entry-item">
+                                    <h3>Tags</h3>
+                                    <input
+                                        type="text"
+                                        name="tags"
+                                        value={
+                                            editableEntry.tags
+                                        }
+                                        onChange={
+                                            handleInputChange
+                                        }
+                                        placeholder="Add tags (separated by commas)"
+                                    />
+                                </div>
                                 <div className="toggle-container">
                                     <label className="toggle-switch">
                                         <input
@@ -309,6 +344,12 @@ function EntryPage() {
                                     <h3>Thorn</h3>
                                     <p>
                                         {entries[0].thorn_text}
+                                    </p>
+                                </div>
+                                <div className="entry-item">
+                                    <h3>Tags</h3>
+                                    <p>
+                                        {Array.isArray(entries[0].tags) ? entries[0].tags.join(' ') : entries[0].tags}
                                     </p>
                                 </div>
                             </>

@@ -10,8 +10,8 @@ function Footer() {
             <nav>
                 <ul className="footer-links">
                     <li>
-                        <Link 
-                            to="/" 
+                        <Link
+                            to="/"
                             className="footer-link"
                         >
                             <MdHome className="footer-icon" />
@@ -22,8 +22,8 @@ function Footer() {
                     </li>
                     <div className="circle">
                         <li>
-                            <Link 
-                                to="/new-entry" 
+                            <Link
+                                to="/new-entry"
                                 className="footer-link"
                                 id="new-entry"
                             >
@@ -36,7 +36,7 @@ function Footer() {
                     </div>
                     <li>
                         <Link
-                            to="/groups"
+                            to="/search"
                             className="footer-link"
                         >
                             <MdGroups className="footer-icon" />

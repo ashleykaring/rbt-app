@@ -17,6 +17,7 @@ import NewEntry from "./new-entry/EntryPage.js";
 import GroupsPage from "./groups/groupsPage.js";
 import GroupEntries from "./groups/groupEntries.js";
 import Settings from "./settings/SettingsPage.js";
+import SearchPage from "./search/SearchPage.js";
 
 // Navigation
 import Header from "./navigation/Header.js";
@@ -55,8 +56,8 @@ const MainAppFlow = ({ setIsLoggedIn }) => {
                         }
                     />
                     <Route
-                        path="/groups"
-                        element={<GroupsPage />}
+                        path="/search"
+                        element={<SearchPage />}
                     />
                     <Route
                         path="/groups/:groupId/:groupName"
