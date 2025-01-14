@@ -14,7 +14,7 @@ const ueSchema = userEntriesSchema;
 
 let dbConnection;
 
-// Helper function to connect to the database 
+// Helper function to connect to the database
 
 function getDbConnection() {
     if (!dbConnection) {
@@ -44,7 +44,7 @@ async function addUser(user) {
     }
 }
 
-//Adding an entry to the database 
+//Adding an entry to the database
 
 async function addEntry(entry) {
     const entryModel = getDbConnection().model(
@@ -174,21 +174,46 @@ async function addGroupToUser(userId, groupId) {
 // Adds a reaction object to an Entry document
 
 async function addReactionToEntry(entryId, reactionObject) {
-    const entryModel = getDbConnection().model("rbt_entries", eSchema);
+    const entryModel = getDbConnection().model(
+        "rbt_entries",
+        eSchema
+    );
 
     try {
         // Find the entry object in the database and push the reaction
-        return await entryModel.findOneAndUpdate({_id: entryId},
+        return await entryModel.findOneAndUpdate(
+            { _id: entryId },
             {
-                $push: { reactions: reactionObject}
-        });
-
+                $push: { reactions: reactionObject }
+            }
+        );
     } catch (error) {
         console.log(error);
         return false;
     }
 }
 
+async function updateUser(userId, updates) {
+    const userModel = getDbConnection().model("users", uSchema);
+    try {
+        const updatedUser = await userModel.findByIdAndUpdate(
+            userId,
+            {
+                ...(updates.email && {
+                    username: updates.email
+                }),
+                ...(updates.name && {
+                    first_name: updates.name
+                })
+            },
+            { new: true }
+        );
+        return updatedUser;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
 
 // Define the entry model
 const EntryModel = getDbConnection().model(
@@ -206,5 +231,6 @@ export {
     getUserEntriesByUserId,
     getEntryById,
     addReactionToEntry,
-    EntryModel
+    EntryModel,
+    updateUser
 };
