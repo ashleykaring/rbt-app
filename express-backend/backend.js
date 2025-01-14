@@ -640,6 +640,21 @@ app.get("/users/:userId/recent", async (req, res) => {
     }
 });
 
+// GET SINGULAR ENTRY BY ID
+app.get("/api/entries/:entryId", authMiddleware, async (req, res) => {
+    try {
+        const entryId = req.params.entryId;
+        const entries = await getEntryById(entryId);
+        res.json(entries[0]);
+    } catch (err) {
+        console.error("Error fetching entry:", err);
+        res.status(500).json({
+            error: "Error fetching entry"
+        });
+    }
+});
+
+
 // GET GROUP ENTRIES
 app.get(
     "/api/groups/:groupId/entries",
