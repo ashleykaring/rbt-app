@@ -29,7 +29,7 @@ export const WhiteCircle = styled.div`
     transform: translateX(-50%);
     width: 90px;
     height: 90px;
-    background: white;
+    background-color: var(--fill-color);
     border-radius: 50%;
     margin-bottom: 10px;
 `;
@@ -39,12 +39,12 @@ export const ActionButton = styled.div`
     bottom: 4px;
     left: 50%;
     transform: translateX(-50%);
-    width: 75px;
-    height: 75px;
+    width: 80px;
+    height: 80px;
     background-color: var(--fill-color);
     border-radius: 50%;
     z-index: 102;
-    margin-bottom: 14px;
+    margin-bottom: 5px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 `;
 

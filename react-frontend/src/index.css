@@ -1,15 +1,29 @@
 :root {
-    --background-color: white;
+    --background-color: #f5f5f5;
+    --card-background: #ffffff;
+    --border-color: #e2e8f0;
+    --text-primary: #2c3e50;
+    --text-secondary: #666666;
+    --header-text: #2c3e50;
+    --header-icon: #2c3e50;
+    --header-border: rgba(0, 0, 0, 0.08);
 }
 
 body.dark-mode {
-    --background-color: #333333;
+    --background-color: #1a1a1a;
+    --card-background: #2a2a2a;
+    --border-color: #3a3a3a;
+    --text-primary: #e1e1e1;
+    --text-secondary: #999999;
+    --header-text: #f0f0f0;
+    --header-icon: #e1e1e1;
+    --header-border: rgba(255, 255, 255, 0.1);
 }
 
 body {
     margin: 0;
     padding: 0;
-    background-color: #f5f5f5;
+    background-color: var(--background-color);
     min-height: 100vh;
     display: flex;
     justify-content: center;

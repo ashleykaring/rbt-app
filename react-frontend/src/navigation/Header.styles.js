@@ -11,7 +11,7 @@ export const HeaderContainer = styled.header`
     align-items: flex-end;
     padding: 0 24px 16px;
     z-index: 100;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid var(--header-border);
 `;
 
 export const ViewInfo = styled.div`
@@ -21,7 +21,7 @@ export const ViewInfo = styled.div`
 
     svg {
         font-size: 32px;
-        color: #2c3e50;
+        color: var(--header-icon);
         opacity: 0.9;
     }
 `;
@@ -30,6 +30,6 @@ export const ViewTitle = styled.h1`
     margin: 0;
     font-size: 28px;
     font-weight: 700;
-    color: #2c3e50;
+    color: var(--header-text);
     letter-spacing: -0.5px;
 `;
