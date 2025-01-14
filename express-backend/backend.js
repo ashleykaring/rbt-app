@@ -645,6 +645,7 @@ app.get("/api/entries/:entryId", authMiddleware, async (req, res) => {
     try {
         const entryId = req.params.entryId;
         const entries = await getEntryById(entryId);
+        console.log(entries);
         res.json(entries[0]);
     } catch (err) {
         console.error("Error fetching entry:", err);

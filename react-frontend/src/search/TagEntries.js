@@ -26,7 +26,6 @@ function TagEntries() {
     // use location.state or none if no entries
     const tagId = location.state.tag_id;
     const tagEntries = location.state.entries;
-    console.log(tagEntries);
     const tagName = location.state.tag_name;
     const [theme, setTheme] = useState({ mode: "light-mode" });
 
@@ -46,25 +45,7 @@ function TagEntries() {
         };
     }
 
-    const fetchEntry = async (entryId) => {
-        try {
-            const response = await fetch(
-                `${API_BASE_URL}/api/entries/${entryId}`,
-                {
-                    credentials: "include" // For JWT cookie
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch entry");
-            }
-
-            const entry = await response.json();
-            return entry;
-        } catch (error) {
-            console.error("Error in fetchEntry:", error);
-        }
-    };
+    
 
     return (
         <ThemeProvider theme={theme}>
@@ -90,9 +71,7 @@ function TagEntries() {
 
                         {/* display all entries in the tag */}
                         <EntriesContainer>
-                            {tagEntries.map((entryId) => {
-                                const entry = fetchEntry(entryId);
-
+                            {tagEntries.map((entry) => {
                                 return (
                                     <EntryCard key={entry._id}>
                                         <EntryHeader>

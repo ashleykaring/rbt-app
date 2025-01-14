@@ -31,6 +31,29 @@ function SearchPage() {
         setTheme({ mode: currentTheme || "light-mode" });
     }, []);
 
+    const fetchEntry = async (entryId) => {
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/api/entries/${entryId}`,
+                {
+                    credentials: "include" // For JWT cookie
+                }
+            );
+
+
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch entry");
+            }
+
+            const entry = await response.json();
+
+            return entry;
+        } catch (error) {
+            console.error("Error in fetchEntry:", error);
+        }
+    };
+
     // fetch user's tags
     const fetchTags = async () => {
         try {
@@ -63,7 +86,13 @@ function SearchPage() {
     }, []);
 
     // navigates to the tag's folder and passes in tag id and entries
-    const navigateToTag = (tag) => {
+    const navigateToTag = async (tag) => {
+
+        const entryObjects = [];
+        for (let i = 0; i<tag.entries.length; i++) {
+            let currentEntry = await fetchEntry(tag.entries[i]);
+            entryObjects.push(currentEntry);
+        }
 
         navigate(
             `/search/${tag._id}/${encodeURIComponent(tag.tag_name)}`,
@@ -71,7 +100,7 @@ function SearchPage() {
                 state: {
                     tag_id: tag._id,
                     tag_name: tag.tag_name,
-                    entries: tag.entries
+                    entries: entryObjects
                 }
             }
         );
