@@ -1,7 +1,11 @@
+/*
+IMPORTS
+*/
 import React from "react";
 import { Link } from "react-router-dom";
 import { MdHome, MdAddCircle, MdGroups } from "react-icons/md";
-import { IoIosRose } from "react-icons/io";
+
+// Styles
 import "./Footer.css";
 
 function Footer() {

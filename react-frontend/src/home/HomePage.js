@@ -1,19 +1,21 @@
+/*
+IMPORTS
+*/
 import { useState, useEffect } from "react";
+import { useSwipeable } from "react-swipeable";
 import Calendar from "react-calendar";
+import Modal from "react-modal";
+
+// Styles
 import "react-calendar/dist/Calendar.css";
 import "./HomePage.css";
-import Modal from "react-modal";
-// add and install!
-import { useSwipeable } from "react-swipeable";
 
 function HomePage() {
     const [date, setDate] = useState(new Date());
     const [selectedEntry, setSelectedEntry] = useState(null);
     const [entryDates, setEntryDates] = useState([]);
-    // add
     const [streakCount, setStreakCount] = useState(0);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    // add
     const [activeStartDate, setActiveStartDate] = useState(
         new Date()
     );
@@ -68,16 +70,17 @@ function HomePage() {
             const datesWithEntries = entries.map((entry) =>
                 new Date(entry.date).toDateString()
             );
+            
+            // entry dates
             setEntryDates(datesWithEntries);
-
-            // streak count add
+            // streak count
             calculateStreakCount(datesWithEntries);
         } catch (error) {
             console.error("Error fetching entry dates:", error);
         }
     };
 
-    // add function to do streak count
+    // streak tracking
     const calculateStreakCount = (dates) => {
         const sortedDates = [...dates]
             .map((date) => new Date(date))
@@ -98,6 +101,7 @@ function HomePage() {
         }
         setStreakCount(streak);
     };
+
     useEffect(() => {
         fetchEntryForDate(date);
         fetchAllEntryDates();
@@ -140,7 +144,7 @@ function HomePage() {
 
     return (
         <div className="home-page" {...swipeHandlers}>
-            <h1>Rose Garden</h1>
+            <h1 className="home-header">Rose Garden</h1>
             <div className="calendar-container">
                 <Calendar
                     onChange={handleDateChange}

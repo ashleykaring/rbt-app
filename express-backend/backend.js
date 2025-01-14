@@ -22,7 +22,9 @@ import {
     getUserEntriesByUserId,
     getEntryById,
     EntryModel,
-    addReactionToEntry
+    addReactionToEntry,
+    getAllTagsByUserId,
+    addTagObject,
 } from "./models/user-services.js";
 
 // Services
@@ -232,12 +234,33 @@ app.post("/api/entries", authMiddleware, async (req, res) => {
             date: Date.now()
         };
 
+
         const newEntry = await addEntry(entry);
         if (!newEntry) {
             return res
                 .status(500)
                 .json({ error: "Error creating entry" });
         }
+
+        // ADD TAGS 
+
+        const tagStrings = req.tags; // array of strings
+        const tagIdArray = [];
+
+        // call addTagObject on each given tag -> automatically checks if it exists or not
+        for (let i = 0; i<tagStrings.length; i++) {
+            let tempTagObject = {
+                tag_name: tagStrings[i],
+                user_id: userId,
+                entries: [newEntry._id]
+            };
+            const tagId = await addTagObject(tempTagObject);
+            const tempEntry = await addTagToEntry(tagId, newEntry._id);
+            tagIdArray.push(tagId);
+        }
+
+
+
 
         res.status(201).json(newEntry);
     } catch (err) {
@@ -709,6 +732,7 @@ app.post("/api/logout", authMiddleware, async (req, res) => {
     }
 });
 
+
 // ADD REACTION TO ENTRY
 app.put(
     "/entries/reaction",
@@ -773,6 +797,26 @@ app.put(
         }
     }
 );
+
+// GET ALL TAGS BY USER
+
+app.get("/api/entries/tags/:userId", authMiddleware, async (req, res) => {
+    try {
+        const userId = new mongoose.Types.ObjectId(req.params.userId);
+        console.log("Fetching all tags for userId:", userId);
+        const tags = await getAllTagsByUserId(userId);
+        console.log("Retrieved entries:", tags);
+        res.json(tags);
+
+    } catch (err) {
+        console.error("Error fetching tags:", err);
+        res.status(500).json({
+            error: "Error fetching tags"
+        });
+    }
+
+
+});
 
 // VERIFY AUTH
 app.get("/api/auth/verify", authMiddleware, (req, res) => {

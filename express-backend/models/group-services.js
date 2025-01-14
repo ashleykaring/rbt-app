@@ -1,11 +1,13 @@
 import mongoose from "mongoose";
-import { GroupSchema } from "./groups.js";
+import { GroupSchema } from "./user.js";
 import { addGroupToUser } from "./user-services.js";
 
 import dotenv from "dotenv";
 dotenv.config();
 
 let dbConnection;
+
+// Helper function to connect to the database 
 
 function getDbConnection() {
     if (!dbConnection) {
@@ -19,6 +21,8 @@ function getDbConnection() {
     }
     return dbConnection;
 }
+
+// Creates a group document
 
 async function createGroup(group) {
     const groupModel = getDbConnection().model(
@@ -37,6 +41,8 @@ async function createGroup(group) {
     }
 }
 
+// Finds a group document from its group code
+
 async function findGroupByCode(code) {
     const groupModel = getDbConnection().model(
         "groups",
@@ -45,6 +51,8 @@ async function findGroupByCode(code) {
     return await groupModel.find({ group_code: code });
 }
 
+// Finds a group document from its ID
+
 async function findGroupById(id) {
     const groupModel = getDbConnection().model(
         "groups",
@@ -52,6 +60,8 @@ async function findGroupById(id) {
     );
     return await groupModel.find({ _id: id });
 }
+
+// Adds a UserID to a group document's list of members 
 
 async function joinGroup(userId, groupId) {
     const groupModel = getDbConnection().model(
