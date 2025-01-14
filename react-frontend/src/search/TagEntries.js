@@ -46,6 +46,26 @@ function TagEntries() {
         };
     }
 
+    const fetchEntry = async (entryId) => {
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/api/entries/${entryId}`,
+                {
+                    credentials: "include" // For JWT cookie
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch entry");
+            }
+
+            const entry = await response.json();
+            return entry;
+        } catch (error) {
+            console.error("Error in fetchEntry:", error);
+        }
+    };
+
     return (
         <ThemeProvider theme={theme}>
             {!tagEntries ? (
@@ -70,39 +90,39 @@ function TagEntries() {
 
                         {/* display all entries in the tag */}
                         <EntriesContainer>
-                            {tagEntries.map((entry) => {
+                            {tagEntries.map((entryId) => {
+                                const entry = fetchEntry(entryId);
 
-
-                                
-                                return ( 
-                                <EntryCard key={entry._id}>
-                                    <EntryHeader>
-                                        <EntryDate>
-                                            {
-                                                getDate(
-                                                    entry.date
-                                                ).text
-                                            }
-                                        </EntryDate>
-                                    </EntryHeader>
-                                    <EntrySection type="rose">
-                                        <EntryText>
-                                            {entry.rose_text}
-                                        </EntryText>
-                                    </EntrySection>
-                                    <EntrySection type="bud">
-                                        <EntryText>
-                                            {entry.bud_text}
-                                        </EntryText>
-                                    </EntrySection>
-                                    <EntrySection type="thorn">
-                                        <EntryText>
-                                            {entry.thorn_text}
-                                        </EntryText>
-                                    </EntrySection>
-                                </EntryCard>
+                                return (
+                                    <EntryCard key={entry._id}>
+                                        <EntryHeader>
+                                            <EntryDate>
+                                                {
+                                                    getDate(
+                                                        entry.date
+                                                    ).text
+                                                }
+                                            </EntryDate>
+                                        </EntryHeader>
+                                        <EntrySection type="rose">
+                                            <EntryText>
+                                                {entry.rose_text}
+                                            </EntryText>
+                                        </EntrySection>
+                                        <EntrySection type="bud">
+                                            <EntryText>
+                                                {entry.bud_text}
+                                            </EntryText>
+                                        </EntrySection>
+                                        <EntrySection type="thorn">
+                                            <EntryText>
+                                                {entry.thorn_text}
+                                            </EntryText>
+                                        </EntrySection>
+                                    </EntryCard>
+                                )
+                            }
                             )}
-                        )}
                         </EntriesContainer>
                     </ContentContainer>
                 </Container>
