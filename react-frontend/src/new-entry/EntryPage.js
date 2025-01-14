@@ -156,6 +156,8 @@ function EntryPage() {
             tagsArray = entry.tags.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
         }
 
+        console.log(tagsArray);
+
         const taggedEntry = {
             ...entry,
             tags: tagsArray // still include if empty
