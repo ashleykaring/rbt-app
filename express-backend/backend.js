@@ -25,6 +25,7 @@ import {
     addReactionToEntry,
     getAllTagsByUserId,
     addTagObject,
+    addTagToEntry
 } from "./models/user-services.js";
 
 // Services
@@ -242,9 +243,11 @@ app.post("/api/entries", authMiddleware, async (req, res) => {
                 .json({ error: "Error creating entry" });
         }
 
+        
         // ADD TAGS 
 
-        const tagStrings = req.tags; // array of strings
+        const tagStrings = req.body.tags; // array of strings
+        console.log(tagStrings);
         const tagIdArray = [];
 
         // call addTagObject on each given tag -> automatically checks if it exists or not
@@ -264,6 +267,7 @@ app.post("/api/entries", authMiddleware, async (req, res) => {
 
         res.status(201).json(newEntry);
     } catch (err) {
+        console.log(err);
         res.status(500).json({
             error: "Error creating journal entry"
         });

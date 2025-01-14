@@ -192,6 +192,8 @@ async function addReactionToEntry(entryId, reactionObject) {
 
 // Create a tag object and add to tags list
 async function addTagObject(tagObject) {
+    console.log("testing");
+    console.log(tagObject);
     const tagModel = getDbConnection().model("tags", TagSchema);
 
     try {
@@ -254,7 +256,7 @@ async function addTagToEntry(tagId, entryId){
     const entryModel = getDbConnection().model("rbt_entries", eSchema);
 
     try {
-        // Find the entry object in the database and push the reaction
+        // Find the entry object in the database and push the tag
         return await entryModel.findOneAndUpdate({_id: entryId},
             {
                 $push: { tags: tagId}
