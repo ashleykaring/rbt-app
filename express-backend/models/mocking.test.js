@@ -38,6 +38,7 @@ test("Adding user -- successful path", async () => {
     first_name: "Jackie"
   };
 
+  // mock addUserEntries to return the mockEntryId
   mockingoose(userModel).toReturn(mockEntryId, 'addUserEntries');
 
   // mock save method
@@ -45,6 +46,7 @@ test("Adding user -- successful path", async () => {
 
   const result = await UserServices.addUser(toBeAdded);
 
+  // check assertions
   expect(result).toBeTruthy();
   expect(result.username).toBe(toBeAdded.username);
   expect(result.first_name).toBe(toBeAdded.first_name);
@@ -85,6 +87,7 @@ test("Fetching by valid id and not finding", async () => {
   // example id
   const anyId = "6132b9d47cefd0cc1916b6a9";
 
+  // find returns an empty array in this case
   mockingoose(userModel).toReturn([], 'find');
 
   const user = await UserServices.findUserById(anyId);
