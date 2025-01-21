@@ -34,6 +34,7 @@ import Settings from "./settings/SettingsPage.js";
 
 // Full Screen Pages
 import GroupEntries from "./groups/groupEntries.js";
+import TagEntries from "./search/TagEntries.js";
 
 // Forces a phone look to the website
 const PhoneContainer = styled.div`
@@ -133,6 +134,14 @@ const MainAppRoutes = ({ setIsLoggedIn }) => {
                 element={
                     <FullScreenView>
                         <GroupEntries />
+                    </FullScreenView>
+                }
+            />
+            <Route
+                path="/search/:tagId/:tagName"
+                element={
+                    <FullScreenView>
+                        <TagEntries />
                     </FullScreenView>
                 }
             />
