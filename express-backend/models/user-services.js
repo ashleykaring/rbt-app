@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 import {
     userSchema,
     entrySchema,
-    userEntriesSchema
+    userEntriesSchema,
+    TagSchema
 } from "./user.js";
 
 import dotenv from "dotenv";
@@ -215,6 +216,87 @@ async function updateUser(userId, updates) {
     }
 }
 
+// Create a tag object and add to tags list
+async function addTagObject(tagObject) {
+    console.log("testing");
+    console.log(tagObject);
+    const tagModel = getDbConnection().model("tags", TagSchema);
+
+    try {
+
+        // CHECK IF TAG ALREADY EXISTS
+
+        const existingTag = await tagModel.findOne({user_id: tagObject.user_id, tag_name: tagObject.tag_name});
+
+        // IF IT DOES, THEN JUST PUSH ENTRY ID
+
+        if (existingTag != null) {
+            const updatedTag = await tagModel.findOneAndUpdate({_id: existingTag._id},
+                {
+                    $push: { entries: tagObject.entries[0]}
+            });
+
+            return updatedTag._id;
+
+
+        } else {
+            const tagToAdd = new tagModel(tagObject);
+            const savedTag = await tagToAdd.save();
+            return savedTag._id;
+        }
+
+
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+
+// Get a tag by its Id
+async function findTagById(tagId) {
+    const tagModel = getDbConnection().model(
+        "tags",
+        TagSchema
+    );
+    return await tagModel.find({ _id: tagId });
+
+}
+
+// Get all tags by userid
+
+async function getAllTagsByUserId(userId) {
+    const tagModel = getDbConnection().model(
+        "tags",
+        TagSchema
+    )
+    return await tagModel.find({user_id: userId});
+}
+
+
+
+
+// Add tags to entry
+async function addTagToEntry(tagId, entryId){
+
+    const entryModel = getDbConnection().model("rbt_entries", eSchema);
+
+    try {
+        // Find the entry object in the database and push the tag
+        return await entryModel.findOneAndUpdate({_id: entryId},
+            {
+                $push: { tags: tagId}
+        });
+
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+
+}
+
+
+
 // Define the entry model
 const EntryModel = getDbConnection().model(
     "rbt_entries",
@@ -238,6 +320,7 @@ async function removeGroupFromUser(userId, groupId) {
     }
 }
 
+
 export {
     addUser,
     findUserByUsername,
@@ -250,5 +333,8 @@ export {
     addReactionToEntry,
     EntryModel,
     updateUser,
-    removeGroupFromUser
+    removeGroupFromUser,
+    getAllTagsByUserId,
+    addTagToEntry,
+    addTagObject,
 };

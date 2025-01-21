@@ -18,6 +18,7 @@ function EntryPage() {
         rose: "",
         bud: "",
         thorn: "",
+        tags: "",
         isPublic: true
     });
 
@@ -58,7 +59,7 @@ function EntryPage() {
             // Compare year, month, and day only
             const isToday =
                 today.getFullYear() ===
-                    entryDate.getFullYear() &&
+                entryDate.getFullYear() &&
                 today.getMonth() === entryDate.getMonth() &&
                 today.getDate() === entryDate.getDate();
 
@@ -72,6 +73,7 @@ function EntryPage() {
                     rose: mostRecentEntry.rose_text,
                     bud: mostRecentEntry.bud_text,
                     thorn: mostRecentEntry.thorn_text,
+                    tags: mostRecentEntry.tags,
                     isPublic: mostRecentEntry.is_public
                 });
             }
@@ -87,6 +89,7 @@ function EntryPage() {
                 rose: mostRecentEntry.rose_text,
                 bud: mostRecentEntry.bud_text,
                 thorn: mostRecentEntry.thorn_text,
+                tags: mostRecentEntry.tags.tag_name,
                 isPublic: mostRecentEntry.is_public
             });
         }
@@ -102,10 +105,16 @@ function EntryPage() {
 
     const handleUpdate = async () => {
         try {
+            let tagsArray = [];
+            if (editableEntry.tags.trim().length > 0) {
+                tagsArray = editableEntry.tags.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+            }
+
             const updateData = {
                 rose_text: editableEntry.rose,
                 bud_text: editableEntry.bud,
                 thorn_text: editableEntry.thorn,
+                tags: tagsArray,
                 is_public: editableEntry.isPublic
             };
 
@@ -141,7 +150,22 @@ function EntryPage() {
             "EntryPage handleSubmit called with:",
             entry
         );
-        makePostCall(entry).then((result) => {
+
+        // filter tags before submission
+        let tagsArray = [];
+        if (entry.tags.trim().length > 0) {
+            // split by commas
+            tagsArray = entry.tags.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+        }
+
+        console.log(tagsArray);
+
+        const taggedEntry = {
+            ...entry,
+            tags: tagsArray // still include if empty
+        };
+
+        makePostCall(taggedEntry).then((result) => {
             console.log("makePostCall result:", result);
             if (result && result.status === 201) {
                 const updatedEntries = [
@@ -172,6 +196,7 @@ function EntryPage() {
                         rose_text: entry.rose,
                         bud_text: entry.bud,
                         thorn_text: entry.thorn,
+                        tags: entry.tags,
                         is_public: entry.isPublic
                     })
                 }
@@ -270,6 +295,20 @@ function EntryPage() {
                                                 }
                                             />
                                         </div>
+                                        <div className="entry-item">
+                                            <h3>Tags</h3>
+                                            <input
+                                                type="text"
+                                                name="tags"
+                                                value={
+                                                    editableEntry.tags.tag_name
+                                                }
+                                                onChange={
+                                                    handleInputChange
+                                                }
+                                                placeholder="Add tags (separated by commas)"
+                                            />
+                                        </div>
                                         <div className="toggle-container">
                                             <label className="toggle-switch">
                                                 <input
@@ -318,7 +357,7 @@ function EntryPage() {
                                                 {
                                                     entries[
                                                         entries.length -
-                                                            1
+                                                        1
                                                     ].rose_text
                                                 }
                                             </p>
@@ -329,7 +368,7 @@ function EntryPage() {
                                                 {
                                                     entries[
                                                         entries.length -
-                                                            1
+                                                        1
                                                     ].bud_text
                                                 }
                                             </p>
@@ -340,11 +379,17 @@ function EntryPage() {
                                                 {
                                                     entries[
                                                         entries.length -
-                                                            1
+                                                        1
                                                     ].thorn_text
                                                 }
                                             </p>
                                         </div>
+                                        {/* <div className="entry-item">
+                                            <h3>Tags</h3>
+                                            <p>
+                                                {Array.isArray(entries[entries.length - 1].tags) ? entries[entries.length - 1].tags.join(' ') : entries[entries.length - 1].tags}
+                                            </p>
+                                        </div> */}
                                     </>
                                 )}
                             </div>
@@ -363,7 +408,7 @@ function EntryPage() {
                                             {
                                                 entries[
                                                     entries.length -
-                                                        1
+                                                    1
                                                 ].rose_text
                                             }
                                         </p>
@@ -374,7 +419,7 @@ function EntryPage() {
                                             {
                                                 entries[
                                                     entries.length -
-                                                        1
+                                                    1
                                                 ].bud_text
                                             }
                                         </p>
@@ -385,7 +430,7 @@ function EntryPage() {
                                             {
                                                 entries[
                                                     entries.length -
-                                                        1
+                                                    1
                                                 ].thorn_text
                                             }
                                         </p>

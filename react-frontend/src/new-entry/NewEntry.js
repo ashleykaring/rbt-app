@@ -6,6 +6,7 @@ function NewEntry(props) {
         rose: "",
         bud: "",
         thorn: "",
+        tags: "",
         isPublic: true
     });
     const [errorMessage, setErrorMessage] = useState("");
@@ -20,6 +21,18 @@ function NewEntry(props) {
     }
 
     function submitEntry() {
+        // filter the tags before submission
+        // let tagsArray = [];
+        // if (entry.tags.trim().length > 0) {
+        //     // split by commas
+        //     tagsArray = entry.tags.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+        // }
+
+        // const taggedEntry = {
+        //     ...entry,
+        //     tags: tagsArray // still include if empty
+        // };
+
         console.log("Submitting entry:", entry);
         if (entry.rose && entry.bud && entry.thorn) {
             props.handleSubmit(entry);
@@ -55,6 +68,15 @@ function NewEntry(props) {
                 id="thorn"
                 placeholder="What could have been better?"
                 value={entry.thorn}
+                onChange={handleChange}
+            />
+            <label htmlFor="tags">Tags</label>
+            <input
+                type="text"
+                name="tags"
+                id="tags"
+                placeholder="Add tags (separated by commas)"
+                value={entry.tags}
                 onChange={handleChange}
             />
             <div className="toggle-container">
