@@ -89,7 +89,7 @@ function EntryPage() {
                 rose: mostRecentEntry.rose_text,
                 bud: mostRecentEntry.bud_text,
                 thorn: mostRecentEntry.thorn_text,
-                tags: mostRecentEntry.tags,
+                tags: mostRecentEntry.tags.tag_name,
                 isPublic: mostRecentEntry.is_public
             });
         }
@@ -301,7 +301,7 @@ function EntryPage() {
                                                 type="text"
                                                 name="tags"
                                                 value={
-                                                    editableEntry.tags
+                                                    editableEntry.tags.tag_name
                                                 }
                                                 onChange={
                                                     handleInputChange
@@ -384,12 +384,12 @@ function EntryPage() {
                                                 }
                                             </p>
                                         </div>
-                                        <div className="entry-item">
+                                        {/* <div className="entry-item">
                                             <h3>Tags</h3>
                                             <p>
                                                 {Array.isArray(entries[entries.length - 1].tags) ? entries[entries.length - 1].tags.join(' ') : entries[entries.length - 1].tags}
                                             </p>
-                                        </div>
+                                        </div> */}
                                     </>
                                 )}
                             </div>

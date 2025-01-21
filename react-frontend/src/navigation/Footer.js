@@ -40,7 +40,7 @@ function Footer() {
                     </div>
                     <li>
                         <Link
-                            to="/search"
+                            to="/groups"
                             className="footer-link"
                         >
                             <MdGroups className="footer-icon" />

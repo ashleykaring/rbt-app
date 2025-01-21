@@ -46,16 +46,18 @@ export const Title = styled.h1`
 `;
 
 export const Subtitle = styled(Title).attrs({ as: "h2" })`
-    font-size: 1.8rem;
-    margin: 4rem 0 1.5rem;
+    font-size: 2.2rem;
+    font-weight: 700;
+    position: relative;
+    top: 0.4em;
+    padding-left: 2rem;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    align-items: center;
     color: ${(props) =>
         props.theme.mode === "dark-mode"
             ? darkTheme.text
             : lightTheme.text};
-
-    &:first-of-type {
-        margin-top: 0;
-    }
 `;
 
 export const TagName = styled.h1`
@@ -71,7 +73,6 @@ export const TagName = styled.h1`
     padding-left: 1rem;
     flex: 1;
 `;
-
 
 export const PageContainer = styled.div`
     margin-horizontal: 5px;
@@ -92,7 +93,7 @@ export const TagFolder = styled.div`
     border-radius: 16px;
     cursor: pointer;
     transition: all 0.3s ease;
-    background: #fadadd;
+    background: linear-gradient(to right, #fadadd, #f2c4bb);
     color: white;
     display: flex;
     align-items: center;
@@ -143,6 +144,7 @@ export const TagContent = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
     color: black;
 `;
 
@@ -250,7 +252,7 @@ export const EntryHeader = styled.div`
 export const EntryCard = styled.div`
     background: ${(props) =>
         props.theme.mode === "dark-mode"
-            ? "#363636" // Slightly brighter than the dark theme background
+            ? "#363636"
             : lightTheme.cardBackground};
     border-radius: 16px;
     padding: 24px;
@@ -390,4 +392,17 @@ export const Folder = styled.div`
     font-size: 3rem;
     opacity: 0.9;
     color: black;
+`;
+
+export const EntryNumber = styled.h3`
+    font-size: 0.2rem;
+    font-weight: 700;
+    color: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? darkTheme.text
+            : lightTheme.text};
+    margin-bottom: 5px;
+    margin-top: 5px;
+    text-align: right; 
+    padding-right: 0.5rem;
 `;

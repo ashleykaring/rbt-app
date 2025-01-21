@@ -16,7 +16,8 @@ import {
     Subtitle,
     TagContent,
     Folder,
-    TagName
+    TagName,
+    EntryNumber
 } from "./search.styles";
 
 const API_BASE_URL = "http://localhost:8000";
@@ -36,11 +37,9 @@ function SearchPage() {
             const response = await fetch(
                 `${API_BASE_URL}/api/entries/${entryId}`,
                 {
-                    credentials: "include" // For JWT cookie
+                    credentials: "include" 
                 }
             );
-
-
 
             if (!response.ok) {
                 throw new Error("Failed to fetch entry");
@@ -87,7 +86,6 @@ function SearchPage() {
 
     // navigates to the tag's folder and passes in tag id and entries
     const navigateToTag = async (tag) => {
-
         const entryObjects = [];
         for (let i = 0; i<tag.entries.length; i++) {
             let currentEntry = await fetchEntry(tag.entries[i]);
@@ -113,16 +111,6 @@ function SearchPage() {
                 {tags.length === 0 ? (
                     <>
                         <Title>No Tags Yet!</Title>
-                        <TagFolder>
-                            <Folder>
-                                <IoFolderOutline />
-                            </Folder>
-                            <TagContent>
-                                <TagName>
-                                    Example
-                                </TagName>
-                            </TagContent>
-                        </TagFolder>
                     </>
                 ) : (
                     // display tags
@@ -140,7 +128,9 @@ function SearchPage() {
                                     <TagName>
                                         {tag.tag_name}
                                     </TagName>
-                                    {/* ADD NUMBER OF ENTRIES HERE */}
+                                    <EntryNumber>
+                                        {tag.entries.length} {tag.entries.length === 1 ? 'entry' : 'entries'}
+                                    </EntryNumber>
                                 </TagContent>
                             </TagFolder>
                         ))}

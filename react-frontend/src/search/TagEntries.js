@@ -17,8 +17,6 @@ import {
     EntryPageTitle
 } from "./search.styles"
 
-const API_BASE_URL = "http://localhost:8000";
-
 function TagEntries() {
     const navigate = useNavigate();
     // to access the state
@@ -45,8 +43,6 @@ function TagEntries() {
         };
     }
 
-    
-
     return (
         <ThemeProvider theme={theme}>
             {!tagEntries ? (
@@ -64,7 +60,7 @@ function TagEntries() {
                                     <FiChevronLeft />
                                 </BackButton>
                                 <EntryPageTitle>
-                                    Entries for {tagName}
+                                    {tagName}
                                 </EntryPageTitle>
                             </HeaderRow>
                         </HeaderContainer>
