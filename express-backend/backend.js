@@ -27,7 +27,9 @@ import {
     addTagObject,
     addTagToEntry,
     updateUser,
-    removeGroupFromUser
+    removeGroupFromUser,
+    updateTagObject,
+    deleteEntriesByEntryId
 } from "./models/user-services.js";
 
 // Services
@@ -337,7 +339,8 @@ app.patch(
                 rose_text,
                 bud_text,
                 thorn_text,
-                is_public
+                is_public,
+                tags
             } = req.body;
             const userId = new mongoose.Types.ObjectId(
                 req.userId
@@ -366,10 +369,31 @@ app.patch(
                         rose_text,
                         bud_text,
                         thorn_text,
-                        is_public
+                        is_public,
+                        tags
                     },
                     { new: true }
                 );
+
+            // UPDATE TAG TABLE
+
+            const updatedTags = req.body.tags;
+
+            await deleteEntriesByEntryId(entryId);
+
+
+            // Compare each tag and see if it already exists in the database
+
+
+            for (let i = 0; i<updatedTags.length; i++) {
+                let tempTagObject = {
+                    tag_name: updatedTags[i],
+                    user_id: userId,
+                    entries: [entryId]
+                };
+                const tagId = await addTagObject(tempTagObject);
+            }
+
 
             res.status(200).json({
                 message: "Entry updated successfully",

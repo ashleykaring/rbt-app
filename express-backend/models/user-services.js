@@ -196,8 +196,6 @@ async function addReactionToEntry(entryId, reactionObject) {
 
 // Create a tag object and add to tags list
 async function addTagObject(tagObject) {
-    console.log("testing");
-    console.log(tagObject);
     const tagModel = getDbConnection().model("tags", TagSchema);
 
     try {
@@ -230,6 +228,22 @@ async function addTagObject(tagObject) {
     }
 }
 
+async function updateTagObject(tagObject) {
+    const tagModel = getDbConnection().model("tags", TagSchema);
+
+    const existingTag = await tagModel.findOne({user_id: tagObject.user_id, tag_name: tagObject.tag_name});
+    if (existingTag != null) {
+        // IF THE TAG EXISTS AND ALREADY HAS THE ENTRY ID, JUST RETURN
+        if (existingTag.entries.includes(tagObject.entries[0])) {
+            return;
+        }
+    }
+
+    return await addTagObject(tagObject);
+
+
+}
+
 
 // Get a tag by its Id
 async function findTagById(tagId) {
@@ -249,6 +263,32 @@ async function getAllTagsByUserId(userId) {
         TagSchema
     )
     return await tagModel.find({user_id: userId});
+}
+
+async function getAllTagsByEntryId(entryId) {
+    const tagModel = getDbConnection().model("tags", TagSchema);
+    return await tagModel.find({entries: { $in: [entryId]}});
+}
+
+async function deleteEntriesByEntryId(entryId) {
+    const tagModel = getDbConnection().model("tags", TagSchema);
+    const allTagObjects = await tagModel.find({entries: { $in: [entryId]}});
+
+    for (let i = 0; i<allTagObjects.length; i++) {
+        if (allTagObjects[i].entries.length == 0) {
+            // if the length of all entries is 0, we can delete the Tag Object itself
+            const deletedTag = await tagModel.findOneAndDelete({_id: allTagObjects[i]._id});
+
+        } else {
+            // Otherwise, we can just delete the entry from it 
+            const removedEntryTag = await tagModel.findOneAndUpate({_id: allTagObjects[i]._id},
+                {$pull: {
+                    entries: entryId
+                }}
+            )
+        }
+
+    }
 }
 
 
@@ -274,6 +314,8 @@ async function addTagToEntry(tagId, entryId){
     }
 
 }
+
+
 
 
 
@@ -339,5 +381,7 @@ export {
     addTagObject,
     EntryModel,
     updateUser,
-    removeGroupFromUser
+    removeGroupFromUser,
+    updateTagObject,
+    deleteEntriesByEntryId
 };
