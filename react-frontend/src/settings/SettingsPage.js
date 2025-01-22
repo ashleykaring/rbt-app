@@ -262,11 +262,11 @@ function Settings({ setIsLoggedIn }) {
                             value={editedUser.name}
                             onChange={handleInputChange}
                             placeholder="Enter your name"
-                            style={{
-                                color: darkMode
-                                    ? "#333"
-                                    : "inherit"
-                            }}
+                            // style={{
+                            //     color: darkMode
+                            //         ? "#333"
+                            //         : "inherit"
+                            // }}
                         />
                     </S.InputWrapper>
                     <S.InputWrapper>
