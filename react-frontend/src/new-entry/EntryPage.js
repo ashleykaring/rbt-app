@@ -397,47 +397,7 @@ function EntryPage() {
                     ) : (
                         <NewEntry handleSubmit={handleSubmit} />
                     )}
-                    {entries.length > 0 &&
-                        !hasSubmittedToday && (
-                            <div className="recent-entry">
-                                <h2>Most Recent Entry</h2>
-                                <div className="entry-card">
-                                    <div className="entry-item">
-                                        <h3>Rose</h3>
-                                        <p>
-                                            {
-                                                entries[
-                                                    entries.length -
-                                                    1
-                                                ].rose_text
-                                            }
-                                        </p>
-                                    </div>
-                                    <div className="entry-item">
-                                        <h3>Bud</h3>
-                                        <p>
-                                            {
-                                                entries[
-                                                    entries.length -
-                                                    1
-                                                ].bud_text
-                                            }
-                                        </p>
-                                    </div>
-                                    <div className="entry-item">
-                                        <h3>Thorn</h3>
-                                        <p>
-                                            {
-                                                entries[
-                                                    entries.length -
-                                                    1
-                                                ].thorn_text
-                                            }
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                    
                 </>
             )}
         </div>

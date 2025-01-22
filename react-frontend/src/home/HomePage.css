@@ -221,6 +221,28 @@ body.dark-mode {
     margin-top: 20px;
 }
 
+.no-entry-message {
+    color: var(--streak-counter-color); 
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-align: center;
+    margin: 1rem 0;
+    background: rgba(240, 197, 188, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.recent-header {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--font-color);
+    position: relative;
+    padding-left: 1rem;
+    text-align: center;
+    width: 100%;
+}
+
 .entry-item {
     padding: 12px 0;
     border-bottom: 1px solid #eee;
@@ -248,3 +270,5 @@ body.dark-mode {
     margin-top: 20px;
     font-style: italic;
 }
+
+
