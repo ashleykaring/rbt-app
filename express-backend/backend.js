@@ -25,7 +25,9 @@ import {
     addReactionToEntry,
     getAllTagsByUserId,
     addTagObject,
-    addTagToEntry
+    addTagToEntry,
+    updateUser,
+    removeGroupFromUser
 } from "./models/user-services.js";
 
 // Services
@@ -201,6 +203,53 @@ app.post("/api/login", async (req, res) => {
     } catch (error) {
         res.status(500).json({
             message: "Error logging you in. Please try again"
+        });
+    }
+});
+
+// Updates user's name and email (settings call)
+app.put("/api/user", authMiddleware, async (req, res) => {
+    try {
+        const { name, email } = req.body;
+        const userId = req.userId;
+
+        // If trying to update email, check if new email is already in use
+        if (email) {
+            const existingUser = await findUserByUsername(
+                email
+            );
+            if (
+                existingUser.length > 0 &&
+                existingUser[0]._id.toString() !== userId
+            ) {
+                return res.status(400).json({
+                    message: "This email is already in use!"
+                });
+            }
+        }
+
+        const updatedUser = await updateUser(userId, {
+            name,
+            email
+        });
+        if (!updatedUser) {
+            return res.status(500).json({
+                message: "Error updating user"
+            });
+        }
+
+        res.status(200).json({
+            message: "User updated successfully",
+            user: {
+                name: updatedUser.first_name,
+                email: updatedUser.username
+            }
+        });
+    } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).json({
+            message:
+                "There was an error updating your information"
         });
     }
 });
@@ -844,10 +893,73 @@ app.get("/api/auth/verify", authMiddleware, (req, res) => {
     res.status(200).json({ authenticated: true });
 });
 
-// Add this with your other routes
+// Get current user
 app.get("/api/user/current", authMiddleware, (req, res) => {
     res.json({ userId: req.userId });
 });
+
+// Get user details
+app.get(
+    "/api/user/details",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            const user = await findUserById(req.userId);
+            if (!user || user.length === 0) {
+                return res
+                    .status(404)
+                    .json({ message: "User not found" });
+            }
+
+            res.status(200).json({
+                name: user[0].first_name,
+                email: user[0].username
+            });
+        } catch (error) {
+            console.error(
+                "Error fetching user details:",
+                error
+            );
+            res.status(500).json({
+                message: "Error fetching user details"
+            });
+        }
+    }
+);
+
+// Leave group
+app.delete(
+    "/api/groups/:groupId/leave",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            const groupId = new mongoose.Types.ObjectId(
+                req.params.groupId
+            );
+            const userId = req.userId;
+
+            const updatedUser = await removeGroupFromUser(
+                userId,
+                groupId
+            );
+
+            if (!updatedUser) {
+                return res.status(500).json({
+                    message: "Error leaving group"
+                });
+            }
+
+            res.status(200).json({
+                message: "Successfully left group"
+            });
+        } catch (error) {
+            console.error("Error leaving group:", error);
+            res.status(500).json({
+                message: "Error leaving group"
+            });
+        }
+    }
+);
 
 // LISTEN
 app.listen(port, () => {

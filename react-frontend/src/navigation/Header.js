@@ -1,24 +1,50 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { MdSettings } from 'react-icons/md';
-import "./Header.css";
+/*
+IMPORTS
+*/
 
+// Libraries
+import React from "react";
+import { useLocation } from "react-router-dom";
+import {
+    MdHome,
+    MdSearch,
+    MdGroups,
+    MdSettings
+} from "react-icons/md";
+import { IoRose } from "react-icons/io5";
+
+// Styles
+import {
+    HeaderContainer,
+    ViewInfo,
+    ViewTitle
+} from "./Header.styles";
+
+// Header component render
 function Header() {
+    const location = useLocation();
+    const path = location.pathname;
+
+    const viewConfigs = {
+        "/": { icon: <MdHome />, title: "Home" },
+        "/search": { icon: <MdSearch />, title: "Search" },
+        "/new-entry": { icon: <IoRose />, title: "New Entry" },
+        "/groups": { icon: <MdGroups />, title: "Groups" },
+        "/settings": { icon: <MdSettings />, title: "Settings" }
+    };
+
+    // Hide for full screen view
+    const currentView = path.startsWith("/groups/")
+        ? viewConfigs["/groups"]
+        : viewConfigs[path] || viewConfigs["/"];
+
     return (
-        <header className="header">
-            <img
-                src="/RBDLogoRounded.png"
-                alt="RBT Logo"
-                // className="logo"
-            />
-            <nav>
-                <div className="settings-link">
-                        <Link to="/settings" className="settings">
-                            <MdSettings className="settings-icon" />
-                        </Link>
-                </div>
-            </nav>
-        </header>
+        <HeaderContainer>
+            <ViewInfo>
+                {currentView.icon}
+                <ViewTitle>{currentView.title}</ViewTitle>
+            </ViewInfo>
+        </HeaderContainer>
     );
 }
 
