@@ -267,9 +267,12 @@ ENTRIES
  */
 app.post("/api/entries", authMiddleware, async (req, res) => {
     try {
-        const { rose_text, bud_text, thorn_text, is_public } =
+        const { rose_text, bud_text, thorn_text, is_public, tags} =
             req.body;
         const userId = new mongoose.Types.ObjectId(req.userId);
+
+        const finalTagString = tags.join(", ");
+
 
         if (!rose_text || !bud_text || !thorn_text) {
             return res
@@ -283,6 +286,7 @@ app.post("/api/entries", authMiddleware, async (req, res) => {
             bud_text,
             thorn_text,
             is_public,
+            tag_string: finalTagString,
             date: Date.now()
         };
 
@@ -298,7 +302,6 @@ app.post("/api/entries", authMiddleware, async (req, res) => {
         // ADD TAGS 
 
         const tagStrings = req.body.tags; // array of strings
-        console.log(tagStrings);
         const tagIdArray = [];
 
         // call addTagObject on each given tag -> automatically checks if it exists or not
@@ -346,6 +349,10 @@ app.patch(
                 req.userId
             );
 
+            const initialTagString = tags.join(", ");
+            console.log("TAG STRING:");
+            console.log(initialTagString);
+
             // Verify the entry belongs to the user
             const entry = await EntryModel.findById(entryId);
             if (!entry) {
@@ -363,36 +370,42 @@ app.patch(
             }
 
             const updatedEntry =
-                await EntryModel.findByIdAndUpdate(
-                    entryId,
-                    {
-                        rose_text,
-                        bud_text,
-                        thorn_text,
-                        is_public,
-                        tags
-                    },
-                    { new: true }
-                );
+            await EntryModel.findByIdAndUpdate(
+                entryId,
+                {
+                    rose_text,
+                    bud_text,
+                    thorn_text,
+                    is_public,
+                    tag_string: initialTagString
+                },
+                { new: true }
+            );
 
             // UPDATE TAG TABLE
 
             const updatedTags = req.body.tags;
 
             await deleteEntriesByEntryId(entryId);
-
-
+            
+            
             // Compare each tag and see if it already exists in the database
-
-
+            const tagIdArray = [];
+            
             for (let i = 0; i<updatedTags.length; i++) {
                 let tempTagObject = {
                     tag_name: updatedTags[i],
                     user_id: userId,
                     entries: [entryId]
-                };
+                  };
                 const tagId = await addTagObject(tempTagObject);
+                const tempEntry = await addTagToEntry(tagId, entryId);
+                tagIdArray.push(tagId);
             }
+
+
+
+
 
 
             res.status(200).json({

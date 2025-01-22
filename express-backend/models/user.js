@@ -27,6 +27,7 @@ const EntrySchema = new mongoose.Schema({
         }
     ],
     tags: [mongoose.Types.ObjectId],
+    tag_string: String,
 });
 
 // USER ENTRIES SCHEMA

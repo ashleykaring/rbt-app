@@ -73,7 +73,7 @@ function EntryPage() {
                     rose: mostRecentEntry.rose_text,
                     bud: mostRecentEntry.bud_text,
                     thorn: mostRecentEntry.thorn_text,
-                    tags: mostRecentEntry.tags,
+                    tag_string: mostRecentEntry.tag_string,
                     isPublic: mostRecentEntry.is_public
                 });
             }
@@ -85,11 +85,12 @@ function EntryPage() {
         if (isEditing) {
             // Reset to original values if canceling
             const mostRecentEntry = entries[entries.length - 1];
+
             setEditableEntry({
                 rose: mostRecentEntry.rose_text,
                 bud: mostRecentEntry.bud_text,
                 thorn: mostRecentEntry.thorn_text,
-                tags: mostRecentEntry.tags.tag_name,
+                tag_string: mostRecentEntry.tag_string,
                 isPublic: mostRecentEntry.is_public
             });
         }
@@ -106,14 +107,15 @@ function EntryPage() {
     const handleUpdate = async () => {
         try {
             let tagsArray = [];
-            if (editableEntry.tags.trim().length > 0) {
-                tagsArray = editableEntry.tags.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+            if (editableEntry.tag_string.trim().length > 0) {
+                tagsArray = editableEntry.tag_string.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
             }
 
             const updateData = {
                 rose_text: editableEntry.rose,
                 bud_text: editableEntry.bud,
                 thorn_text: editableEntry.thorn,
+                tag_string: editableEntry.tag_string,
                 tags: tagsArray,
                 is_public: editableEntry.isPublic
             };
@@ -153,9 +155,9 @@ function EntryPage() {
 
         // filter tags before submission
         let tagsArray = [];
-        if (entry.tags.trim().length > 0) {
+        if (entry.tag_string.trim().length > 0) {
             // split by commas
-            tagsArray = entry.tags.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+            tagsArray = entry.tag_string.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
         }
 
         console.log(tagsArray);
@@ -197,6 +199,7 @@ function EntryPage() {
                         bud_text: entry.bud,
                         thorn_text: entry.thorn,
                         tags: entry.tags,
+                        tag_string: entry.tag_string,
                         is_public: entry.isPublic
                     })
                 }
@@ -299,9 +302,9 @@ function EntryPage() {
                                             <h3>Tags</h3>
                                             <input
                                                 type="text"
-                                                name="tags"
+                                                name="tag_string"
                                                 value={
-                                                    editableEntry.tags.tag_name
+                                                    editableEntry.tag_string
                                                 }
                                                 onChange={
                                                     handleInputChange

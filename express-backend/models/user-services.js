@@ -271,17 +271,22 @@ async function getAllTagsByEntryId(entryId) {
 }
 
 async function deleteEntriesByEntryId(entryId) {
+    const entryModel = getDbConnection().model("rbt_entries", entrySchema);
+
+    await entryModel.findOneAndUpdate({_id: entryId}, {tags: []});
+
+
     const tagModel = getDbConnection().model("tags", TagSchema);
     const allTagObjects = await tagModel.find({entries: { $in: [entryId]}});
 
     for (let i = 0; i<allTagObjects.length; i++) {
-        if (allTagObjects[i].entries.length == 0) {
-            // if the length of all entries is 0, we can delete the Tag Object itself
+        if (allTagObjects[i].entries.length == 1) {
+            // if the length of all entries is 1, we can delete the Tag Object itself
             const deletedTag = await tagModel.findOneAndDelete({_id: allTagObjects[i]._id});
 
         } else {
             // Otherwise, we can just delete the entry from it 
-            const removedEntryTag = await tagModel.findOneAndUpate({_id: allTagObjects[i]._id},
+            const removedEntryTag = await tagModel.findOneAndUpdate({_id: allTagObjects[i]._id},
                 {$pull: {
                     entries: entryId
                 }}
