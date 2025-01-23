@@ -10,8 +10,19 @@ body.dark-mode {
     --text-color: #f0f0f0;
     --fill-color: #d58a94;
     --button-color: #c8808a;
-    --input-color: #d0d0d0;
+    --input-color: #444444;
     --past-background: #444444;
+    input[type="text"]::placeholder {
+        color: #ffffff; 
+        opacity: 0.7; 
+    }
+    input[type="text"] {
+        color: #ffffff; 
+    }
+    .entry-date::after {
+        background-color: #f6becb; /* Lighter pink for better contrast */
+    }
+    
 }
 
 * {

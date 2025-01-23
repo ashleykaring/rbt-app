@@ -22,6 +22,26 @@ import {
 
 const API_BASE_URL = "http://localhost:8000";
 
+// import styled from "styled-components";
+
+// const SearchContainer = styled.div`
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     height: 100%;
+// `;
+
+// const SearchText = styled.h1`
+//     font-size: 2rem;
+//     color: #2c3e50;
+// `;
+
+// function SearchPage() {
+//     return (
+//         <SearchContainer>
+//             <SearchText>Search Page</SearchText>
+//         </SearchContainer>
+
 function SearchPage() {
     const [tags, setTags] = useState([]);
     const [theme, setTheme] = useState({ mode: "light-mode" });

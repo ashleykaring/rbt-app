@@ -23,11 +23,11 @@ import {
     getEntryById,
     EntryModel,
     addReactionToEntry,
+    updateUser,
+    removeGroupFromUser,
     getAllTagsByUserId,
     addTagObject,
     addTagToEntry,
-    updateUser,
-    removeGroupFromUser,
     updateTagObject,
     deleteEntriesByEntryId
 } from "./models/user-services.js";

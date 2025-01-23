@@ -16,6 +16,7 @@ const ueSchema = userEntriesSchema;
 let dbConnection;
 
 // Helper function to connect to the database
+// Helper function to connect to the database
 
 function getDbConnection() {
     if (!dbConnection) {
@@ -176,8 +177,11 @@ async function addGroupToUser(userId, groupId) {
 
 async function addReactionToEntry(entryId, reactionObject) {
     const entryModel = getDbConnection().model(
+        
         "rbt_entries",
+       
         eSchema
+    
     );
 
     try {
@@ -193,6 +197,7 @@ async function addReactionToEntry(entryId, reactionObject) {
         return false;
     }
 }
+
 
 // Create a tag object and add to tags list
 async function addTagObject(tagObject) {
@@ -371,6 +376,7 @@ async function removeGroupFromUser(userId, groupId) {
 
 
 
+
 export {
     addUser,
     findUserByUsername,
@@ -381,12 +387,12 @@ export {
     getUserEntriesByUserId,
     getEntryById,
     addReactionToEntry,
-    getAllTagsByUserId,
-    addTagToEntry,
-    addTagObject,
     EntryModel,
     updateUser,
     removeGroupFromUser,
+    getAllTagsByUserId,
+    addTagToEntry,
+    addTagObject,
     updateTagObject,
     deleteEntriesByEntryId
 };
