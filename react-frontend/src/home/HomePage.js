@@ -1,7 +1,7 @@
 /*
 IMPORTS
 */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSwipeable } from "react-swipeable";
 import Calendar from "react-calendar";
 import Modal from "react-modal";
@@ -24,7 +24,7 @@ function HomePage() {
     const API_BASE_URL = "http://localhost:8000";
 
     // fetch most recent entry
-    const fetchMostRecentEntry = async () => {
+    const fetchMostRecentEntry = useCallback(async () => {
         try {
             const response = await fetch(
                 `${API_BASE_URL}/api/entries`,
@@ -48,7 +48,7 @@ function HomePage() {
         } catch (error) {
             console.error("Error fetching most recent entry:", error);
         }
-    };
+    }, []);
 
     // Fetch entry for selected date
     const fetchEntryForDate = async (selectedDate) => {
@@ -81,7 +81,7 @@ function HomePage() {
     };
 
     // Fetch all entry dates
-    const fetchAllEntryDates = async () => {
+    const fetchAllEntryDates = useCallback(async () => {
         try {
             const response = await fetch(
                 `${API_BASE_URL}/api/entries`,
@@ -106,7 +106,7 @@ function HomePage() {
         } catch (error) {
             console.error("Error fetching entry dates:", error);
         }
-    };
+    }, []);
 
     // streak tracking
     const calculateStreakCount = (dates) => {
@@ -133,7 +133,7 @@ function HomePage() {
     useEffect(() => {
         fetchMostRecentEntry();
         fetchAllEntryDates();
-    }, []);
+    }, [fetchMostRecentEntry, fetchAllEntryDates]);
 
     useEffect(() => {
         fetchEntryForDate(date);
