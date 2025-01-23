@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 const lightTheme = {
-    background: "white",
+    background: "#f5f5f5",
     text: "#2c3e50",
     secondaryText: "#64748b",
     cardBackground: "white",
@@ -90,6 +90,7 @@ export const PageContainer = styled.div`
 export const TagFolder = styled.div`
     padding: 1.8rem;
     margin-bottom: 1.25rem;
+    margin-top: 20px;
     border-radius: 16px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -215,9 +216,9 @@ export const BackButton = styled.button`
 
     &:hover {
         background: ${(props) =>
-        props.theme.mode === "dark-mode"
-            ? "#404040"
-            : "#e9ecef"};
+            props.theme.mode === "dark-mode"
+                ? "#404040"
+                : "#e9ecef"};
         transform: translateX(-2px);
     }
 
@@ -260,9 +261,9 @@ export const EntryCard = styled.div`
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid
         ${(props) =>
-        props.theme.mode === "dark-mode"
-            ? "rgba(255, 255, 255, 0.1)"
-            : "rgba(0, 0, 0, 0.05)"};
+            props.theme.mode === "dark-mode"
+                ? "rgba(255, 255, 255, 0.1)"
+                : "rgba(0, 0, 0, 0.05)"};
 
     &:hover {
         transform: translateY(-2px);
@@ -322,17 +323,17 @@ export const EntrySection = styled.div`
 
     &::before {
         content: "${(props) => {
-        switch (props.type) {
-            case "rose":
-                return "Rose";
-            case "thorn":
-                return "Thorn";
-            case "bud":
-                return "Bud";
-            default:
-                return "";
-        }
-    }}";
+            switch (props.type) {
+                case "rose":
+                    return "Rose";
+                case "thorn":
+                    return "Thorn";
+                case "bud":
+                    return "Bud";
+                default:
+                    return "";
+            }
+        }}";
         position: absolute;
         left: 20px;
         top: -10px;
@@ -341,21 +342,21 @@ export const EntrySection = styled.div`
         padding: 2px 8px;
         border-radius: 6px;
         background: ${(props) =>
-        props.theme.mode === "dark-mode"
-            ? darkTheme.cardBackground
-            : "white"};
+            props.theme.mode === "dark-mode"
+                ? darkTheme.cardBackground
+                : "white"};
         color: ${(props) => {
-        switch (props.type) {
-            case "rose":
-                return "#FF8FB1";
-            case "thorn":
-                return "#B83A3A";
-            case "bud":
-                return "#98CE00";
-            default:
-                return "#2c3e50";
-        }
-    }};
+            switch (props.type) {
+                case "rose":
+                    return "#FF8FB1";
+                case "thorn":
+                    return "#B83A3A";
+                case "bud":
+                    return "#98CE00";
+                default:
+                    return "#2c3e50";
+            }
+        }};
     }
 `;
 
@@ -403,6 +404,6 @@ export const EntryNumber = styled.h3`
             : lightTheme.text};
     margin-bottom: 5px;
     margin-top: 5px;
-    text-align: right; 
+    text-align: right;
     padding-right: 0.5rem;
 `;

@@ -46,7 +46,10 @@ function HomePage() {
 
             setRecentEntry(sortedEntries[0] || null);
         } catch (error) {
-            console.error("Error fetching most recent entry:", error);
+            console.error(
+                "Error fetching most recent entry:",
+                error
+            );
         }
     }, []);
 
@@ -98,7 +101,7 @@ function HomePage() {
             const datesWithEntries = entries.map((entry) =>
                 new Date(entry.date).toDateString()
             );
-            
+
             // entry dates
             setEntryDates(datesWithEntries);
             // streak count
@@ -159,7 +162,9 @@ function HomePage() {
     };
 
     // check if entry for today
-    const hasEntryForToday = entryDates.includes(new Date().toDateString());
+    const hasEntryForToday = entryDates.includes(
+        new Date().toDateString()
+    );
 
     // add swipe function
     const handleSwipe = (direction) => {
@@ -243,9 +248,11 @@ function HomePage() {
                 </span>
             </div>
 
-            {recentEntry ? (
-                <div className ="entry-display">
-                    <h2 className="recent-header">Most Recent Entry</h2>
+            {recentEntry && (
+                <div className="entry-display">
+                    <h2 className="recent-header">
+                        Most Recent Entry
+                    </h2>
                     <div className="entry-item">
                         <h3>Rose</h3>
                         <p>{recentEntry.rose_text}</p>
@@ -259,13 +266,7 @@ function HomePage() {
                         <p>{recentEntry.thorn_text}</p>
                     </div>
                 </div>
-            ) : (
-                <p className="no-recent-entry">
-                    Start journaling today and submit your first entry!
-                </p>
             )}
-
-            
         </div>
     );
 }

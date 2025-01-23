@@ -59,7 +59,7 @@ function EntryPage() {
             // Compare year, month, and day only
             const isToday =
                 today.getFullYear() ===
-                entryDate.getFullYear() &&
+                    entryDate.getFullYear() &&
                 today.getMonth() === entryDate.getMonth() &&
                 today.getDate() === entryDate.getDate();
 
@@ -108,7 +108,11 @@ function EntryPage() {
         try {
             let tagsArray = [];
             if (editableEntry.tag_string.trim().length > 0) {
-                tagsArray = editableEntry.tag_string.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+                tagsArray = editableEntry.tag_string
+                    .trim()
+                    .split(",")
+                    .map((tag) => tag.trim())
+                    .filter((tag) => tag.length > 0);
             }
 
             const updateData = {
@@ -155,9 +159,13 @@ function EntryPage() {
 
         // filter tags before submission
         let tagsArray = [];
-        if (entry.tag_string.trim().length > 0) {
+        if (entry.tags.trim().length > 0) {
             // split by commas
-            tagsArray = entry.tag_string.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+            tagsArray = entry.tags
+                .trim()
+                .split(",")
+                .map((tag) => tag.trim())
+                .filter((tag) => tag.length > 0);
         }
 
         console.log(tagsArray);
@@ -170,12 +178,7 @@ function EntryPage() {
         makePostCall(taggedEntry).then((result) => {
             console.log("makePostCall result:", result);
             if (result && result.status === 201) {
-                const updatedEntries = [
-                    result.data,
-                    ...entries
-                ];
-                setEntries(updatedEntries);
-                checkIfSubmittedToday(updatedEntries);
+                fetchUserEntries();
             }
         });
     }
@@ -360,7 +363,7 @@ function EntryPage() {
                                                 {
                                                     entries[
                                                         entries.length -
-                                                        1
+                                                            1
                                                     ].rose_text
                                                 }
                                             </p>
@@ -371,7 +374,7 @@ function EntryPage() {
                                                 {
                                                     entries[
                                                         entries.length -
-                                                        1
+                                                            1
                                                     ].bud_text
                                                 }
                                             </p>
@@ -382,7 +385,7 @@ function EntryPage() {
                                                 {
                                                     entries[
                                                         entries.length -
-                                                        1
+                                                            1
                                                     ].thorn_text
                                                 }
                                             </p>
@@ -400,7 +403,6 @@ function EntryPage() {
                     ) : (
                         <NewEntry handleSubmit={handleSubmit} />
                     )}
-                    
                 </>
             )}
         </div>
