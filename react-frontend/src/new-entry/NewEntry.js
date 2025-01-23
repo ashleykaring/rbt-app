@@ -73,7 +73,7 @@ function NewEntry(props) {
             <label htmlFor="tags">Tags</label>
             <input
                 type="text"
-                name="tags"
+                name="tag_string"
                 id="tags"
                 placeholder="Add tags (separated by commas)"
                 value={entry.tag_string}
