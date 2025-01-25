@@ -46,7 +46,7 @@ export const Title = styled.h1`
 `;
 
 export const Subtitle = styled(Title).attrs({ as: "h2" })`
-    font-size: 2.2rem;
+    font-size: 2rem;
     font-weight: 700;
     position: relative;
     top: 0.4em;
@@ -76,15 +76,10 @@ export const TagName = styled.h1`
 
 export const PageContainer = styled.div`
     margin-horizontal: 5px;
+    margin-top: 20px;
     margin-bottom: 50px;
-    background: ${(props) =>
-        props.theme.mode === "dark-mode"
-            ? darkTheme.background
-            : lightTheme.background};
-    color: ${(props) =>
-        props.theme.mode === "dark-mode"
-            ? darkTheme.text
-            : lightTheme.text};
+    background-color: var(--background-color);
+    color: var(--text-primary);
 `;
 
 export const TagFolder = styled.div`
@@ -93,7 +88,10 @@ export const TagFolder = styled.div`
     border-radius: 16px;
     cursor: pointer;
     transition: all 0.3s ease;
-    background: linear-gradient(to right, #fadadd, #f2c4bb);
+    background: ${(props) =>
+        props.theme.mode === "dark-mode" 
+            ? "linear-gradient(to right,rgb(197, 141, 170),rgb(152, 34, 83))" // dark
+            : "linear-gradient(to right, #fadadd, #f2c4bb)"};
     color: white;
     display: flex;
     align-items: center;
@@ -394,8 +392,8 @@ export const Folder = styled.div`
     color: black;
 `;
 
-export const EntryNumber = styled.h3`
-    font-size: 0.2rem;
+export const EntryNumber = styled.h4`
+    font-size: 0.7rem;
     font-weight: 700;
     color: ${(props) =>
         props.theme.mode === "dark-mode"
