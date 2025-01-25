@@ -6,7 +6,7 @@ function NewEntry(props) {
         rose: "",
         bud: "",
         thorn: "",
-        tags: "",
+        tag_string: "",
         isPublic: true
     });
     const [errorMessage, setErrorMessage] = useState("");
@@ -76,7 +76,7 @@ function NewEntry(props) {
                 name="tags"
                 id="tags"
                 placeholder="Add tags (separated by commas)"
-                value={entry.tags}
+                value={entry.tag_string}
                 onChange={handleChange}
             />
             <div className="toggle-container">

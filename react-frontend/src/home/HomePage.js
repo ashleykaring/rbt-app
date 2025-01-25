@@ -1,7 +1,7 @@
 /*
 IMPORTS
 */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSwipeable } from "react-swipeable";
 import Calendar from "react-calendar";
 import Modal from "react-modal";
@@ -13,6 +13,7 @@ import "./HomePage.css";
 function HomePage() {
     const [date, setDate] = useState(new Date());
     const [selectedEntry, setSelectedEntry] = useState(null);
+    const [recentEntry, setRecentEntry] = useState(null);
     const [entryDates, setEntryDates] = useState([]);
     const [streakCount, setStreakCount] = useState(0);
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -21,6 +22,36 @@ function HomePage() {
     );
 
     const API_BASE_URL = "http://localhost:8000";
+
+    // fetch most recent entry
+    const fetchMostRecentEntry = useCallback(async () => {
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/api/entries`,
+                {
+                    credentials: "include"
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch entries");
+            }
+
+            const entries = await response.json();
+
+            // sort entries from newest to oldest
+            const sortedEntries = entries.sort(
+                (a, b) => new Date(b.date) - new Date(a.date)
+            );
+
+            setRecentEntry(sortedEntries[0] || null);
+        } catch (error) {
+            console.error(
+                "Error fetching most recent entry:",
+                error
+            );
+        }
+    }, []);
 
     // Fetch entry for selected date
     const fetchEntryForDate = async (selectedDate) => {
@@ -53,7 +84,7 @@ function HomePage() {
     };
 
     // Fetch all entry dates
-    const fetchAllEntryDates = async () => {
+    const fetchAllEntryDates = useCallback(async () => {
         try {
             const response = await fetch(
                 `${API_BASE_URL}/api/entries`,
@@ -70,7 +101,7 @@ function HomePage() {
             const datesWithEntries = entries.map((entry) =>
                 new Date(entry.date).toDateString()
             );
-            
+
             // entry dates
             setEntryDates(datesWithEntries);
             // streak count
@@ -78,7 +109,7 @@ function HomePage() {
         } catch (error) {
             console.error("Error fetching entry dates:", error);
         }
-    };
+    }, []);
 
     // streak tracking
     const calculateStreakCount = (dates) => {
@@ -103,8 +134,12 @@ function HomePage() {
     };
 
     useEffect(() => {
-        fetchEntryForDate(date);
+        fetchMostRecentEntry();
         fetchAllEntryDates();
+    }, [fetchMostRecentEntry, fetchAllEntryDates]);
+
+    useEffect(() => {
+        fetchEntryForDate(date);
     }, [date]);
 
     const handleDateChange = (newDate) => {
@@ -125,6 +160,11 @@ function HomePage() {
         }
         return null;
     };
+
+    // check if entry for today
+    const hasEntryForToday = entryDates.includes(
+        new Date().toDateString()
+    );
 
     // add swipe function
     const handleSwipe = (direction) => {
@@ -191,6 +231,14 @@ function HomePage() {
                 <h2>Current Streak: {streakCount} days!</h2>
             </div>
 
+            {!hasEntryForToday && (
+                <div className="no-entry-message">
+                    <h3>
+                        Don't forget to post an entry for today!
+                    </h3>
+                </div>
+            )}
+
             <div className="selected-date">
                 <span className="date-label">
                     Selected Date:
@@ -199,6 +247,26 @@ function HomePage() {
                     {date.toDateString()}
                 </span>
             </div>
+
+            {recentEntry && (
+                <div className="entry-display">
+                    <h2 className="recent-header">
+                        Most Recent Entry
+                    </h2>
+                    <div className="entry-item">
+                        <h3>Rose</h3>
+                        <p>{recentEntry.rose_text}</p>
+                    </div>
+                    <div className="entry-item">
+                        <h3>Bud</h3>
+                        <p>{recentEntry.bud_text}</p>
+                    </div>
+                    <div className="entry-item">
+                        <h3>Thorn</h3>
+                        <p>{recentEntry.thorn_text}</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

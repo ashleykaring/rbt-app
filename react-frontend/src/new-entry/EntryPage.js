@@ -59,7 +59,7 @@ function EntryPage() {
             // Compare year, month, and day only
             const isToday =
                 today.getFullYear() ===
-                entryDate.getFullYear() &&
+                    entryDate.getFullYear() &&
                 today.getMonth() === entryDate.getMonth() &&
                 today.getDate() === entryDate.getDate();
 
@@ -73,7 +73,7 @@ function EntryPage() {
                     rose: mostRecentEntry.rose_text,
                     bud: mostRecentEntry.bud_text,
                     thorn: mostRecentEntry.thorn_text,
-                    tags: mostRecentEntry.tags,
+                    tag_string: mostRecentEntry.tag_string,
                     isPublic: mostRecentEntry.is_public
                 });
             }
@@ -85,11 +85,12 @@ function EntryPage() {
         if (isEditing) {
             // Reset to original values if canceling
             const mostRecentEntry = entries[entries.length - 1];
+
             setEditableEntry({
                 rose: mostRecentEntry.rose_text,
                 bud: mostRecentEntry.bud_text,
                 thorn: mostRecentEntry.thorn_text,
-                tags: mostRecentEntry.tags.tag_name,
+                tag_string: mostRecentEntry.tag_string,
                 isPublic: mostRecentEntry.is_public
             });
         }
@@ -106,14 +107,19 @@ function EntryPage() {
     const handleUpdate = async () => {
         try {
             let tagsArray = [];
-            if (editableEntry.tags.trim().length > 0) {
-                tagsArray = editableEntry.tags.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+            if (editableEntry.tag_string.trim().length > 0) {
+                tagsArray = editableEntry.tag_string
+                    .trim()
+                    .split(",")
+                    .map((tag) => tag.trim())
+                    .filter((tag) => tag.length > 0);
             }
 
             const updateData = {
                 rose_text: editableEntry.rose,
                 bud_text: editableEntry.bud,
                 thorn_text: editableEntry.thorn,
+                tag_string: editableEntry.tag_string,
                 tags: tagsArray,
                 is_public: editableEntry.isPublic
             };
@@ -155,7 +161,11 @@ function EntryPage() {
         let tagsArray = [];
         if (entry.tags.trim().length > 0) {
             // split by commas
-            tagsArray = entry.tags.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+            tagsArray = entry.tags
+                .trim()
+                .split(",")
+                .map((tag) => tag.trim())
+                .filter((tag) => tag.length > 0);
         }
 
         console.log(tagsArray);
@@ -168,12 +178,7 @@ function EntryPage() {
         makePostCall(taggedEntry).then((result) => {
             console.log("makePostCall result:", result);
             if (result && result.status === 201) {
-                const updatedEntries = [
-                    result.data,
-                    ...entries
-                ];
-                setEntries(updatedEntries);
-                checkIfSubmittedToday(updatedEntries);
+                fetchUserEntries();
             }
         });
     }
@@ -197,6 +202,7 @@ function EntryPage() {
                         bud_text: entry.bud,
                         thorn_text: entry.thorn,
                         tags: entry.tags,
+                        tag_string: entry.tag_string,
                         is_public: entry.isPublic
                     })
                 }
@@ -299,9 +305,9 @@ function EntryPage() {
                                             <h3>Tags</h3>
                                             <input
                                                 type="text"
-                                                name="tags"
+                                                name="tag_string"
                                                 value={
-                                                    editableEntry.tags.tag_name
+                                                    editableEntry.tag_string
                                                 }
                                                 onChange={
                                                     handleInputChange
@@ -357,7 +363,7 @@ function EntryPage() {
                                                 {
                                                     entries[
                                                         entries.length -
-                                                        1
+                                                            1
                                                     ].rose_text
                                                 }
                                             </p>
@@ -368,7 +374,7 @@ function EntryPage() {
                                                 {
                                                     entries[
                                                         entries.length -
-                                                        1
+                                                            1
                                                     ].bud_text
                                                 }
                                             </p>
@@ -379,7 +385,7 @@ function EntryPage() {
                                                 {
                                                     entries[
                                                         entries.length -
-                                                        1
+                                                            1
                                                     ].thorn_text
                                                 }
                                             </p>
@@ -397,47 +403,6 @@ function EntryPage() {
                     ) : (
                         <NewEntry handleSubmit={handleSubmit} />
                     )}
-                    {entries.length > 0 &&
-                        !hasSubmittedToday && (
-                            <div className="recent-entry">
-                                <h2>Most Recent Entry</h2>
-                                <div className="entry-card">
-                                    <div className="entry-item">
-                                        <h3>Rose</h3>
-                                        <p>
-                                            {
-                                                entries[
-                                                    entries.length -
-                                                    1
-                                                ].rose_text
-                                            }
-                                        </p>
-                                    </div>
-                                    <div className="entry-item">
-                                        <h3>Bud</h3>
-                                        <p>
-                                            {
-                                                entries[
-                                                    entries.length -
-                                                    1
-                                                ].bud_text
-                                            }
-                                        </p>
-                                    </div>
-                                    <div className="entry-item">
-                                        <h3>Thorn</h3>
-                                        <p>
-                                            {
-                                                entries[
-                                                    entries.length -
-                                                    1
-                                                ].thorn_text
-                                            }
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
                 </>
             )}
         </div>

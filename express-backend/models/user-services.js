@@ -16,6 +16,7 @@ const ueSchema = userEntriesSchema;
 let dbConnection;
 
 // Helper function to connect to the database
+// Helper function to connect to the database
 
 function getDbConnection() {
     if (!dbConnection) {
@@ -176,8 +177,11 @@ async function addGroupToUser(userId, groupId) {
 
 async function addReactionToEntry(entryId, reactionObject) {
     const entryModel = getDbConnection().model(
+        
         "rbt_entries",
+       
         eSchema
+    
     );
 
     try {
@@ -194,32 +198,9 @@ async function addReactionToEntry(entryId, reactionObject) {
     }
 }
 
-async function updateUser(userId, updates) {
-    const userModel = getDbConnection().model("users", uSchema);
-    try {
-        const updatedUser = await userModel.findByIdAndUpdate(
-            userId,
-            {
-                ...(updates.email && {
-                    username: updates.email
-                }),
-                ...(updates.name && {
-                    first_name: updates.name
-                })
-            },
-            { new: true }
-        );
-        return updatedUser;
-    } catch (error) {
-        console.log(error);
-        return false;
-    }
-}
 
 // Create a tag object and add to tags list
 async function addTagObject(tagObject) {
-    console.log("testing");
-    console.log(tagObject);
     const tagModel = getDbConnection().model("tags", TagSchema);
 
     try {
@@ -252,6 +233,22 @@ async function addTagObject(tagObject) {
     }
 }
 
+async function updateTagObject(tagObject) {
+    const tagModel = getDbConnection().model("tags", TagSchema);
+
+    const existingTag = await tagModel.findOne({user_id: tagObject.user_id, tag_name: tagObject.tag_name});
+    if (existingTag != null) {
+        // IF THE TAG EXISTS AND ALREADY HAS THE ENTRY ID, JUST RETURN
+        if (existingTag.entries.includes(tagObject.entries[0])) {
+            return;
+        }
+    }
+
+    return await addTagObject(tagObject);
+
+
+}
+
 
 // Get a tag by its Id
 async function findTagById(tagId) {
@@ -272,6 +269,39 @@ async function getAllTagsByUserId(userId) {
     )
     return await tagModel.find({user_id: userId});
 }
+
+async function getAllTagsByEntryId(entryId) {
+    const tagModel = getDbConnection().model("tags", TagSchema);
+    return await tagModel.find({entries: { $in: [entryId]}});
+}
+
+async function deleteEntriesByEntryId(entryId) {
+    const entryModel = getDbConnection().model("rbt_entries", entrySchema);
+
+    await entryModel.findOneAndUpdate({_id: entryId}, {tags: []});
+
+
+    const tagModel = getDbConnection().model("tags", TagSchema);
+    const allTagObjects = await tagModel.find({entries: { $in: [entryId]}});
+
+    for (let i = 0; i<allTagObjects.length; i++) {
+        if (allTagObjects[i].entries.length == 1) {
+            // if the length of all entries is 1, we can delete the Tag Object itself
+            const deletedTag = await tagModel.findOneAndDelete({_id: allTagObjects[i]._id});
+
+        } else {
+            // Otherwise, we can just delete the entry from it 
+            const removedEntryTag = await tagModel.findOneAndUpdate({_id: allTagObjects[i]._id},
+                {$pull: {
+                    entries: entryId
+                }}
+            )
+        }
+
+    }
+}
+
+
 
 
 
@@ -297,6 +327,30 @@ async function addTagToEntry(tagId, entryId){
 
 
 
+
+
+async function updateUser(userId, updates) {
+    const userModel = getDbConnection().model("users", uSchema);
+    try {
+        const updatedUser = await userModel.findByIdAndUpdate(
+            userId,
+            {
+                ...(updates.email && {
+                    username: updates.email
+                }),
+                ...(updates.name && {
+                    first_name: updates.name
+                })
+            },
+            { new: true }
+        );
+        return updatedUser;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
 // Define the entry model
 const EntryModel = getDbConnection().model(
     "rbt_entries",
@@ -321,6 +375,8 @@ async function removeGroupFromUser(userId, groupId) {
 }
 
 
+
+
 export {
     addUser,
     findUserByUsername,
@@ -337,4 +393,6 @@ export {
     getAllTagsByUserId,
     addTagToEntry,
     addTagObject,
+    updateTagObject,
+    deleteEntriesByEntryId
 };

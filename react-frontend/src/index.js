@@ -137,13 +137,10 @@ const MainAppRoutes = ({ setIsLoggedIn }) => {
                     </FullScreenView>
                 }
             />
+
             <Route
                 path="/search/:tagId/:tagName"
-                element={
-                    <FullScreenView>
-                        <TagEntries />
-                    </FullScreenView>
-                }
+                element={<TagEntries />}
             />
         </Routes>
     );

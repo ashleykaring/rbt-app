@@ -18,6 +18,7 @@ import {
 } from "./search.styles"
 
 function TagEntries() {
+    console.log("test");
     const navigate = useNavigate();
     // to access the state
     const location = useLocation();
