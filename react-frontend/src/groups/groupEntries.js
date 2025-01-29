@@ -15,7 +15,6 @@ import {
     FiChevronLeft
 } from "react-icons/fi";
 import { ThemeProvider } from "styled-components";
-import { getCurrentUserId } from "../utils/auth";
 
 // Styles
 import {
@@ -45,7 +44,7 @@ import {
 /*
 RENDER
 */
-function GroupEntries() {
+function GroupEntries({ userId }) {
     // Constants & states
     const { groupId, groupName } = useParams();
     const navigate = useNavigate();
@@ -107,6 +106,7 @@ function GroupEntries() {
     // Fetch entries for the group
     const fetchEntries = async () => {
         try {
+            const currentUser = userId;
             const response = await fetch(
                 `${API_BASE_URL}/api/groups/${groupId}/entries`,
                 {
@@ -121,20 +121,20 @@ function GroupEntries() {
             const entries = await response.json();
             setEntries(entries);
         } catch (error) {
-            console.error("Error in fetchEntries:", error);
+            console.error("Error fetching entries:", error);
         }
     };
 
     // Update useEffect to remove groupUsers dependency
     useEffect(() => {
-        if (groupId) {
+        if (groupId && userId) {
             fetchEntries();
         }
-    }, [groupId]);
+    }, [groupId, userId]);
 
     // add new reaction
     const newReaction = async (emoji, user, entry) => {
-        const currentUser = await getCurrentUserId();
+        const currentUser = userId;
         if (!currentUser) {
             console.error("No user ID found");
             return;

@@ -10,11 +10,10 @@ import {
     Route,
     Navigate
 } from "react-router-dom";
-import styled from "styled-components";
+import { API_BASE_URL } from "./config.js";
 
-// Navigation
-import Header from "./navigation/Header.js";
-import Footer from "./navigation/Footer.js";
+// Layout
+import AppLayout from "./layout/AppLayout";
 
 // Styles
 import "./index.css";
@@ -36,45 +35,11 @@ import Settings from "./settings/SettingsPage.js";
 import GroupEntries from "./groups/groupEntries.js";
 import TagEntries from "./search/TagEntries.js";
 
-// Forces a phone look to the website
-const PhoneContainer = styled.div`
-    width: 100%;
-    max-width: 450px;
-    height: calc(100vh - 28px);
-    margin: 14px 0;
-    background: var(--background-color);
-    position: relative;
-    border: 0px solid #000000;
-    border-radius: 40px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-
-    @media (max-width: 400px) {
-        margin: 0;
-        height: 100vh;
-        border: none;
-        border-radius: 0;
-        box-shadow: none;
-    }
-`;
-
-// Tab views are the 5 main views with header and footer
-const TabView = ({ children }) => (
-    <>
-        <Header />
-        <main className="main-content">{children}</main>
-        <Footer />
-    </>
-);
-
-// Full screen views do not show header or footer
-const FullScreenView = ({ children }) => (
-    <main className="main-content">{children}</main>
-);
-
-const MainAppRoutes = ({ setIsLoggedIn }) => {
+const MainAppRoutes = ({
+    setIsLoggedIn,
+    setUserId,
+    userId
+}) => {
     // Check for dark mode and pass through
     useEffect(() => {
         const darkMode =
@@ -84,60 +49,26 @@ const MainAppRoutes = ({ setIsLoggedIn }) => {
 
     return (
         <Routes>
-            {/* Tab Routes - with Header & Footer */}
-            <Route
-                path="/"
-                element={
-                    <TabView>
-                        <HomePage />
-                    </TabView>
-                }
-            />
+            {/* Tab Routes */}
+            <Route path="/" element={<HomePage />} />
             <Route
                 path="/search"
-                element={
-                    <TabView>
-                        <SearchPage />
-                    </TabView>
-                }
+                element={<SearchPage userId={userId} />}
             />
-            <Route
-                path="/new-entry"
-                element={
-                    <TabView>
-                        <NewEntry />
-                    </TabView>
-                }
-            />
-            <Route
-                path="/groups"
-                element={
-                    <TabView>
-                        <GroupsPage />
-                    </TabView>
-                }
-            />
+            <Route path="/new-entry" element={<NewEntry />} />
+            <Route path="/groups" element={<GroupsPage />} />
             <Route
                 path="/settings"
                 element={
-                    <TabView>
-                        <Settings
-                            setIsLoggedIn={setIsLoggedIn}
-                        />
-                    </TabView>
+                    <Settings setIsLoggedIn={setIsLoggedIn} />
                 }
             />
 
-            {/* Full Screen Routes - no Header & Footer */}
+            {/* Full Screen Routes */}
             <Route
                 path="/groups/:groupId/:groupName"
-                element={
-                    <FullScreenView>
-                        <GroupEntries />
-                    </FullScreenView>
-                }
+                element={<GroupEntries userId={userId} />}
             />
-
             <Route
                 path="/search/:tagId/:tagName"
                 element={<TagEntries />}
@@ -146,32 +77,38 @@ const MainAppRoutes = ({ setIsLoggedIn }) => {
     );
 };
 
-// Protects the main app routes by checking if the user is logged in and routing to the account flow if not
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userId, setUserId] = useState(null);
 
-    // Checks if the user is logged in
     useEffect(() => {
         const checkAuth = async () => {
             try {
                 const response = await fetch(
-                    "http://localhost:8000/api/auth/verify",
+                    `${API_BASE_URL}/api/auth/verify`,
                     {
                         credentials: "include"
                     }
                 );
-                setIsLoggedIn(response.ok);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setIsLoggedIn(true);
+                    setUserId(data.userId);
+                } else {
+                    setIsLoggedIn(false);
+                    setUserId(null);
+                }
             } catch (error) {
                 setIsLoggedIn(false);
+                setUserId(null);
             }
         };
         checkAuth();
     }, []);
 
-    // Render the route accordingly
     return (
         <Routes>
-            {/* Account Flow */}
             <Route
                 path="/account"
                 element={
@@ -180,19 +117,22 @@ const App = () => {
                     ) : (
                         <AccountFlow
                             setIsLoggedIn={setIsLoggedIn}
+                            setUserId={setUserId}
                         />
                     )
                 }
             />
-
-            {/* Protected Routes */}
             <Route
                 path="/*"
                 element={
                     isLoggedIn ? (
-                        <MainAppRoutes
-                            setIsLoggedIn={setIsLoggedIn}
-                        />
+                        <AppLayout>
+                            <MainAppRoutes
+                                setIsLoggedIn={setIsLoggedIn}
+                                setUserId={setUserId}
+                                userId={userId}
+                            />
+                        </AppLayout>
                     ) : (
                         <Navigate to="/account" />
                     )
@@ -202,12 +142,9 @@ const App = () => {
     );
 };
 
-// Renders the app and forces a phone look to the website
 ReactDOM.render(
     <Router>
-        <PhoneContainer>
-            <App />
-        </PhoneContainer>
+        <App />
     </Router>,
     document.getElementById("root")
 );
