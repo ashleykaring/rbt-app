@@ -35,6 +35,37 @@ import Settings from "./settings/SettingsPage.js";
 import GroupEntries from "./groups/groupEntries.js";
 import TagEntries from "./search/TagEntries.js";
 
+// Register Service Worker
+if (
+    "serviceWorker" in navigator &&
+    process.env.NODE_ENV === "production"
+) {
+    window.addEventListener("load", async () => {
+        try {
+            // First check if there's already a service worker
+            const registration =
+                await navigator.serviceWorker.getRegistration();
+            if (!registration) {
+                // Only register if one doesn't exist
+                await navigator.serviceWorker.register(
+                    "/service-worker.js",
+                    {
+                        scope: "/"
+                    }
+                );
+                console.log(
+                    "ServiceWorker registration successful"
+                );
+            }
+        } catch (err) {
+            console.log(
+                "ServiceWorker registration failed: ",
+                err
+            );
+        }
+    });
+}
+
 const MainAppRoutes = ({
     setIsLoggedIn,
     setUserId,
