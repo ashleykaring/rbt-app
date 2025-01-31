@@ -7,7 +7,6 @@
     --pop-up-background: #f2c4bb; 
     --streak-counter-color: #d66c84; 
     --pop-up-text-color: #333333; 
-   
 }
 
 body.dark-mode {
@@ -29,9 +28,8 @@ body.dark-mode {
         background: var(--pop-up-background) !important; 
         color: #fff !important; 
     }
-
-    
 }
+
 .home-page {
     display: flex;
     flex-direction: column;
@@ -149,7 +147,6 @@ body.dark-mode {
     border-radius: 8px;
     font-weight: 500;
     background-color: var(--calendar-tile-background); /* Use the new variable */
-
 }
 
 .react-calendar__tile--active {
@@ -166,7 +163,6 @@ body.dark-mode {
 .react-calendar__tile:hover {
     background-color: var(--hover-background-dark-mode); 
     color: var(--hover-text-color-dark-mode); 
-    
 }
 
 .entry-date {
@@ -270,5 +266,3 @@ body.dark-mode {
     margin-top: 20px;
     font-style: italic;
 }
-
-
