@@ -114,7 +114,6 @@ function SearchPage() {
             `/search/${tag._id}/${encodeURIComponent(tag.tag_name)}`,
             {
                 state: {
-                    tag_id: tag._id,
                     tag_name: tag.tag_name,
                     entries: entryObjects
                 }
