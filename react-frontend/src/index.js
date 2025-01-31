@@ -11,6 +11,7 @@ import {
     Navigate
 } from "react-router-dom";
 import { API_BASE_URL } from "./config.js";
+import { initDB } from "./utils/db";
 
 // Layout
 import AppLayout from "./layout/AppLayout";
@@ -35,7 +36,7 @@ import Settings from "./settings/SettingsPage.js";
 import GroupEntries from "./groups/groupEntries.js";
 import TagEntries from "./search/TagEntries.js";
 
-// Register Service Worker
+// Register Service Worker (FOR PWA)
 if (
     "serviceWorker" in navigator &&
     process.env.NODE_ENV === "production"
@@ -65,6 +66,20 @@ if (
         }
     });
 }
+
+// Initialize IndexedDB
+window.addEventListener("load", () => {
+    initDB()
+        .then(() => {
+            console.log("IndexedDB initialized successfully");
+        })
+        .catch((error) => {
+            console.error(
+                "Error initializing IndexedDB:",
+                error
+            );
+        });
+});
 
 const MainAppRoutes = ({
     setIsLoggedIn,
