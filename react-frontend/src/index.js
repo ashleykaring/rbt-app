@@ -28,7 +28,7 @@ import AccountFlow from "./login/accountFlow.js";
 // Main Tab Pages
 import HomePage from "./home/HomePage.js";
 import SearchPage from "./search/SearchPage.js";
-import NewEntry from "./new-entry/EntryPage.js";
+import NewEntryPage from "./new-entry/EntryNew.js";
 import GroupsPage from "./groups/groupsPage.js";
 import Settings from "./settings/SettingsPage.js";
 
@@ -101,7 +101,10 @@ const MainAppRoutes = ({
                 path="/search"
                 element={<SearchPage userId={userId} />}
             />
-            <Route path="/new-entry" element={<NewEntry />} />
+            <Route
+                path="/new-entry"
+                element={<NewEntryPage userId={userId} />}
+            />
             <Route path="/groups" element={<GroupsPage />} />
             <Route
                 path="/settings"

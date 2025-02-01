@@ -86,13 +86,17 @@ export const entriesDB = {
         return db.put("entries", entry);
     },
 
-    async getByDate(userId, date) {
+    async getByDate(userId, date = new Date()) {
         const entries = await this.getAll(userId);
         return entries.find(
             (entry) =>
                 new Date(entry.date).toDateString() ===
                 date.toDateString()
         );
+    },
+
+    async getTodaysEntry(userId) {
+        return this.getByDate(userId, new Date());
     }
 };
 
