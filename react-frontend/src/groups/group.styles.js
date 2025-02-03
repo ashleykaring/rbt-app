@@ -290,7 +290,7 @@ export const NameInput = styled.input`
     transition: all 0.2s ease;
     color: ${(props) =>
         props.theme.mode === "dark-mode"
-            ? darkTheme.text
+            ? "#a6a6a6" /*text */
             : lightTheme.text};
 
     &::placeholder {
@@ -840,13 +840,23 @@ export const EntryDate = styled.div`
     color: #64748b;
     font-weight: 600;
     padding: 6px 12px;
-    background: #f8fafc;
+    // background: #f8fafc;
     border-radius: 20px;
     transition: all 0.2s ease;
-
+    background: ${({ theme }) =>
+        theme.mode === "dark-mode" 
+        ? "#222" 
+        : "#f8fafc"};
+    color: ${({ theme }) =>
+        theme.mode === "dark-mode" 
+        ? "#fff" 
+        : "#64748b"};
     &:hover {
         transform: translateY(-1px);
-        background: #f1f5f9;
+        background: ${({ theme }) =>
+            theme.mode === "dark-mode" 
+        ? "4a4a4a" 
+        : "#f1f5f9"};
     }
 
     span {

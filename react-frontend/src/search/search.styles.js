@@ -264,12 +264,24 @@ export const EntryDate = styled.div`
     background: #f8fafc;
     border-radius: 20px;
     transition: all 0.2s ease;
+     background: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? "#222" 
+            : "#f8fafc"}; 
+
+    /* Change text color based on theme */
+    color: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? "#ffffff" 
+            : "#64748b"}; 
 
     &:hover {
         transform: translateY(-1px);
-        background: #f1f5f9;
+        background: ${(props) =>
+            props.theme.mode === "dark-mode"
+                ? "#4a4a4a" 
+                : "#f1f5f9"};
     }
-
     span {
         font-size: 1.2rem;
     }
