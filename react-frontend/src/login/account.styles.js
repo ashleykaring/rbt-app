@@ -349,7 +349,7 @@ export const NameInput = styled(Input)`
     color: black !important;
 
     &::placeholder {
-        color: #2E2E2E !important;
+        color: #6C6565 !important;
     }
     &:focus {
         border-color: #23a6d5;
