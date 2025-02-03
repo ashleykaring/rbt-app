@@ -189,10 +189,13 @@ export const SubmitWrapper = styled.div`
     flex-direction: column;
     gap: 0.6rem;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s;
+    opacity: ${(props) =>
+        props.isEditMode && !props.hasChanges ? 0.6 : 1};
 
     &:hover {
         background-color: var(--button-color);
+        opacity: 1;
     }
 `;
 

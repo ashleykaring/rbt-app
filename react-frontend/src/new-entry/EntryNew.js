@@ -7,15 +7,9 @@ import {
     EntryField,
     EntryInput,
     EntryText,
-    EntryFieldTitle,
     TagsSection,
     TagsContainer,
     TagPill,
-    ToggleContainer,
-    ToggleSwitch,
-    ToggleSlider,
-    ToggleLabel,
-    SubmitButton,
     ErrorMessage,
     FieldLabel,
     SubmitContainer,
@@ -25,6 +19,7 @@ import {
     SubmitText
 } from "./Entry.styles";
 import { entriesDB } from "../utils/db";
+import styled from "styled-components";
 
 const theme = {
     lightPink: "rgba(242, 196, 187, 0.5)" // Lighter version of fill-color
@@ -46,6 +41,7 @@ const NewEntryPage = ({ userId }) => {
     const [editingField, setEditingField] = useState(null);
     const [error, setError] = useState("");
     const [isPublic, setIsPublic] = useState(true);
+    const [hasChanges, setHasChanges] = useState(false);
 
     // Fetch today's entry on mount
     useEffect(() => {
@@ -63,22 +59,40 @@ const NewEntryPage = ({ userId }) => {
                 updateUIFromEntry(cachedEntry);
             }
 
-            // Then fetch from API
+            // Then fetch from API - get all entries and find today's
             try {
                 const response = await fetch(
-                    "http://localhost:8000/api/entries/today",
+                    "http://localhost:8000/api/entries",
                     {
                         credentials: "include"
                     }
                 );
 
                 if (response.ok) {
-                    const data = await response.json();
-                    if (data) {
-                        updateUIFromEntry(data);
+                    const entries = await response.json();
+                    // Find today's entry if it exists
+                    const today = new Date();
+                    const todaysEntry = entries.find(
+                        (entry) => {
+                            const entryDate = new Date(
+                                entry.date
+                            );
+                            return (
+                                entryDate.getDate() ===
+                                    today.getDate() &&
+                                entryDate.getMonth() ===
+                                    today.getMonth() &&
+                                entryDate.getFullYear() ===
+                                    today.getFullYear()
+                            );
+                        }
+                    );
+
+                    if (todaysEntry) {
+                        updateUIFromEntry(todaysEntry);
                         // Update IndexedDB with latest data
                         await entriesDB.update({
-                            ...data,
+                            ...todaysEntry,
                             user_id: userId
                         });
                     }
@@ -87,7 +101,6 @@ const NewEntryPage = ({ userId }) => {
                 console.log(
                     "Network request failed, using cached data"
                 );
-                // That's okay, we'll use the cached data
             }
         } catch (error) {
             console.error("Error loading entry:", error);
@@ -100,11 +113,21 @@ const NewEntryPage = ({ userId }) => {
         setEntry({
             rose: entryData.rose_text,
             bud: entryData.bud_text,
-            thorn: entryData.thorn_text
+            thorn: entryData.thorn_text,
+            _id: entryData._id
         });
-        setTags(entryData.tags || []);
+        // Use tags array directly if available, otherwise parse tag_string
+        const tagArray = Array.isArray(entryData.tags)
+            ? entryData.tags
+            : entryData.tag_string
+            ? entryData.tag_string
+                  .split(", ")
+                  .filter((tag) => tag)
+            : [];
+        setTags(tagArray);
         setIsPublic(entryData.is_public);
         setIsEditMode(true);
+        setHasChanges(false);
     };
 
     // Tag handling
@@ -115,12 +138,14 @@ const NewEntryPage = ({ userId }) => {
             if (tag && !tags.includes(tag)) {
                 setTags([...tags, tag]);
                 setCurrentTag("");
+                setHasChanges(true);
             }
         }
     };
 
     const removeTag = (tagToRemove) => {
         setTags(tags.filter((tag) => tag !== tagToRemove));
+        setHasChanges(true);
     };
 
     // Field editing
@@ -129,6 +154,7 @@ const NewEntryPage = ({ userId }) => {
     };
 
     const handleFieldChange = (field, value) => {
+        setHasChanges(true);
         setEntry((prev) => ({
             ...prev,
             [field]: value
@@ -146,22 +172,27 @@ const NewEntryPage = ({ userId }) => {
             return;
         }
 
+        // Create tag string from array
+        const tag_string = tags.join(", ");
+
         const entryData = {
             rose_text: entry.rose,
             bud_text: entry.bud,
             thorn_text: entry.thorn,
-            tags,
-            is_public: isPublic,
-            user_id: userId,
-            date: new Date().toISOString()
+            tags: tags,
+            tag_string: tag_string,
+            is_public: isPublic
         };
 
         try {
             if (isEditMode) {
                 // Update existing entry
-                await entriesDB.update(entryData);
+                await entriesDB.update({
+                    ...entryData,
+                    _id: entry._id
+                });
                 const response = await fetch(
-                    "http://localhost:8000/api/entries",
+                    `http://localhost:8000/api/entries/${entry._id}`,
                     {
                         method: "PATCH",
                         headers: {
@@ -174,10 +205,9 @@ const NewEntryPage = ({ userId }) => {
                 if (!response.ok)
                     throw new Error("Failed to update entry");
                 const data = await response.json();
-                updateUIFromEntry(data);
+                updateUIFromEntry(data.entry);
             } else {
                 // Create new entry
-                await entriesDB.add(entryData);
                 const response = await fetch(
                     "http://localhost:8000/api/entries",
                     {
@@ -189,11 +219,18 @@ const NewEntryPage = ({ userId }) => {
                         body: JSON.stringify(entryData)
                     }
                 );
+
                 if (!response.ok)
                     throw new Error("Failed to create entry");
-                const data = await response.json();
 
-                // Important: After successful creation, load today's entry fresh
+                const data = await response.json();
+                // Update IndexedDB after successful API call
+                await entriesDB.add({
+                    ...data,
+                    user_id: userId
+                });
+
+                // After successful creation, load today's entry fresh
                 await loadTodaysEntry();
             }
         } catch (error) {
@@ -203,7 +240,7 @@ const NewEntryPage = ({ userId }) => {
     };
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <div></div>;
     }
 
     return (
@@ -279,7 +316,11 @@ const NewEntryPage = ({ userId }) => {
                 </EntryField>
 
                 <SubmitContainer>
-                    <SubmitWrapper onClick={handleSubmit}>
+                    <SubmitWrapper
+                        onClick={handleSubmit}
+                        isEditMode={isEditMode}
+                        hasChanges={hasChanges}
+                    >
                         <SubmitText>
                             {isEditMode
                                 ? "Save Changes"
