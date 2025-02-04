@@ -174,6 +174,7 @@ async function addGroupToUser(userId, groupId) {
     }
 }
 
+
 // Adds a reaction object to an Entry document
 
 async function addReactionToEntry(entryId, reactionObject) {
