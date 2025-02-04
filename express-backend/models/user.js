@@ -7,7 +7,6 @@ const UserSchema = new mongoose.Schema({
     password: String,
     first_name: String,
     entries: mongoose.Types.ObjectId,
-    groups: [mongoose.Types.ObjectId],
 });
 
 // ENTRY SCHEMA
@@ -34,7 +33,7 @@ const EntrySchema = new mongoose.Schema({
 
 const UserEntriesSchema = new mongoose.Schema({
     user_id: mongoose.Types.ObjectId,
-    entries: [mongoose.Types.ObjectId],
+    entries: [mongoose.Types.ObjectId]
 });
 
 // GROUP SCHEMA
@@ -42,8 +41,14 @@ const UserEntriesSchema = new mongoose.Schema({
 const GroupSchema = new mongoose.Schema({
     group_code: String,
     name: String,
-    users: [mongoose.Types.ObjectId],
 });
+
+// MEMBER SCHEMA
+
+const MemberSchema = new mongoose.Schema({
+    user_id: mongoose.Types.ObjectId,
+    group_id: mongoose.Types.ObjectId,
+}) 
 
 // TAG SCHEMA
 const TagSchema = new mongoose.Schema({

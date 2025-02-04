@@ -4,8 +4,6 @@ IMPORTS
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
-import { CiFolderOn } from "react-icons/ci";
-import { MdFolderOpen } from "react-icons/md";
 import { IoFolderOutline } from "react-icons/io5";
 
 import {
@@ -118,7 +116,6 @@ function SearchPage({ userId }) {
             )}`,
             {
                 state: {
-                    tag_id: tag._id,
                     tag_name: tag.tag_name,
                     entries: entryObjects
                 }

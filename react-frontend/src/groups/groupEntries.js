@@ -1,7 +1,7 @@
 /*
 IMPORTS
 */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import axios from "axios";
 import {
     useParams,
@@ -60,7 +60,7 @@ function GroupEntries({ userId }) {
 
     const API_BASE_URL = "http://localhost:8000";
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const currentTheme = localStorage.getItem("theme");
         setTheme({ mode: currentTheme || "light-mode" });
     }, []);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
 import { FiChevronLeft } from "react-icons/fi";
@@ -18,18 +18,16 @@ import {
 } from "./search.styles"
 
 function TagEntries() {
-    console.log("test");
     const navigate = useNavigate();
     // to access the state
     const location = useLocation();
     // use location.state or none if no entries
-    const tagId = location.state.tag_id;
     const tagEntries = location.state.entries;
     const tagName = location.state.tag_name;
     const [theme, setTheme] = useState({ mode: "light-mode" });
 
     // set theme
-    useEffect(() => {
+    useLayoutEffect(() => {
         const currentTheme = localStorage.getItem("theme");
         setTheme({ mode: currentTheme || "light-mode" });
     }, []);

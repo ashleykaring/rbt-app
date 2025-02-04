@@ -3,7 +3,8 @@ import {
     userSchema,
     entrySchema,
     userEntriesSchema,
-    TagSchema
+    TagSchema,
+    GroupSchema
 } from "./user.js";
 
 import dotenv from "dotenv";

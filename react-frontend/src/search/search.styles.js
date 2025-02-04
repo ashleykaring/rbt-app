@@ -1,24 +1,5 @@
 import styled from "styled-components";
-
-const lightTheme = {
-    background: "#f5f5f5",
-    text: "#2c3e50",
-    secondaryText: "#64748b",
-    cardBackground: "white",
-    inputBackground: "#f8f9fa",
-    borderColor: "#e9ecef",
-    hoverBackground: "#f1f5f9"
-};
-
-const darkTheme = {
-    background: "#333333",
-    text: "#f0f0f0",
-    secondaryText: "#a0aec0",
-    cardBackground: "#2d2d2d",
-    inputBackground: "#333333",
-    borderColor: "#404040",
-    hoverBackground: "#404040"
-};
+import { lightTheme, darkTheme } from "../layout/themes.js";
 
 export const Title = styled.h1`
     font-size: 2.4rem;
@@ -90,7 +71,7 @@ export const TagFolder = styled.div`
     cursor: pointer;
     transition: all 0.3s ease;
     background: ${(props) =>
-        props.theme.mode === "dark-mode" 
+        props.theme.mode === "dark-mode"
             ? "linear-gradient(to right,rgb(197, 141, 170),rgb(152, 34, 83))" // dark
             : "linear-gradient(to right, #fadadd, #f2c4bb)"};
     color: white;
@@ -283,12 +264,22 @@ export const EntryDate = styled.div`
     background: #f8fafc;
     border-radius: 20px;
     transition: all 0.2s ease;
+    background: ${(props) =>
+        props.theme.mode === "dark-mode" ? "#222" : "#f8fafc"};
+
+    /* Change text color based on theme */
+    color: ${(props) =>
+        props.theme.mode === "dark-mode"
+            ? "#ffffff"
+            : "#64748b"};
 
     &:hover {
         transform: translateY(-1px);
-        background: #f1f5f9;
+        background: ${(props) =>
+            props.theme.mode === "dark-mode"
+                ? "#4a4a4a"
+                : "#f1f5f9"};
     }
-
     span {
         font-size: 1.2rem;
     }

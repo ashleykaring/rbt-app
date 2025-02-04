@@ -10,7 +10,7 @@ import {
     Route,
     Navigate
 } from "react-router-dom";
-import { API_BASE_URL } from "./config.js";
+import { API_BASE_URL } from "./utils/config.js";
 import { initDB } from "./utils/db";
 
 // Layout
@@ -28,7 +28,7 @@ import AccountFlow from "./login/accountFlow.js";
 // Main Tab Pages
 import HomePage from "./home/HomePage.js";
 import SearchPage from "./search/SearchPage.js";
-import NewEntryPage from "./new-entry/EntryNew.js";
+import NewEntryPage from "./new-entry/EntryPage.js";
 import GroupsPage from "./groups/groupsPage.js";
 import Settings from "./settings/SettingsPage.js";
 
