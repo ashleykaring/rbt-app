@@ -8,7 +8,6 @@ import {
     FaSun,
     FaSignOutAlt,
     FaSync,
-    FaTimes,
     FaSignOutAlt as FaLeaveGroup
 } from "react-icons/fa";
 import * as S from "./SettingsStyles";

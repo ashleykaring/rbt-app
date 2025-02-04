@@ -1,24 +1,5 @@
 import styled from "styled-components";
-
-const lightTheme = {
-    background: "white",
-    text: "#2c3e50",
-    secondaryText: "#64748b",
-    cardBackground: "white",
-    inputBackground: "#f8f9fa",
-    borderColor: "#e9ecef",
-    hoverBackground: "#f1f5f9"
-};
-
-const darkTheme = {
-    background: "#333333",
-    text: "#f0f0f0",
-    secondaryText: "#a0aec0",
-    cardBackground: "#2d2d2d",
-    inputBackground: "#333333",
-    borderColor: "#404040",
-    hoverBackground: "#404040"
-};
+import { lightTheme, darkTheme } from "../themes";
 
 const gradients = [
     "linear-gradient(135deg, #D66C84 0%, #F0C5BC 100%)",
@@ -309,7 +290,7 @@ export const NameInput = styled.input`
     transition: all 0.2s ease;
     color: ${(props) =>
         props.theme.mode === "dark-mode"
-            ? darkTheme.text
+            ? "#a6a6a6" /*text */
             : lightTheme.text};
 
     &::placeholder {
@@ -859,13 +840,23 @@ export const EntryDate = styled.div`
     color: #64748b;
     font-weight: 600;
     padding: 6px 12px;
-    background: #f8fafc;
+    // background: #f8fafc;
     border-radius: 20px;
     transition: all 0.2s ease;
-
+    background: ${({ theme }) =>
+        theme.mode === "dark-mode" 
+        ? "#222" 
+        : "#f8fafc"};
+    color: ${({ theme }) =>
+        theme.mode === "dark-mode" 
+        ? "#fff" 
+        : "#64748b"};
     &:hover {
         transform: translateY(-1px);
-        background: #f1f5f9;
+        background: ${({ theme }) =>
+            theme.mode === "dark-mode" 
+        ? "4a4a4a" 
+        : "#f1f5f9"};
     }
 
     span {

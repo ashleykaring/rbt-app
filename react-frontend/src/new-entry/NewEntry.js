@@ -23,19 +23,19 @@ function NewEntry(props) {
     function submitEntry() {
         // filter the tags before submission
         // let tagsArray = [];
-        // if (entry.tags.trim().length > 0) {
+        // if (entry.tag_string && entry.tag_string.length > 0) {
         //     // split by commas
-        //     tagsArray = entry.tags.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+        //     tagsArray = entry.tag_string.trim().split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
         // }
 
-        // const taggedEntry = {
-        //     ...entry,
-        //     tags: tagsArray // still include if empty
-        // };
+        const taggedEntry = {
+            ...entry,
+            tags: entry.tag_string // still include if empty
+        };
 
-        console.log("Submitting entry:", entry);
-        if (entry.rose && entry.bud && entry.thorn) {
-            props.handleSubmit(entry);
+        console.log("Submitting entry:", taggedEntry);
+        if (taggedEntry.rose && taggedEntry.bud && taggedEntry.thorn) {
+            props.handleSubmit(taggedEntry);
         } else {
             setErrorMessage("Please fill in all fields");
         }
@@ -70,11 +70,11 @@ function NewEntry(props) {
                 value={entry.thorn}
                 onChange={handleChange}
             />
-            <label htmlFor="tags">Tags</label>
+            <label htmlFor="tag_string">Tags</label>
             <input
                 type="text"
                 name="tag_string"
-                id="tags"
+                id="tag_string"
                 placeholder="Add tags (separated by commas)"
                 value={entry.tag_string}
                 onChange={handleChange}

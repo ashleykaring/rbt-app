@@ -1,5 +1,4 @@
 :root {
-    --text-color: #2c3e50;
     --fill-color: #f2c4bb;
     --button-color: #eab3a9;
     --input-color: #e4e4e4;
@@ -7,7 +6,6 @@
 }
 
 body.dark-mode {
-    --text-color: #f0f0f0;
     --fill-color: #d58a94;
     --button-color: #c8808a;
     --input-color: #444444;
@@ -22,7 +20,6 @@ body.dark-mode {
     .entry-date::after {
         background-color: #f6becb; /* Lighter pink for better contrast */
     }
-    
 }
 
 * {
@@ -40,7 +37,7 @@ body {
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f8f8f8;
+    background-color: var(--background-color)
 }
 
 .container {
@@ -64,7 +61,7 @@ form {
 label {
     font-weight: 600;
     font-size: 16px;
-    color: var(--text-color);
+    color: var(--text-primary);
 }
 
 p {
@@ -113,7 +110,7 @@ input[type="button"]:hover,
 .recent-entry h2 {
     font-size: 30px;
     margin-bottom: 5px;
-    color: var(--text-color);
+    color: var(--text-primary);
 }
 
 .entry-card {
@@ -134,19 +131,19 @@ input[type="button"]:hover,
 
 .entry-item h3 {
     font-size: 16px;
-    color: var(--text-color);
+    color: var(--text-primary);
     margin-bottom: 5px;
 }
 
 .entry-item p {
     font-size: 16px;
-    color: var(--text-color);
+    color: var(--text-primary);
 }
 
 .entry-header {
     font-size: 2.2rem;
     font-weight: 700;
-    color: var(--text-color);
+    color: var(--text-primary);
     margin: 1rem 0 2rem;
     position: relative;
     padding-left: 1rem;
@@ -222,13 +219,13 @@ input[type="button"]:hover,
 
 .entry-item h3 {
     font-size: 16px;
-    color: var(--text-color);
+    color: var(--text-primary);
     margin-bottom: 5px;
 }
 
 .entry-item p {
     font-size: 16px;
-    color: var(--text-color);
+    color: var(--text-primary);
 }
 
 .toggle-container {
@@ -284,6 +281,6 @@ input:checked + .toggle-slider:before {
 }
 
 .toggle-label {
-    color: var(--text-color);
+    color: var(--text-primary);
     font-size: 14px;
 }

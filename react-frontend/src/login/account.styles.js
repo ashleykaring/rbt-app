@@ -341,12 +341,16 @@ export const UserName = styled.span`
 `;
 
 export const NameInput = styled(Input)`
-    background: white;
+    background: white !important;
     border: 2px solid #ddd;
     border-radius: 8px;
     font-size: 16px;
     transition: all 0.3s ease;
+    color: black !important;
 
+    &::placeholder {
+        color: #6C6565 !important;
+    }
     &:focus {
         border-color: #23a6d5;
         box-shadow: 0 0 0 3px rgba(35, 166, 213, 0.1);

@@ -267,12 +267,16 @@ ENTRIES
  */
 app.post("/api/entries", authMiddleware, async (req, res) => {
     try {
-        const { rose_text, bud_text, thorn_text, is_public, tags} =
-            req.body;
+        const {
+            rose_text,
+            bud_text,
+            thorn_text,
+            is_public,
+            tags
+        } = req.body;
         const userId = new mongoose.Types.ObjectId(req.userId);
 
         const finalTagString = tags.join(", ");
-
 
         if (!rose_text || !bud_text || !thorn_text) {
             return res
@@ -290,7 +294,6 @@ app.post("/api/entries", authMiddleware, async (req, res) => {
             date: Date.now()
         };
 
-
         const newEntry = await addEntry(entry);
         if (!newEntry) {
             return res
@@ -298,26 +301,25 @@ app.post("/api/entries", authMiddleware, async (req, res) => {
                 .json({ error: "Error creating entry" });
         }
 
-        
-        // ADD TAGS 
+        // ADD TAGS
 
         const tagStrings = req.body.tags; // array of strings
         const tagIdArray = [];
 
         // call addTagObject on each given tag -> automatically checks if it exists or not
-        for (let i = 0; i<tagStrings.length; i++) {
+        for (let i = 0; i < tagStrings.length; i++) {
             let tempTagObject = {
                 tag_name: tagStrings[i],
                 user_id: userId,
                 entries: [newEntry._id]
             };
             const tagId = await addTagObject(tempTagObject);
-            const tempEntry = await addTagToEntry(tagId, newEntry._id);
+            const tempEntry = await addTagToEntry(
+                tagId,
+                newEntry._id
+            );
             tagIdArray.push(tagId);
         }
-
-
-
 
         res.status(201).json(newEntry);
     } catch (err) {
@@ -370,43 +372,40 @@ app.patch(
             }
 
             const updatedEntry =
-            await EntryModel.findByIdAndUpdate(
-                entryId,
-                {
-                    rose_text,
-                    bud_text,
-                    thorn_text,
-                    is_public,
-                    tag_string: initialTagString
-                },
-                { new: true }
-            );
+                await EntryModel.findByIdAndUpdate(
+                    entryId,
+                    {
+                        rose_text,
+                        bud_text,
+                        thorn_text,
+                        is_public,
+                        tag_string: initialTagString
+                    },
+                    { new: true }
+                );
 
             // UPDATE TAG TABLE
 
             const updatedTags = req.body.tags;
 
             await deleteEntriesByEntryId(entryId);
-            
-            
+
             // Compare each tag and see if it already exists in the database
             const tagIdArray = [];
-            
-            for (let i = 0; i<updatedTags.length; i++) {
+
+            for (let i = 0; i < updatedTags.length; i++) {
                 let tempTagObject = {
                     tag_name: updatedTags[i],
                     user_id: userId,
                     entries: [entryId]
-                  };
+                };
                 const tagId = await addTagObject(tempTagObject);
-                const tempEntry = await addTagToEntry(tagId, entryId);
+                const tempEntry = await addTagToEntry(
+                    tagId,
+                    entryId
+                );
                 tagIdArray.push(tagId);
             }
-
-
-
-
-
 
             res.status(200).json({
                 message: "Entry updated successfully",
@@ -727,20 +726,23 @@ app.get("/users/:userId/recent", async (req, res) => {
 });
 
 // GET SINGULAR ENTRY BY ID
-app.get("/api/entries/:entryId", authMiddleware, async (req, res) => {
-    try {
-        const entryId = req.params.entryId;
-        const entries = await getEntryById(entryId);
-        console.log(entries);
-        res.json(entries[0]);
-    } catch (err) {
-        console.error("Error fetching entry:", err);
-        res.status(500).json({
-            error: "Error fetching entry"
-        });
+app.get(
+    "/api/entries/:entryId",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            const entryId = req.params.entryId;
+            const entries = await getEntryById(entryId);
+            console.log(entries);
+            res.json(entries[0]);
+        } catch (err) {
+            console.error("Error fetching entry:", err);
+            res.status(500).json({
+                error: "Error fetching entry"
+            });
+        }
     }
-});
-
+);
 
 // GET GROUP ENTRIES
 app.get(
@@ -838,7 +840,6 @@ app.post("/api/logout", authMiddleware, async (req, res) => {
     }
 });
 
-
 // ADD REACTION TO ENTRY
 app.put(
     "/entries/reaction",
@@ -906,24 +907,30 @@ app.put(
 
 // GET ALL TAGS BY USER
 
-app.get("/api/entries/tags/:userId", authMiddleware, async (req, res) => {
-    try {
-        console.log("TESTING");
-        const userId = new mongoose.Types.ObjectId(req.params.userId);
-        console.log("Fetching all tags for userId:", userId);
-        const tags = await getAllTagsByUserId(userId);
-        console.log("Retrieved entries:", tags);
-        res.json(tags);
-
-    } catch (err) {
-        console.error("Error fetching tags:", err);
-        res.status(500).json({
-            error: "Error fetching tags"
-        });
+app.get(
+    "/api/entries/tags/:userId",
+    authMiddleware,
+    async (req, res) => {
+        try {
+            console.log("TESTING");
+            const userId = new mongoose.Types.ObjectId(
+                req.params.userId
+            );
+            console.log(
+                "Fetching all tags for userId:",
+                userId
+            );
+            const tags = await getAllTagsByUserId(userId);
+            console.log("Retrieved entries:", tags);
+            res.json(tags);
+        } catch (err) {
+            console.error("Error fetching tags:", err);
+            res.status(500).json({
+                error: "Error fetching tags"
+            });
+        }
     }
-
-
-});
+);
 
 // VERIFY AUTH
 app.get("/api/auth/verify", authMiddleware, (req, res) => {
