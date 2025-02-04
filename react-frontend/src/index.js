@@ -36,6 +36,9 @@ import Settings from "./settings/SettingsPage.js";
 import GroupEntries from "./groups/groupEntries.js";
 import TagEntries from "./search/TagEntries.js";
 
+/* 
+SERVICE WORKER & INDEXED-DB REGISTRATION
+ */
 // Register Service Worker (FOR PWA)
 if (
     "serviceWorker" in navigator &&
@@ -67,7 +70,7 @@ if (
     });
 }
 
-// Initialize IndexedDB
+// Initialize IndexedDB (For PWA)
 window.addEventListener("load", () => {
     initDB()
         .then(() => {
@@ -81,6 +84,10 @@ window.addEventListener("load", () => {
         });
 });
 
+/* 
+MAIN APP ROUTES
+(Tab and full screen routes)
+ */
 const MainAppRoutes = ({
     setIsLoggedIn,
     setUserId,
@@ -126,6 +133,10 @@ const MainAppRoutes = ({
     );
 };
 
+/* 
+AUTHENTICATION ROUTES
+(Account flow and authentication check)
+ */
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userId, setUserId] = useState(null);
@@ -191,6 +202,9 @@ const App = () => {
     );
 };
 
+/* 
+RENDER APP
+ */
 ReactDOM.render(
     <Router>
         <App />
