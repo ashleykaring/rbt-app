@@ -18,8 +18,7 @@ import {
     SubmitWrapper,
     SubmitText
 } from "./Entry.styles";
-import { entriesDB } from "../utils/db";
-import styled from "styled-components";
+import { entriesDB } from "../utils/db"; // --Import the database functions
 
 const theme = {
     lightPink: "rgba(242, 196, 187, 0.5)" // Lighter version of fill-color
@@ -48,19 +47,28 @@ const NewEntryPage = ({ userId }) => {
         loadTodaysEntry();
     }, []);
 
+    /* 
+    --This is the function to pay attention to if trying to understand IndexedDB
+    */
     const loadTodaysEntry = async () => {
+        // Start loading state
         setIsLoading(true);
+
         try {
             // First try IndexedDB
+            // Notice how it uses the function from the db.js file (and has access to all entriesDB functions via the import)
             const cachedEntry = await entriesDB.getTodaysEntry(
                 userId
             );
+
+            // If you find an entry in the IndexedDB, use that
             if (cachedEntry) {
                 updateUIFromEntry(cachedEntry);
             }
 
-            // Then fetch from API - get all entries and find today's
+            // Then regardless of what happens, fetch from API - get all entries and find today's
             try {
+                // Same old way of fetching
                 const response = await fetch(
                     "http://localhost:8000/api/entries",
                     {
@@ -68,9 +76,12 @@ const NewEntryPage = ({ userId }) => {
                     }
                 );
 
+                // You got a response, so now you can do stuff with it
                 if (response.ok) {
                     const entries = await response.json();
+
                     // Find today's entry if it exists
+                    // (Logic should probably be in the backend but eh)
                     const today = new Date();
                     const todaysEntry = entries.find(
                         (entry) => {
@@ -89,8 +100,12 @@ const NewEntryPage = ({ userId }) => {
                     );
 
                     if (todaysEntry) {
+                        // If you do find an entry you need to:
+
+                        // 1. Update the UI
                         updateUIFromEntry(todaysEntry);
-                        // Update IndexedDB with latest data
+
+                        // 2. Update the IndexedDB with the latest data
                         await entriesDB.update({
                             ...todaysEntry,
                             user_id: userId
@@ -105,6 +120,8 @@ const NewEntryPage = ({ userId }) => {
         } catch (error) {
             console.error("Error loading entry:", error);
         }
+
+        // When done stop loading state
         setIsLoading(false);
     };
 
@@ -165,7 +182,7 @@ const NewEntryPage = ({ userId }) => {
         setEditingField(null);
     };
 
-    // Submit handling
+    // You can reference the logic from this one too, but it's more confusing because it's dealing with a post and update call from the same button based on state
     const handleSubmit = async () => {
         if (!entry.rose || !entry.bud || !entry.thorn) {
             setError("Please fill in all fields");

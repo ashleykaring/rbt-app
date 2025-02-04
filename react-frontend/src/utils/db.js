@@ -1,9 +1,14 @@
+// -- Where you need to put everything for the IndexedDB
 import { openDB } from "idb";
 
+// Do not change these for now
 const DB_NAME = "rbtApp";
 const DB_VERSION = 1;
 
 // Database initialization
+/*
+I did my best to make this include everything. It is possible that you may need to add something. This runs once when the app is loaded intiially, and basiclaly just creates the database. So if you're trying to access a field, or add a field, it needs to be in here or the IndexedDB will not know it exists.
+*/
 export const initDB = async () => {
     const db = await openDB(DB_NAME, DB_VERSION, {
         upgrade(db) {
@@ -58,6 +63,23 @@ export const initDB = async () => {
         }
     });
     return db;
+};
+
+/*
+Below this are all the operations that can then be performed on the database. I just generated some of the common ones, but you will certainly need to add more. The functions SHOULD match the database calls, because any call you make to the cloud database, should be first made to this, and then the cloud, and then this again.
+*/
+
+// User operations
+export const userDB = {
+    async get(userId) {
+        const db = await initDB();
+        return db.get("users", userId);
+    },
+
+    async update(user) {
+        const db = await initDB();
+        return db.put("users", user);
+    }
 };
 
 // Entries operations
@@ -135,18 +157,5 @@ export const tagsDB = {
     async add(tag) {
         const db = await initDB();
         return db.add("tags", tag);
-    }
-};
-
-// User operations
-export const userDB = {
-    async get(userId) {
-        const db = await initDB();
-        return db.get("users", userId);
-    },
-
-    async update(user) {
-        const db = await initDB();
-        return db.put("users", user);
     }
 };
