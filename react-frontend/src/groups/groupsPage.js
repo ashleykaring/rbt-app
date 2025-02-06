@@ -106,12 +106,12 @@ function GroupsPage() {
             <Subtitle>Your Groups</Subtitle>
             {userGroups.map((group) => (
                 <GroupCard
-                    key={group._id}
-                    gradient={getGradient(group._id)}
-                    onClick={() => handleGroupClick(group)}
+                    key={group[0]._id}
+                    gradient={getGradient(group[0]._id)}
+                    onClick={() => handleGroupClick(group[0])}
                 >
                     <GroupCardContent>
-                        <h3>{group.name}</h3>
+                        <h3>{group[0].name}</h3>
                         <ChevronIcon>
                             <IoChevronForward />
                         </ChevronIcon>

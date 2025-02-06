@@ -29,7 +29,7 @@ import {
     addTagObject,
     addTagToEntry,
     updateTagObject,
-    deleteEntriesByEntryId
+    deleteEntriesByEntryId,
 } from "./models/user-services.js";
 
 // Services
@@ -37,7 +37,9 @@ import {
     createGroup,
     findGroupByCode,
     joinGroup,
-    findGroupById
+    findGroupById,
+    getAllGroups,
+    getAllUsers
 } from "./models/group-services.js";
 
 // JWT Utils
@@ -597,12 +599,13 @@ app.post("/api/groups", authMiddleware, async (req, res) => {
 
         const group = {
             group_code,
-            name,
-            users: [userId]
+            name
         };
 
         const newGroup = await createGroup(group);
+        const newMember = await joinGroup(userId, newGroup._id);
         console.log("Group created successfully:", newGroup);
+        console.log("Owner has joined group:", newMember);
 
         if (!newGroup) {
             return res
@@ -640,14 +643,25 @@ app.get("/api/groups", authMiddleware, async (req, res) => {
         }
 
         // Get full group details for each group ID
+        const userGroups = await getAllGroups(userId); // ONLY HAS ONE ID
+
+
+        /*
         const userGroups = await Promise.all(
             user[0].groups.map((groupId) =>
                 findGroupById(groupId)
             )
         );
+        */
 
-        // Flatten the array since findGroupById returns an array
-        const groups = userGroups.map((group) => group[0]);
+        const groups = await Promise.all(
+            userGroups.map((member) => 
+                findGroupById(member.group_id)
+            )
+        );
+
+
+
 
         console.log("Retrieved groups:", groups);
         res.json(groups);
@@ -762,12 +776,18 @@ app.get(
                     .json({ error: "Group not found" });
             }
 
+            const allUsers = await getAllUsers(groupId);  // LIST OF MEMBER OBJECTS
+
+
+
             // Get recent entries for all users in one query
             const recentEntries = await Promise.all(
-                group[0].users.map(async (userId) => {
+                allUsers.map(async (currentUser) => {
                     const userEntries =
-                        await getUserEntriesByUserId(userId);
-                    const userInfo = await findUserById(userId);
+                        await getUserEntriesByUserId(currentUser.user_id);
+
+
+                    const userInfo = await findUserById(currentUser.user_id);
 
                     if (
                         !userEntries ||
@@ -795,7 +815,7 @@ app.get(
                             currentEntry[0].is_public
                         ) {
                             return {
-                                userId,
+                                userId: currentUser.user_id,
                                 userName: name,
                                 ...currentEntry[0]._doc
                             };
@@ -804,6 +824,8 @@ app.get(
                     return null;
                 })
             );
+
+
 
             // Filter out null entries and send
             res.json(
