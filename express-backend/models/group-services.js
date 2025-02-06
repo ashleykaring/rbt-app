@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { GroupSchema } from "./user.js";
+import { GroupSchema, MemberSchema} from "./user.js";
 import { addGroupToUser } from "./user-services.js";
 
 import dotenv from "dotenv";
@@ -62,7 +62,7 @@ async function findGroupById(id) {
 }
 
 // Adds a UserID to a group document's list of members 
-
+/*
 async function joinGroup(userId, groupId) {
     const groupModel = getDbConnection().model(
         "groups",
@@ -82,6 +82,27 @@ async function joinGroup(userId, groupId) {
     }
 
     return await addGroupToUser(userId, groupId);
+}
+*/
+
+async function joinGroup(userId, groupId) {
+    const memberModel = getDbConnection().model(
+        "members",
+        MemberSchema
+    );
+
+
+    try {
+        const memberObject = new memberModel({user_id: userId, group_id: groupId});
+        const savedMember = await memberObject.save();
+        return savedMember;
+
+    } catch (err) {
+        console.log(err);
+        return false;
+
+    }
+
 }
 
 export {
