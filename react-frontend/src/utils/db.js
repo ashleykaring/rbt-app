@@ -1,4 +1,4 @@
-// -- Where you need to put everything for the IndexedDB
+// -=- Where you need to put everything for the IndexedDB
 import { openDB } from "idb";
 
 // Do not change these for now

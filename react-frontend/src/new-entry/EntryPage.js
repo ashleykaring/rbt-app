@@ -18,7 +18,7 @@ import {
     SubmitWrapper,
     SubmitText
 } from "./Entry.styles";
-import { entriesDB } from "../utils/db"; // --Import the database functions
+import { entriesDB } from "../utils/db"; // -=-Import the database functions
 
 const theme = {
     lightPink: "rgba(242, 196, 187, 0.5)" // Lighter version of fill-color
@@ -48,7 +48,7 @@ const NewEntryPage = ({ userId }) => {
     }, []);
 
     /* 
-    --This is the function to pay attention to if trying to understand IndexedDB
+    -=-This is the function to pay attention to if trying to understand IndexedDB
     */
     const loadTodaysEntry = async () => {
         // Start loading state
