@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa";
 import * as S from "./SettingsStyles";
 import { createGlobalStyle } from "styled-components";
+import { clearDB } from "../utils/db";
 
 export const GlobalStyle = createGlobalStyle`
     @keyframes spin {
@@ -158,6 +159,9 @@ function Settings({ setIsLoggedIn }) {
             );
 
             if (!response.ok) throw new Error("Logout failed");
+
+            // Clear IndexedDB before logging out
+            await clearDB();
             setIsLoggedIn(false);
             navigate("/account");
         } catch (error) {
