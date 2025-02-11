@@ -28,7 +28,10 @@ function Header() {
     const viewConfigs = {
         "/": { icon: <MdHome />, title: "Home" },
         "/search": { icon: <MdSearch />, title: "Search" },
-        "/new-entry": { icon: <IoRose />, title: "New Entry" },
+        "/new-entry": {
+            icon: <IoRose />,
+            title: "Your RBT"
+        },
         "/groups": { icon: <MdGroups />, title: "Groups" },
         "/settings": { icon: <MdSettings />, title: "Settings" }
     };

@@ -90,3 +90,11 @@ A mobile-first application for creating and sharing Rose, Bud, Thorn reflections
 # Figma Prototype
 
 https://www.figma.com/proto/k6hVGwym15fjauvJcAr6bc/RBT?node-id=1-17&t=WMD2GRyX0BEHsMKm-1
+
+# Testing on Phone
+
+Run setup:
+npm run ngrok:setup
+
+Run connection:
+ngrok http 3000

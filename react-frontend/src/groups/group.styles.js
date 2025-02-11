@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { lightTheme, darkTheme } from "../themes";
+import { lightTheme, darkTheme } from "../layout/themes";
 
 const gradients = [
     "linear-gradient(135deg, #D66C84 0%, #F0C5BC 100%)",
@@ -845,19 +845,13 @@ export const EntryDate = styled.div`
     border-radius: 20px;
     transition: all 0.2s ease;
     background: ${({ theme }) =>
-        theme.mode === "dark-mode" 
-        ? "#222" 
-        : "#f8fafc"};
+        theme.mode === "dark-mode" ? "#222" : "#f8fafc"};
     color: ${({ theme }) =>
-        theme.mode === "dark-mode" 
-        ? "#fff" 
-        : "#64748b"};
+        theme.mode === "dark-mode" ? "#fff" : "#64748b"};
     &:hover {
         transform: translateY(-1px);
         background: ${({ theme }) =>
-            theme.mode === "dark-mode" 
-        ? "4a4a4a" 
-        : "#f1f5f9"};
+            theme.mode === "dark-mode" ? "4a4a4a" : "#f1f5f9"};
     }
 
     span {

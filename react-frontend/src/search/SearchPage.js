@@ -2,7 +2,6 @@
 IMPORTS
  */
 import React, { useState, useEffect } from "react";
-import { getCurrentUserId } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
 import { IoFolderOutline } from "react-icons/io5";
@@ -40,7 +39,7 @@ const API_BASE_URL = "http://localhost:8000";
 //             <SearchText>Search Page</SearchText>
 //         </SearchContainer>
 
-function SearchPage() {
+function SearchPage({ userId }) {
     const [tags, setTags] = useState([]);
     const [theme, setTheme] = useState({ mode: "light-mode" });
     const navigate = useNavigate();
@@ -55,7 +54,7 @@ function SearchPage() {
             const response = await fetch(
                 `${API_BASE_URL}/api/entries/${entryId}`,
                 {
-                    credentials: "include" 
+                    credentials: "include"
                 }
             );
 
@@ -74,8 +73,6 @@ function SearchPage() {
     // fetch user's tags
     const fetchTags = async () => {
         try {
-            const userId = await getCurrentUserId();
-
             const response = await fetch(
                 `${API_BASE_URL}/api/entries/tags/${userId}`,
                 {
@@ -85,33 +82,38 @@ function SearchPage() {
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(data.message || "Failed to fetch tags");
+                throw new Error(
+                    data.message || "Failed to fetch tags"
+                );
             }
 
             // set tags with entries data
             const tags = await response.json();
             console.log("User's tags fetched:", tags);
             setTags(tags);
-
-        } catch (err) {
-            console.error("Error fetching tags:", err);
+        } catch (error) {
+            console.error("Error fetching tags:", error);
         }
     };
 
     useEffect(() => {
-        fetchTags();
-    }, []);
+        if (userId) {
+            fetchTags();
+        }
+    }, [userId]);
 
     // navigates to the tag's folder and passes in tag id and entries
     const navigateToTag = async (tag) => {
         const entryObjects = [];
-        for (let i = 0; i<tag.entries.length; i++) {
+        for (let i = 0; i < tag.entries.length; i++) {
             let currentEntry = await fetchEntry(tag.entries[i]);
             entryObjects.push(currentEntry);
         }
 
         navigate(
-            `/search/${tag._id}/${encodeURIComponent(tag.tag_name)}`,
+            `/search/${tag._id}/${encodeURIComponent(
+                tag.tag_name
+            )}`,
             {
                 state: {
                     tag_name: tag.tag_name,
@@ -136,7 +138,9 @@ function SearchPage() {
                         {tags.map((tag) => (
                             <TagFolder
                                 key={tag._id}
-                                onClick={() => navigateToTag(tag)}
+                                onClick={() =>
+                                    navigateToTag(tag)
+                                }
                             >
                                 <Folder>
                                     <IoFolderOutline />
@@ -146,7 +150,11 @@ function SearchPage() {
                                         {tag.tag_name}
                                     </TagName>
                                     <EntryNumber>
-                                        {tag.entries.length} {tag.entries.length === 1 ? 'entry' : 'entries'}
+                                        {tag.entries.length}{" "}
+                                        {tag.entries.length ===
+                                        1
+                                            ? "entry"
+                                            : "entries"}
                                     </EntryNumber>
                                 </TagContent>
                             </TagFolder>

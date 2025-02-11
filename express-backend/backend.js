@@ -956,7 +956,7 @@ app.get(
 
 // VERIFY AUTH
 app.get("/api/auth/verify", authMiddleware, (req, res) => {
-    res.status(200).json({ authenticated: true });
+    res.json({ userId: req.userId });
 });
 
 // Get current user

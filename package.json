@@ -14,7 +14,10 @@
         "loginTest": "concurrently \"npm run loginBackend\" \"npm run loginFrontend\"",
         "loginBackend": "cd express-backend\\login && node userServer.js",
         "loginFrontend": "cd react-frontend && npm start",
-        "test": "cd express-backend && npm test"
+        "test": "cd express-backend && npm test",
+        "ngrok:setup": "concurrently \"npm run ngrok:backend\" \"npm run ngrok:frontend\"",
+        "ngrok:backend": "cd express-backend && node backend.js",
+        "ngrok:frontend": "cd react-frontend && set HTTPS=true && npm start"
     },
     "author": "",
     "license": "ISC",

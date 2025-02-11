@@ -1,412 +1,377 @@
-/*
-IMPORTS
-*/
-import React, { useState, useEffect, useCallback } from "react";
-import { FaEdit, FaTimes } from "react-icons/fa";
-import NewEntry from "./NewEntry";
+import React, { useState, useEffect } from "react";
+import { FaTimes, FaEye, FaLock } from "react-icons/fa";
+import { ThemeProvider } from "styled-components";
+import {
+    EntryContainer,
+    EntryTitle,
+    EntryField,
+    EntryInput,
+    EntryText,
+    TagsSection,
+    TagsContainer,
+    TagPill,
+    ErrorMessage,
+    FieldLabel,
+    SubmitContainer,
+    VisibilityToggle,
+    ToggleOption,
+    SubmitWrapper,
+    SubmitText
+} from "./Entry.styles";
+import { entriesDB } from "../utils/db"; // -=-Import the database functions
 
-// Styles
-import "./Entry.css";
+const theme = {
+    lightPink: "rgba(242, 196, 187, 0.5)" // Lighter version of fill-color
+};
 
-function EntryPage() {
-    const [entries, setEntries] = useState([]);
-    const [hasSubmittedToday, setHasSubmittedToday] =
-        useState(false);
-    const [isEditing, setIsEditing] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [editableEntry, setEditableEntry] = useState({
+const NewEntryPage = ({ userId }) => {
+    const [isEditMode, setIsEditMode] = useState(false);
+    // State for entry data
+    const [entry, setEntry] = useState({
         rose: "",
         bud: "",
-        thorn: "",
-        tags: "",
-        isPublic: true
+        thorn: ""
     });
 
-    const fetchUserEntries = useCallback(async () => {
-        try {
-            const response = await fetch(
-                "http://localhost:8000/api/entries",
-                {
-                    credentials: "include" // For JWT cookie
-                }
-            );
+    // State for UI
+    const [isLoading, setIsLoading] = useState(true);
+    const [tags, setTags] = useState([]);
+    const [currentTag, setCurrentTag] = useState("");
+    const [editingField, setEditingField] = useState(null);
+    const [error, setError] = useState("");
+    const [isPublic, setIsPublic] = useState(true);
+    const [hasChanges, setHasChanges] = useState(false);
 
-            if (!response.ok) {
-                throw new Error("Failed to fetch entries");
-            }
-
-            const data = await response.json();
-            console.log("Fetched entries:", data);
-            setEntries(data);
-            checkIfSubmittedToday(data);
-            setIsLoading(false);
-        } catch (error) {
-            console.error("Error fetching entries:", error);
-            setIsLoading(false);
-        }
+    // Fetch today's entry on mount
+    useEffect(() => {
+        loadTodaysEntry();
     }, []);
 
-    useEffect(() => {
-        fetchUserEntries();
-    }, [fetchUserEntries]);
+    /* 
+    -=-This is the function to pay attention to if trying to understand IndexedDB
+    */
+    const loadTodaysEntry = async () => {
+        // Start loading state
+        setIsLoading(true);
 
-    const checkIfSubmittedToday = (entries) => {
-        if (entries.length > 0) {
-            const mostRecentEntry = entries[entries.length - 1];
-            const today = new Date();
-            const entryDate = new Date(mostRecentEntry.date);
+        try {
+            // First try IndexedDB
+            // Notice how it uses the function from the db.js file (and has access to all entriesDB functions via the import)
+            const cachedEntry = await entriesDB.getTodaysEntry(
+                userId
+            );
 
-            // Compare year, month, and day only
-            const isToday =
-                today.getFullYear() ===
-                    entryDate.getFullYear() &&
-                today.getMonth() === entryDate.getMonth() &&
-                today.getDate() === entryDate.getDate();
+            // If you find an entry in the IndexedDB, use that
+            if (cachedEntry) {
+                updateUIFromEntry(cachedEntry);
+            }
 
-            console.log("Today's date:", today);
-            console.log("Most recent entry date:", entryDate);
-            console.log("Is today?", isToday);
+            // Then regardless of what happens, fetch from API - get all entries and find today's
+            try {
+                // Same old way of fetching
+                const response = await fetch(
+                    "http://localhost:8000/api/entries",
+                    {
+                        credentials: "include"
+                    }
+                );
 
-            setHasSubmittedToday(isToday);
-            if (isToday) {
-                setEditableEntry({
-                    rose: mostRecentEntry.rose_text,
-                    bud: mostRecentEntry.bud_text,
-                    thorn: mostRecentEntry.thorn_text,
-                    tag_string: mostRecentEntry.tag_string,
-                    isPublic: mostRecentEntry.is_public
-                });
+                // You got a response, so now you can do stuff with it
+                if (response.ok) {
+                    const entries = await response.json();
+
+                    // Find today's entry if it exists
+                    // (Logic should probably be in the backend but eh)
+                    const today = new Date();
+                    const todaysEntry = entries.find(
+                        (entry) => {
+                            const entryDate = new Date(
+                                entry.date
+                            );
+                            return (
+                                entryDate.getDate() ===
+                                    today.getDate() &&
+                                entryDate.getMonth() ===
+                                    today.getMonth() &&
+                                entryDate.getFullYear() ===
+                                    today.getFullYear()
+                            );
+                        }
+                    );
+
+                    if (todaysEntry) {
+                        // If you do find an entry you need to:
+
+                        // 1. Update the UI
+                        updateUIFromEntry(todaysEntry);
+
+                        // 2. Update the IndexedDB with the latest data
+                        await entriesDB.update({
+                            ...todaysEntry,
+                            user_id: userId
+                        });
+                    }
+                }
+            } catch (networkError) {
+                console.log(
+                    "Network request failed, using cached data"
+                );
+            }
+        } catch (error) {
+            console.error("Error loading entry:", error);
+        }
+
+        // When done stop loading state
+        setIsLoading(false);
+    };
+
+    // Helper to update UI state from entry data
+    const updateUIFromEntry = (entryData) => {
+        setEntry({
+            rose: entryData.rose_text,
+            bud: entryData.bud_text,
+            thorn: entryData.thorn_text,
+            _id: entryData._id
+        });
+        // Use tags array directly if available, otherwise parse tag_string
+        const tagArray = Array.isArray(entryData.tags)
+            ? entryData.tags
+            : entryData.tag_string
+            ? entryData.tag_string
+                  .split(", ")
+                  .filter((tag) => tag)
+            : [];
+        setTags(tagArray);
+        setIsPublic(entryData.is_public);
+        setIsEditMode(true);
+        setHasChanges(false);
+    };
+
+    // Tag handling
+    const handleTagKeyDown = (e) => {
+        if (e.key === "Enter" || e.key === ",") {
+            e.preventDefault();
+            const tag = currentTag.trim();
+            if (tag && !tags.includes(tag)) {
+                setTags([...tags, tag]);
+                setCurrentTag("");
+                setHasChanges(true);
             }
         }
     };
 
-    const handleEditClick = () => {
-        setIsEditing(!isEditing);
-        if (isEditing) {
-            // Reset to original values if canceling
-            const mostRecentEntry = entries[entries.length - 1];
-
-            setEditableEntry({
-                rose: mostRecentEntry.rose_text,
-                bud: mostRecentEntry.bud_text,
-                thorn: mostRecentEntry.thorn_text,
-                tag_string: mostRecentEntry.tag_string,
-                isPublic: mostRecentEntry.is_public
-            });
-        }
+    const removeTag = (tagToRemove) => {
+        setTags(tags.filter((tag) => tag !== tagToRemove));
+        setHasChanges(true);
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setEditableEntry((prev) => ({
+    // Field editing
+    const handleFieldClick = (field) => {
+        setEditingField(field);
+    };
+
+    const handleFieldChange = (field, value) => {
+        setHasChanges(true);
+        setEntry((prev) => ({
             ...prev,
-            [name]: value
+            [field]: value
         }));
     };
 
-    const handleUpdate = async () => {
+    const handleFieldBlur = () => {
+        setEditingField(null);
+    };
+
+    // You can reference the logic from this one too, but it's more confusing because it's dealing with a post and update call from the same button based on state
+    const handleSubmit = async () => {
+        if (!entry.rose || !entry.bud || !entry.thorn) {
+            setError("Please fill in all fields");
+            return;
+        }
+
+        // Create tag string from array
+        const tag_string = tags.join(", ");
+
+        const entryData = {
+            rose_text: entry.rose,
+            bud_text: entry.bud,
+            thorn_text: entry.thorn,
+            tags: tags,
+            tag_string: tag_string,
+            is_public: isPublic
+        };
+
         try {
-            let tagsArray = [];
-            if (editableEntry.tag_string.trim().length > 0) {
-                tagsArray = editableEntry.tag_string
-                    .trim()
-                    .split(",")
-                    .map((tag) => tag.trim())
-                    .filter((tag) => tag.length > 0);
+            if (isEditMode) {
+                // Update existing entry
+                await entriesDB.update({
+                    ...entryData,
+                    _id: entry._id
+                });
+                const response = await fetch(
+                    `http://localhost:8000/api/entries/${entry._id}`,
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        credentials: "include",
+                        body: JSON.stringify(entryData)
+                    }
+                );
+                if (!response.ok)
+                    throw new Error("Failed to update entry");
+                const data = await response.json();
+                updateUIFromEntry(data.entry);
+            } else {
+                // Create new entry
+                const response = await fetch(
+                    "http://localhost:8000/api/entries",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        credentials: "include",
+                        body: JSON.stringify(entryData)
+                    }
+                );
+
+                if (!response.ok)
+                    throw new Error("Failed to create entry");
+
+                const data = await response.json();
+                // Update IndexedDB after successful API call
+                await entriesDB.add({
+                    ...data,
+                    user_id: userId
+                });
+
+                // After successful creation, load today's entry fresh
+                await loadTodaysEntry();
             }
-
-            const updateData = {
-                rose_text: editableEntry.rose,
-                bud_text: editableEntry.bud,
-                thorn_text: editableEntry.thorn,
-                tag_string: editableEntry.tag_string,
-                tags: tagsArray,
-                is_public: editableEntry.isPublic
-            };
-
-            const response = await fetch(
-                `http://localhost:8000/api/entries/${entries[0]._id}`,
-                {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    credentials: "include",
-                    body: JSON.stringify(updateData)
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error("Failed to update entry");
-            }
-
-            const data = await response.json();
-            setEntries((prevEntries) => [
-                data.entry,
-                ...prevEntries.slice(1)
-            ]);
-            setIsEditing(false);
         } catch (error) {
-            console.error("Error updating entry:", error);
+            console.error("Error saving entry:", error);
+            setError("Failed to save entry");
         }
     };
 
-    function handleSubmit(entry) {
-        console.log(
-            "EntryPage handleSubmit called with:",
-            entry
-        );
-
-        // filter tags before submission
-        let tagsArray = [];
-        if (entry.tags.trim().length > 0) {
-            // split by commas
-            tagsArray = entry.tags
-                .trim()
-                .split(",")
-                .map((tag) => tag.trim())
-                .filter((tag) => tag.length > 0);
-        }
-
-        console.log(tagsArray);
-
-        const taggedEntry = {
-            ...entry,
-            tags: tagsArray // still include if empty
-        };
-
-        makePostCall(taggedEntry).then((result) => {
-            console.log("makePostCall result:", result);
-            if (result && result.status === 201) {
-                fetchUserEntries();
-            }
-        });
-    }
-
-    async function makePostCall(entry) {
-        try {
-            console.log(
-                "Making POST request with data:",
-                entry
-            );
-            const response = await fetch(
-                "http://localhost:8000/api/entries",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    credentials: "include",
-                    body: JSON.stringify({
-                        rose_text: entry.rose,
-                        bud_text: entry.bud,
-                        thorn_text: entry.thorn,
-                        tags: entry.tags,
-                        tag_string: entry.tag_string,
-                        is_public: entry.isPublic
-                    })
-                }
-            );
-
-            console.log(
-                "POST response status:",
-                response.status
-            );
-            if (!response.ok) {
-                const errorData = await response.text();
-                console.error("Error response:", errorData);
-                throw new Error(
-                    `Failed to create entry: ${errorData}`
-                );
-            }
-
-            const data = await response.json();
-            console.log("POST response data:", data);
-            return { status: 201, data };
-        } catch (error) {
-            console.error("Error creating entry:", error);
-            return false;
-        }
+    if (isLoading) {
+        return <div></div>;
     }
 
     return (
-        <div className="entry-page">
-            {isLoading ? (
-                <div></div> // Empty div for loading state
-            ) : (
-                <>
-                    {!hasSubmittedToday && (
-                        <h1 className="entry-header">
-                            Journal Entry
-                        </h1>
-                    )}
-                    {hasSubmittedToday ? (
-                        <div className="recent-entry">
-                            <div className="entry-header">
-                                <h2>Today's Entry</h2>
-                                <button
-                                    className="edit-button"
-                                    onClick={handleEditClick}
-                                >
-                                    {isEditing ? (
-                                        <>
-                                            <FaTimes /> Cancel
-                                        </>
-                                    ) : (
-                                        <>
-                                            <FaEdit /> Edit
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                            <div className="entry-card">
-                                {isEditing ? (
-                                    <>
-                                        <div className="entry-item">
-                                            <h3>Rose</h3>
-                                            <input
-                                                type="text"
-                                                name="rose"
-                                                value={
-                                                    editableEntry.rose
-                                                }
-                                                onChange={
-                                                    handleInputChange
-                                                }
-                                            />
-                                        </div>
-                                        <div className="entry-item">
-                                            <h3>Bud</h3>
-                                            <input
-                                                type="text"
-                                                name="bud"
-                                                value={
-                                                    editableEntry.bud
-                                                }
-                                                onChange={
-                                                    handleInputChange
-                                                }
-                                            />
-                                        </div>
-                                        <div className="entry-item">
-                                            <h3>Thorn</h3>
-                                            <input
-                                                type="text"
-                                                name="thorn"
-                                                value={
-                                                    editableEntry.thorn
-                                                }
-                                                onChange={
-                                                    handleInputChange
-                                                }
-                                            />
-                                        </div>
-                                        <div className="entry-item">
-                                            <h3>Tags</h3>
-                                            <input
-                                                type="text"
-                                                name="tag_string"
-                                                value={
-                                                    editableEntry.tag_string
-                                                }
-                                                onChange={
-                                                    handleInputChange
-                                                }
-                                                placeholder="Add tags (separated by commas)"
-                                            />
-                                        </div>
-                                        <div className="toggle-container">
-                                            <label className="toggle-switch">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={
-                                                        editableEntry.isPublic
-                                                    }
-                                                    onChange={(
-                                                        e
-                                                    ) =>
-                                                        setEditableEntry(
-                                                            (
-                                                                prev
-                                                            ) => ({
-                                                                ...prev,
-                                                                isPublic:
-                                                                    e
-                                                                        .target
-                                                                        .checked
-                                                            })
-                                                        )
-                                                    }
-                                                />
-                                                <span className="toggle-slider"></span>
-                                            </label>
-                                            <span className="toggle-label">
-                                                {editableEntry.isPublic
-                                                    ? "Public Entry"
-                                                    : "Private Entry"}
-                                            </span>
-                                        </div>
-                                        <button
-                                            className="update-button"
-                                            onClick={
-                                                handleUpdate
-                                            }
-                                        >
-                                            Update
-                                        </button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className="entry-item">
-                                            <h3>Rose</h3>
-                                            <p>
-                                                {
-                                                    entries[
-                                                        entries.length -
-                                                            1
-                                                    ].rose_text
-                                                }
-                                            </p>
-                                        </div>
-                                        <div className="entry-item">
-                                            <h3>Bud</h3>
-                                            <p>
-                                                {
-                                                    entries[
-                                                        entries.length -
-                                                            1
-                                                    ].bud_text
-                                                }
-                                            </p>
-                                        </div>
-                                        <div className="entry-item">
-                                            <h3>Thorn</h3>
-                                            <p>
-                                                {
-                                                    entries[
-                                                        entries.length -
-                                                            1
-                                                    ].thorn_text
-                                                }
-                                            </p>
-                                        </div>
-                                        {/* <div className="entry-item">
-                                            <h3>Tags</h3>
-                                            <p>
-                                                {Array.isArray(entries[entries.length - 1].tags) ? entries[entries.length - 1].tags.join(' ') : entries[entries.length - 1].tags}
-                                            </p>
-                                        </div> */}
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                    ) : (
-                        <NewEntry handleSubmit={handleSubmit} />
-                    )}
-                </>
-            )}
-        </div>
-    );
-}
+        <ThemeProvider theme={theme}>
+            <EntryContainer>
+                <EntryTitle>
+                    {isEditMode
+                        ? "Edit Today's Entry"
+                        : "Add Today's Entry"}
+                </EntryTitle>
 
-export default EntryPage;
+                {["rose", "bud", "thorn"].map((field) => (
+                    <EntryField key={field}>
+                        <FieldLabel>{field}</FieldLabel>
+                        {isEditMode && !editingField ? (
+                            <EntryText
+                                onClick={() =>
+                                    handleFieldClick(field)
+                                }
+                            >
+                                {entry[field] ||
+                                    `Click to edit your ${field}`}
+                            </EntryText>
+                        ) : (
+                            <EntryInput
+                                value={entry[field]}
+                                onChange={(e) =>
+                                    handleFieldChange(
+                                        field,
+                                        e.target.value
+                                    )
+                                }
+                                onBlur={
+                                    isEditMode
+                                        ? handleFieldBlur
+                                        : undefined
+                                }
+                                placeholder={`What's your ${field} for today?`}
+                                autoFocus={
+                                    editingField === field
+                                }
+                            />
+                        )}
+                    </EntryField>
+                ))}
+
+                <EntryField>
+                    <FieldLabel>Tags</FieldLabel>
+                    <EntryInput
+                        value={currentTag}
+                        onChange={(e) =>
+                            setCurrentTag(e.target.value)
+                        }
+                        onKeyDown={handleTagKeyDown}
+                        placeholder="Add tags (separate with commas)"
+                    />
+                    <TagsSection>
+                        <TagsContainer>
+                            {tags.map((tag) => (
+                                <TagPill key={tag}>
+                                    {tag}
+                                    <button
+                                        onClick={() =>
+                                            removeTag(tag)
+                                        }
+                                    >
+                                        <FaTimes />
+                                    </button>
+                                </TagPill>
+                            ))}
+                        </TagsContainer>
+                    </TagsSection>
+                </EntryField>
+
+                <SubmitContainer>
+                    <SubmitWrapper
+                        onClick={handleSubmit}
+                        isEditMode={isEditMode}
+                        hasChanges={hasChanges}
+                    >
+                        <SubmitText>
+                            {isEditMode
+                                ? "Save Changes"
+                                : "Submit Entry"}
+                        </SubmitText>
+                        <VisibilityToggle
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <ToggleOption
+                                selected={isPublic}
+                                onClick={() =>
+                                    setIsPublic(true)
+                                }
+                            >
+                                <FaEye />
+                                <span>Public</span>
+                            </ToggleOption>
+                            <ToggleOption
+                                selected={!isPublic}
+                                onClick={() =>
+                                    setIsPublic(false)
+                                }
+                            >
+                                <FaLock />
+                                <span>Private</span>
+                            </ToggleOption>
+                        </VisibilityToggle>
+                    </SubmitWrapper>
+                </SubmitContainer>
+
+                {error && <ErrorMessage>{error}</ErrorMessage>}
+            </EntryContainer>
+        </ThemeProvider>
+    );
+};
+
+export default NewEntryPage;
