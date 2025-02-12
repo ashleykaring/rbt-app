@@ -1,5 +1,40 @@
 import styled from "styled-components";
 
+export const Circle = styled.div`
+    width: 1.3rem;
+    height: 1.3rem;
+    background-color: #f2c4bb;
+    border-radius: 50%;
+    margin-right: 8px;
+`;
+
+export const ThemeSelection = styled.div`
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 2px solid transparent; // Default border (transparent)
+    border-radius: 8px; // Rounded corners for the box
+    margin: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background-color: rgba(
+            0,
+            0,
+            0,
+            0.1
+        ); // Light hover effect
+    }
+
+    ${(props) =>
+        props.active &&
+        `
+        border-color: #4A90E2; // Blue border for selected theme
+        background-color: #F5F5F5; // Light background for the selected theme
+    `}
+`;
+
 export const SettingsContainer = styled.div`
     max-width: 900px;
     width: 100%;

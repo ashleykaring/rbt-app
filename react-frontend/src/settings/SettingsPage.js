@@ -22,7 +22,7 @@ export const GlobalStyle = createGlobalStyle`
 
 function Settings({ setIsLoggedIn }) {
     const navigate = useNavigate();
-    const [darkMode, setDarkMode] = useState(false);
+    const [theme, setTheme] = useState("light-mode");
 
     // Track both current and edited values
     const [currentUser, setCurrentUser] = useState({
@@ -126,25 +126,27 @@ function Settings({ setIsLoggedIn }) {
 
     // Dark mode logic
     const toggleTheme = () => {
-        setDarkMode((prev) => !prev);
+        setTheme((prev) => !prev);
     };
 
     useEffect(() => {
         const currentTheme = localStorage.getItem("theme");
         if (currentTheme) {
-            setDarkMode(currentTheme === "dark-mode");
+            setTheme(currentTheme);
         }
     }, []);
 
     useEffect(() => {
-        if (darkMode) {
-            localStorage.setItem("theme", "dark-mode");
-            document.body.classList.add("dark-mode");
-        } else {
-            localStorage.setItem("theme", "light-mode");
-            document.body.classList.remove("dark-mode");
-        }
-    }, [darkMode]);
+        localStorage.setItem("theme", theme);
+        document.body.className = theme;
+        // if (darkMode) {
+        //     localStorage.setItem("theme", "dark-mode");
+        //     document.body.classList.add("dark-mode");
+        // } else {
+        //     localStorage.setItem("theme", "light-mode");
+        //     document.body.classList.remove("dark-mode");
+        // }
+    }, [theme]);
 
     // Logout logic
     const handleLogout = async () => {
@@ -232,19 +234,44 @@ function Settings({ setIsLoggedIn }) {
     return (
         <S.SettingsContainer>
             <S.SectionContainer>
-                <S.SectionHeader>System</S.SectionHeader>
+                <S.SectionHeader>Appearance</S.SectionHeader>
                 <S.ContentCard>
-                    <S.ToggleWrapper>
-                        <S.IconWrapper active={darkMode}>
-                            {darkMode ? <FaMoon /> : <FaSun />}
+                    <S.ThemeSelection
+                        onClick={() =>
+                            toggleTheme("light-mode")
+                        }
+                        active={"light-mode"}
+                    >
+                        <S.IconWrapper>
+                            <S.Circle color="#f2c4bb" />
                         </S.IconWrapper>
-                        Dark Mode
-                        <S.Toggle
-                            onClick={toggleTheme}
-                            active={darkMode}
-                            aria-label="Toggle dark mode"
-                        />
-                    </S.ToggleWrapper>
+                        Classic
+                        {/* <S.ToggleWrapper>
+                            <S.IconWrapper active={darkMode}>
+                                {darkMode ? <FaMoon /> : <FaSun />}
+                            </S.IconWrapper>
+                            Dark Mode
+                            <S.Toggle
+                                onClick={toggleTheme}
+                                active={darkMode}
+                                aria-label="Toggle dark mode"
+                            />
+                            </S.ToggleWrapper> */}
+                    </S.ThemeSelection>
+                    <S.ThemeSelection
+                        onClick={() => toggleTheme("dark-mode")}
+                        active={"dark-mode"}
+                    >
+                        <S.Circle color="#000000" />
+                        Dark
+                    </S.ThemeSelection>
+                    <S.ThemeSelection
+                        active={theme === "blue-theme"}
+                        onClick={() => setTheme("blue-theme")}
+                    >
+                        Glacial
+                    </S.ThemeSelection>
+                    <S.ThemeSelection>Simple</S.ThemeSelection>
                 </S.ContentCard>
             </S.SectionContainer>
 

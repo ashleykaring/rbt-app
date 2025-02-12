@@ -5,7 +5,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
 import { IoFolderOutline } from "react-icons/io5";
-
 import {
     Title,
     PageContainer,
@@ -16,6 +15,8 @@ import {
     TagName,
     EntryNumber
 } from "./search.styles";
+import { entriesDB } from "../utils/db";
+import { tagsDB } from "../utils/db";
 
 const API_BASE_URL = "http://localhost:8000";
 
@@ -42,6 +43,7 @@ const API_BASE_URL = "http://localhost:8000";
 function SearchPage({ userId }) {
     const [tags, setTags] = useState([]);
     const [theme, setTheme] = useState({ mode: "light-mode" });
+    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -50,50 +52,104 @@ function SearchPage({ userId }) {
     }, []);
 
     const fetchEntry = async (entryId) => {
+        setIsLoading(true);
+
         try {
-            const response = await fetch(
-                `${API_BASE_URL}/api/entries/${entryId}`,
-                {
-                    credentials: "include"
-                }
+            const cachedEntry = await entriesDB.getById(
+                entryId
             );
 
-            if (!response.ok) {
-                throw new Error("Failed to fetch entry");
+            if (cachedEntry) {
+                return cachedEntry;
             }
 
-            const entry = await response.json();
+            try {
+                const response = await fetch(
+                    `${API_BASE_URL}/api/entries/${entryId}`,
+                    {
+                        credentials: "include"
+                    }
+                );
 
-            return entry;
+                if (!response.ok) {
+                    throw new Error("Failed to fetch entry");
+                }
+
+                const entry = await response.json();
+
+                if (entry) {
+                    await entriesDB.update({
+                        ...entry,
+                        user_id: userId
+                    });
+                }
+
+                return entry;
+            } catch (networkError) {
+                console.error(
+                    "Network entry request failed, using cached data:",
+                    networkError
+                );
+            }
         } catch (error) {
-            console.error("Error in fetchEntry:", error);
+            console.error(
+                "Error fetching entry by entryid:",
+                error
+            );
         }
+
+        setIsLoading(false);
     };
 
     // fetch user's tags
     const fetchTags = async () => {
-        try {
-            const response = await fetch(
-                `${API_BASE_URL}/api/entries/tags/${userId}`,
-                {
-                    credentials: "include"
-                }
-            );
+        setIsLoading(true);
 
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(
-                    data.message || "Failed to fetch tags"
-                );
+        try {
+            const cachedTags = await tagsDB.getAll(userId);
+
+            if (cachedTags) {
+                setTags(cachedTags);
             }
 
-            // set tags with entries data
-            const tags = await response.json();
-            console.log("User's tags fetched:", tags);
-            setTags(tags);
+            try {
+                const response = await fetch(
+                    `${API_BASE_URL}/api/entries/tags/${userId}`,
+                    {
+                        credentials: "include"
+                    }
+                );
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(
+                        data.message || "Failed to fetch tags"
+                    );
+                }
+
+                // set tags with entries data
+                const tags = await response.json();
+
+                if (tags) {
+                    console.log("User's tags fetched:", tags);
+                    setTags(tags);
+
+                    await tagsDB.update({
+                        ...tags,
+                        user_id: userId
+                    });
+                }
+            } catch (networkError) {
+                console.error(
+                    "Network tags request failed, using cached data:",
+                    networkError
+                );
+            }
         } catch (error) {
-            console.error("Error fetching tags:", error);
+            console.error("Error loading tags:", error);
         }
+
+        setIsLoading(false);
     };
 
     useEffect(() => {
