@@ -112,7 +112,7 @@ const MainAppRoutes = ({
                 path="/new-entry"
                 element={<NewEntryPage userId={userId} />}
             />
-            <Route path="/groups" element={<GroupsPage />} />
+            <Route path="/groups" element={<GroupsPage userId={userId}/>} />
             <Route
                 path="/settings"
                 element={
