@@ -18,3 +18,13 @@ export const darkTheme = {
     borderColor: "#404040",
     hoverBackground: "#404040"
 };
+
+export const blueTheme = {
+    background: "#9bc4e2",
+    text: "#000000",
+    secondaryText: "#000",
+    cardBackground: "#000",
+    inputBackground: "#000",
+    borderColor: "#000",
+    hoverBackground: "#000"
+};

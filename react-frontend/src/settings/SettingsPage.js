@@ -124,9 +124,9 @@ function Settings({ setIsLoggedIn }) {
         }
     };
 
-    // Dark mode logic
-    const toggleTheme = () => {
-        setTheme((prev) => !prev);
+    // theme switching logic
+    const toggleTheme = (theme) => {
+        setTheme(theme);
     };
 
     useEffect(() => {
@@ -139,6 +139,7 @@ function Settings({ setIsLoggedIn }) {
     useEffect(() => {
         localStorage.setItem("theme", theme);
         document.body.className = theme;
+        console.log(theme);
         // if (darkMode) {
         //     localStorage.setItem("theme", "dark-mode");
         //     document.body.classList.add("dark-mode");
@@ -236,6 +237,17 @@ function Settings({ setIsLoggedIn }) {
             <S.SectionContainer>
                 <S.SectionHeader>Appearance</S.SectionHeader>
                 <S.ContentCard>
+                    {/* <S.ToggleWrapper>
+                            <S.IconWrapper active={darkMode}>
+                                {darkMode ? <FaMoon /> : <FaSun />}
+                            </S.IconWrapper>
+                            Dark Mode
+                            <S.Toggle
+                                onClick={toggleTheme}
+                                active={darkMode}
+                                aria-label="Toggle dark mode"
+                            />
+                        </S.ToggleWrapper> */}
                     <S.ThemeSelection
                         onClick={() =>
                             toggleTheme("light-mode")
@@ -246,17 +258,6 @@ function Settings({ setIsLoggedIn }) {
                             <S.Circle color="#f2c4bb" />
                         </S.IconWrapper>
                         Classic
-                        {/* <S.ToggleWrapper>
-                            <S.IconWrapper active={darkMode}>
-                                {darkMode ? <FaMoon /> : <FaSun />}
-                            </S.IconWrapper>
-                            Dark Mode
-                            <S.Toggle
-                                onClick={toggleTheme}
-                                active={darkMode}
-                                aria-label="Toggle dark mode"
-                            />
-                            </S.ToggleWrapper> */}
                     </S.ThemeSelection>
                     <S.ThemeSelection
                         onClick={() => toggleTheme("dark-mode")}
@@ -269,9 +270,16 @@ function Settings({ setIsLoggedIn }) {
                         active={theme === "blue-theme"}
                         onClick={() => setTheme("blue-theme")}
                     >
+                        <S.Circle color="#9bc4e2" />
                         Glacial
                     </S.ThemeSelection>
-                    <S.ThemeSelection>Simple</S.ThemeSelection>
+                    <S.ThemeSelection
+                        active={theme === "min-theme"}
+                        onClick={() => setTheme("min-theme")}
+                    >
+                        <S.Circle color="#d3d3d3" />
+                        Minimalist
+                    </S.ThemeSelection>
                 </S.ContentCard>
             </S.SectionContainer>
 
