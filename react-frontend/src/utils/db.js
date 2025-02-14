@@ -126,11 +126,28 @@ export const entriesDB = {
 
     async getTodaysEntry(userId) {
         return this.getByDate(userId, new Date());
-    }
+    },
+
+    async getMostRecentByUserId(userId) {
+        const entries = await this.getAll(userId);
+        const filteredEntries = entries.filter((entry) => entry.user_id === userId);
+
+        let maxDateEntry = filteredEntries.length > 0 ? filteredEntries[0]: null;
+
+        for (let i = 0; i<filteredEntries.length; i++) {
+            if (filteredEntries[i].date > maxDateEntry) maxDateEntry = filteredEntries[i];
+
+        }
+
+        return maxDateEntry;
+
+        
+    },
 };
 
 // Groups operations
 export const groupsDB = {
+
 
     async getById(groupId) {
         const db = await initDB();
@@ -161,6 +178,16 @@ export const membersDB = {
         const members = await store.getAll();
         return members.filter((memberObject) =>
             memberObject.user_id.includes(userId)
+        );
+    },
+
+    async getUserIds(groupId) {
+        const db = await initDB();
+        const tx = db.transaction("members", "readonly");
+        const store = tx.store;
+        const members = await store.getAll();
+        return members.filter((memberObject) => 
+            memberObject.group_id.includes(groupId)
         );
     },
 

@@ -16,6 +16,8 @@ import {
 } from "react-icons/fi";
 import { ThemeProvider } from "styled-components";
 
+import {groupsDB, membersDB} from "../utils/db";
+
 // Styles
 import {
     Container,
@@ -104,7 +106,21 @@ function GroupEntries({ userId }) {
     };
 
     // Fetch entries for the group
+
+    // Backend function instructions
+    // 1. get all users of the group
+    // 2. get the most recent public entry of each user (this shouldn't be hard with IndexedDb)
+    // 
+
+
     const fetchEntries = async () => {
+
+        // get cached info
+
+        const cachedMemberObjects = membersDB.getUserIds(groupId);
+
+
+
         try {
             const currentUser = userId;
             const response = await fetch(
