@@ -17,16 +17,18 @@ export const ThemeSelection = styled.div`
     margin: 5px;
     cursor: pointer;
     transition: all 0.3s ease;
+    gap: 12px;
+    color: var(--text-primary);
+    font-weight: 500;
 
     &:hover {
         background-color: rgba(0, 0, 0, 0.1);
     }
 
     ${(props) =>
-        props.active &&
+        props.selected &&
         `
         border-color: #4A90E2;
-        background-color: #F5F5F5;
     `}
 `;
 
@@ -99,14 +101,14 @@ export const LogoutButton = styled.button`
     }
 `;
 
-export const ToggleWrapper = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 6px 8px;
-    color: var(--text-primary);
-    font-weight: 500;
-`;
+// export const ToggleWrapper = styled.div`
+//     display: flex;
+//     align-items: center;
+//     gap: 12px;
+//     padding: 6px 8px;
+//     color: var(--text-primary);
+//     font-weight: 500;
+// `;
 
 export const IconWrapper = styled.div`
     display: flex;

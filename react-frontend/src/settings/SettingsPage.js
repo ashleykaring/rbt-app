@@ -253,6 +253,7 @@ function Settings({ setIsLoggedIn }) {
                             toggleTheme("light-mode")
                         }
                         active={"light-mode"}
+                        selected={theme === "light-mode"}
                     >
                         <S.IconWrapper>
                             <S.Circle color="#f2c4bb" />
@@ -262,6 +263,7 @@ function Settings({ setIsLoggedIn }) {
                     <S.ThemeSelection
                         onClick={() => toggleTheme("dark-mode")}
                         active={"dark-mode"}
+                        selected={theme === "dark-mode"}
                     >
                         <S.Circle color="#000000" />
                         Dark
@@ -269,13 +271,15 @@ function Settings({ setIsLoggedIn }) {
                     <S.ThemeSelection
                         active={theme === "blue-theme"}
                         onClick={() => setTheme("blue-theme")}
+                        selected={theme === "blue-theme"}
                     >
                         <S.Circle color="#9bc4e2" />
-                        Glacial
+                        Sky
                     </S.ThemeSelection>
                     <S.ThemeSelection
                         active={theme === "min-theme"}
                         onClick={() => setTheme("min-theme")}
+                        selected={theme === "min-theme"}
                     >
                         <S.Circle color="#d3d3d3" />
                         Minimalist

@@ -22,9 +22,21 @@ export const darkTheme = {
 export const blueTheme = {
     background: "#9bc4e2",
     text: "#000000",
-    secondaryText: "#000",
-    cardBackground: "#000",
-    inputBackground: "#000",
-    borderColor: "#000",
-    hoverBackground: "#000"
+    secondaryText: "#000000",
+    cardBackground: "#000000",
+    inputBackground: "#000000",
+    borderColor: "#000000",
+    hoverBackground: "#000000",
+    containerBackground: "#2d1f1f"
+};
+
+export const minTheme = {
+    background: "#f5f5f5",
+    text: "#2c3e50",
+    secondaryText: "#64748b",
+    cardBackground: "white",
+    inputBackground: "#f8f9fa",
+    borderColor: "#e9ecef",
+    hoverBackground: "#f1f5f9",
+    containerBackground: "#2d1f1f"
 };

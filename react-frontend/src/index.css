@@ -14,6 +14,10 @@
     --button-color: #eab3a9;
     --input-color: #e4e4e4;
     --past-background: white;
+
+    /* search/groups */
+    --top-background: white;
+    --container-background: #fdf2f1;
 }
 
 body.dark-mode {
@@ -31,6 +35,11 @@ body.dark-mode {
     --button-color: #c8808a;
     --input-color: #444444;
     --past-background: #444444;
+
+    /* search/groups */
+    --top-background: #2d2d2d;
+    --container-background: #2d1f1f;
+
     input[type="text"]::placeholder {
         color: #ffffff;
         opacity: 0.7;
@@ -44,20 +53,24 @@ body.dark-mode {
 }
 
 body.blue-theme {
-    --background-color: #dbf0f9; /* Main blue background color */
-    --card-background: #ffffff; /* Keeping the card background white */
-    --border-color: #bdd8eb; /* Light blue border to match the background */
-    --text-primary: #2c3e50; /* Keep the same text-primary color */
-    --text-secondary: #666666; /* Keep the same text-secondary color */
-    --header-text: #2c3e50; /* Keep the same header text color */
-    --header-icon: #2c3e50; /* Keep the same header icon color */
+    --background-color: #e3f2f9; 
+    --card-background: #ffffff; 
+    --border-color: #bdd8eb; 
+    --text-primary: #2c3e50; 
+    --text-secondary: #666666; 
+    --header-text: #2c3e50; 
+    --header-icon: #2c3e50; 
     --header-border: rgba(0, 0, 0, 0.08);
 
     --text-color: #2c3e50;
-    --fill-color: #9bc4e2;
-    --button-color: #eab3a9;
+    --fill-color: #B8D3EB;
+    --button-color: #89afca;
     --input-color: #e4e4e4;
     --past-background: white;
+
+    /* search/groups */
+    --top-background: white;
+    --container-background: #e3f2f9;
 }
 
 body.min-theme {
@@ -75,6 +88,10 @@ body.min-theme {
     --button-color: #D3D3D3;
     --input-color: #e4e4e4;
     --past-background: white;
+
+    /* search/groups */
+    --top-background: white;
+    --container-background: rgb(236, 236, 236);
 }
 
 body {
