@@ -98,6 +98,13 @@ export const entriesDB = {
         return index.getAll(userId);
     },
 
+    async getAllOverall() {
+        const db = await initDB();
+        const tx = db.transaction("entries", "readonly");
+        const index = tx.store.index("user_id");
+        return index.getAll();
+    },
+
     async getMostRecent(userId) {
         const entries = await this.getAll(userId);
         return (
@@ -129,7 +136,7 @@ export const entriesDB = {
     },
 
     async getMostRecentByUserId(userId) {
-        const entries = await this.getAll(userId);
+        const entries = await this.getAllOverall(userId);
         const filteredEntries = entries.filter((entry) => entry.user_id === userId);
 
         let maxDateEntry = filteredEntries.length > 0 ? filteredEntries[0]: null;
@@ -140,9 +147,18 @@ export const entriesDB = {
         }
 
         return maxDateEntry;
-
         
     },
+
+    async addIfNotPresent(entry) {
+        const entries = await this.getAllOverall();
+        if (!entries.some((e) => e._id === entry._id)) {
+            return this.add(entry);
+        }
+
+        return;
+
+    }
 };
 
 // Groups operations

@@ -16,7 +16,7 @@ import {
 } from "react-icons/fi";
 import { ThemeProvider } from "styled-components";
 
-import {groupsDB, membersDB} from "../utils/db";
+import {groupsDB, membersDB, entriesDB} from "../utils/db";
 
 // Styles
 import {
@@ -117,7 +117,18 @@ function GroupEntries({ userId }) {
 
         // get cached info
 
-        const cachedMemberObjects = membersDB.getUserIds(groupId);
+        const cachedMemberObjects = await membersDB.getUserIds(groupId);
+
+        const groupsPageEntries = [];
+        for (let i = 0; i<cachedMemberObjects.length; i++) {
+            groupsPageEntries.push(await entriesDB.getMostRecentByUserId(cachedMemberObjects.user_id));
+        }
+
+
+        // Filter out nulls
+        const finalCachedPageEntries = groupsPageEntries.filter((entry) => entry!=null);
+
+        setEntries(finalCachedPageEntries);
 
 
 
@@ -135,6 +146,16 @@ function GroupEntries({ userId }) {
             }
 
             const entries = await response.json();
+
+
+            // Update indexed db - add entries to DB if they are not already in it
+
+            for (let i = 0; i<entries.length; i++) {
+                await entriesDB.addIfNotPresent(entries[i]);
+            }
+
+
+
             setEntries(entries);
         } catch (error) {
             console.error("Error fetching entries:", error);
