@@ -108,7 +108,7 @@ function SearchPage({ userId }) {
         try {
             const cachedTags = await tagsDB.getAll(userId);
 
-            if (cachedTags) {
+            if (cachedTags && cachedTags.length > 0) {
                 setTags(cachedTags);
             }
 
