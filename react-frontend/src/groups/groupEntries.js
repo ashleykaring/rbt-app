@@ -121,14 +121,18 @@ function GroupEntries({ userId }) {
 
         const groupsPageEntries = [];
         for (let i = 0; i<cachedMemberObjects.length; i++) {
-            groupsPageEntries.push(await entriesDB.getMostRecentByUserId(cachedMemberObjects.user_id));
+            const newEntry = await entriesDB.getMostRecentByUserId(cachedMemberObjects[0].user_id);
+            groupsPageEntries.push(newEntry);
         }
+
 
 
         // Filter out nulls
         const finalCachedPageEntries = groupsPageEntries.filter((entry) => entry!=null);
 
-        setEntries(finalCachedPageEntries);
+        if (finalCachedPageEntries) {
+            setEntries(finalCachedPageEntries);
+        }
 
 
 
@@ -147,6 +151,9 @@ function GroupEntries({ userId }) {
 
             const entries = await response.json();
 
+            setEntries(entries);
+
+
 
             // Update indexed db - add entries to DB if they are not already in it
 
@@ -156,7 +163,6 @@ function GroupEntries({ userId }) {
 
 
 
-            setEntries(entries);
         } catch (error) {
             console.error("Error fetching entries:", error);
         }

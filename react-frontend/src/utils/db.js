@@ -137,6 +137,7 @@ export const entriesDB = {
 
     async getMostRecentByUserId(userId) {
         const entries = await this.getAllOverall(userId);
+
         const filteredEntries = entries.filter((entry) => entry.user_id === userId);
 
         let maxDateEntry = filteredEntries.length > 0 ? filteredEntries[0]: null;
@@ -145,6 +146,7 @@ export const entriesDB = {
             if (filteredEntries[i].date > maxDateEntry) maxDateEntry = filteredEntries[i];
 
         }
+
 
         return maxDateEntry;
         
