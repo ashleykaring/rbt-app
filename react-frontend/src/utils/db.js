@@ -119,6 +119,11 @@ export const entriesDB = {
 
     async getTodaysEntry(userId) {
         return this.getByDate(userId, new Date());
+    },
+
+    async getById(entryId) {
+        const db = await initDB();
+        return db.get("entries", entryId);
     }
 };
 
@@ -157,5 +162,10 @@ export const tagsDB = {
     async add(tag) {
         const db = await initDB();
         return db.add("tags", tag);
+    },
+
+    async update(tags) {
+        const db = await initDB();
+        return db.put("tags", tags);
     }
 };
