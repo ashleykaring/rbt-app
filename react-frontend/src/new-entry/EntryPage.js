@@ -73,7 +73,7 @@ const NewEntryPage = ({ userId }) => {
             // Then regardless of what happens, fetch from API - get all entries and find today's
             try {
                 const response = await fetch(
-                    "http://localhost:8000/api/entries",
+                    "http://rosebudthorn.azurewebsites.net/api/entries",
                     {
                         credentials: "include"
                     }
@@ -139,7 +139,7 @@ const NewEntryPage = ({ userId }) => {
             // Fetch tag names for each tag ID
             try {
                 const response = await fetch(
-                    `http://localhost:8000/api/entries/tags/${userId}`,
+                    `http://rosebudthorn.azurewebsites.net/api/entries/tags/${userId}`,
                     {
                         credentials: "include"
                     }
@@ -237,7 +237,7 @@ const NewEntryPage = ({ userId }) => {
                     _id: entry._id
                 });
                 const response = await fetch(
-                    `http://localhost:8000/api/entries/${entry._id}`,
+                    `http://rosebudthorn.azurewebsites.net/api/entries/${entry._id}`,
                     {
                         method: "PATCH",
                         headers: {
@@ -254,7 +254,7 @@ const NewEntryPage = ({ userId }) => {
             } else {
                 // Create new entry
                 const response = await fetch(
-                    "http://localhost:8000/api/entries",
+                    "http://rosebudthorn.azurewebsites.net/api/entries",
                     {
                         method: "POST",
                         headers: {
@@ -279,7 +279,7 @@ const NewEntryPage = ({ userId }) => {
                 // Fetch and update tags in IndexedDB
                 try {
                     const tagsResponse = await fetch(
-                        `http://localhost:8000/api/entries/tags/${userId}`,
+                        `http://rosebudthorn.azurewebsites.net/api/entries/tags/${userId}`,
                         {
                             credentials: "include"
                         }

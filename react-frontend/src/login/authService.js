@@ -1,4 +1,5 @@
-const API_BASE_URL = "http://localhost:8000/api";
+const API_BASE_URL =
+    "http://rosebudthorn.azurewebsites.net/api";
 
 // CHECK IF USER EXISTS
 export const checkIfUserExists = async (email) => {

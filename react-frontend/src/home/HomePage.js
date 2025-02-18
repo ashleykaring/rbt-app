@@ -39,7 +39,8 @@ function HomePage({ userId }) {
     const [isOffline, setIsOffline] = useState(false);
     const [userName, setUserName] = useState("");
 
-    const API_BASE_URL = "http://localhost:8000";
+    const API_BASE_URL =
+        "http://rosebudthorn.azurewebsites.net";
 
     // add swipe function
     const handleSwipe = (direction) => {

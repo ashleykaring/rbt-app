@@ -5,7 +5,7 @@ const getApiBaseUrl = () => {
         // When using ngrok, API calls will go to /api/* on the same domain
         return ""; // Empty string means use relative paths
     }
-    return "http://localhost:8000";
+    return "http://rosebudthorn.azurewebsites.net";
 };
 
 export const API_BASE_URL = getApiBaseUrl();

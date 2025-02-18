@@ -26,7 +26,7 @@ import {
 import CreateGroup from "./CreateGroup";
 import JoinGroup from "./JoinGroup";
 
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = "http://rosebudthorn.azurewebsites.net";
 
 /*
 RENDER

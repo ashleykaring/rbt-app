@@ -32,7 +32,8 @@ function CreateGroup({ onGroupUpdate }) {
     const [toastMessage, setToastMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    const API_BASE_URL = "http://localhost:8000";
+    const API_BASE_URL =
+        "http://rosebudthorn.azurewebsites.net";
 
     // Generates and verifies a unique group code
     const generateUniqueCode = async () => {
