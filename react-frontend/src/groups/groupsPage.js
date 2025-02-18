@@ -6,7 +6,7 @@ import { BiLoaderAlt } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
 import { IoChevronForward } from "react-icons/io5";
-import {groupsDB, membersDB} from "../utils/db";
+import { groupsDB, membersDB } from "../utils/db";
 
 // Styles
 import {
@@ -31,7 +31,7 @@ const API_BASE_URL = "http://localhost:8000";
 /*
 RENDER
 */
-function GroupsPage({userId}) {
+function GroupsPage({ userId }) {
     const [userGroups, setUserGroups] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -46,17 +46,22 @@ function GroupsPage({userId}) {
 
     // Fetch groups for the user - INDEXED DB STUFF
     const fetchGroups = async () => {
-
         setIsLoading(true);
 
         try {
-
-            const cachedMemberObjects = await membersDB.getGroupIds(userId);
+            const cachedMemberObjects =
+                await membersDB.getGroupIds(userId);
 
             const cachedGroups = [];
 
-            for(let i = 0; i<cachedMemberObjects.length; i++) {
-                const groupToAdd = await groupsDB.getById(cachedMemberObjects[i].group_id);
+            for (
+                let i = 0;
+                i < cachedMemberObjects.length;
+                i++
+            ) {
+                const groupToAdd = await groupsDB.getById(
+                    cachedMemberObjects[i].group_id
+                );
                 cachedGroups.push(groupToAdd);
             }
 
@@ -69,49 +74,59 @@ function GroupsPage({userId}) {
             // Now, fetch from API
 
             try {
-
                 const response = await fetch(
                     `${API_BASE_URL}/api/groups`,
                     {
                         credentials: "include" // Important for sending cookies
                     }
                 );
-    
+
                 if (!response.ok) {
                     const data = await response.json();
                     throw new Error(
                         data.message || "Failed to fetch groups"
                     );
                 }
-    
+
                 const groups = await response.json();
 
                 setUserGroups(groups);
 
-
                 if (groups) {
-                    for (let i = 0; i<groups.length; i++) {
-                        const newGroupObject = {_id: groups[i][0]._id, group_code: groups[i][0].group_code, name: groups[i][0].name}
-                        const newMembersObject = {_id: Date.now(), user_id: userId, group_id: groups[i][0]._id}
+                    for (let i = 0; i < groups.length; i++) {
+                        const newGroupObject = {
+                            _id: groups[i][0]._id,
+                            group_code: groups[i][0].group_code,
+                            name: groups[i][0].name
+                        };
+                        const newMembersObject = {
+                            _id: Date.now(),
+                            user_id: userId,
+                            group_id: groups[i][0]._id
+                        };
                         // If the group is NOT in the cached group, we should add it to the cached group
-                        if (!cachedGroups.some(group => group[0]._id === newGroupObject._id)) {
+                        if (
+                            !cachedGroups.some(
+                                (group) =>
+                                    group[0]._id ===
+                                    newGroupObject._id
+                            )
+                        ) {
                             await groupsDB.add(newGroupObject);
                             console.log(newMembersObject);
-                            await membersDB.add(newMembersObject);
+                            await membersDB.add(
+                                newMembersObject
+                            );
                         }
-                            
                     }
-                    
                 }
                 console.log("Fetched groups:", groups);
-
             } catch (networkError) {
                 console.log(
-                    "Network request failed, using cached data" + networkError
+                    "Network request failed, using cached data" +
+                        networkError
                 );
             }
-            
-            
         } catch (err) {
             console.error("Error fetching groups:", err);
             setError(err.message);
@@ -174,16 +189,7 @@ function GroupsPage({userId}) {
 
     // Loading spinner
     if (isLoading) {
-        return (
-            <LoadingContainer>
-                <LoadingSpinner>
-                    <BiLoaderAlt />
-                </LoadingSpinner>
-                <LoadingText>
-                    Getting your groups...
-                </LoadingText>
-            </LoadingContainer>
-        );
+        return <div></div>;
     }
 
     // Fall back if there's an error

@@ -378,7 +378,7 @@ function Settings({ setIsLoggedIn }) {
     };
 
     if (isLoading) {
-        return <S.LoadingSpinner>Loading...</S.LoadingSpinner>;
+        return <div></div>;
     }
 
     return (

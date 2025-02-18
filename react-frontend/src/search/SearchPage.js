@@ -15,8 +15,7 @@ import {
     TagName,
     EntryNumber
 } from "./search.styles";
-import { entriesDB } from "../utils/db";
-import { tagsDB } from "../utils/db";
+import { entriesDB, tagsDB } from "../utils/db";
 
 const API_BASE_URL = "http://localhost:8000";
 
@@ -55,9 +54,8 @@ function SearchPage({ userId }) {
         setIsLoading(true);
 
         try {
-            const cachedEntry = await entriesDB.getById(
-                entryId
-            );
+            const cachedEntry =
+                await entriesDB.getById(entryId);
 
             if (cachedEntry) {
                 return cachedEntry;
@@ -134,10 +132,13 @@ function SearchPage({ userId }) {
                     console.log("User's tags fetched:", tags);
                     setTags(tags);
 
-                    await tagsDB.update({
-                        ...tags,
-                        user_id: userId
-                    });
+                    // Update each tag individually in IndexedDB
+                    for (const tag of tags) {
+                        await tagsDB.update({
+                            ...tag,
+                            user_id: userId
+                        });
+                    }
                 }
             } catch (networkError) {
                 console.error(

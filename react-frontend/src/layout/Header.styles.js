@@ -5,13 +5,13 @@ export const HeaderContainer = styled.header`
     top: 0;
     left: 0;
     right: 0;
-    height: 80px;
+    height: 72px;
     background-color: var(--background-color);
     display: flex;
-    align-items: flex-end;
-    padding: 0 24px 16px;
+    align-items: center;
+    padding: 0 24px;
     z-index: 100;
-    border-bottom: 1px solid var(--header-border);
+    border-bottom: 2px solid var(--header-border);
 `;
 
 export const ViewInfo = styled.div`
@@ -20,16 +20,20 @@ export const ViewInfo = styled.div`
     gap: 16px;
 
     svg {
+        margin-top: 5px;
         font-size: 32px;
         color: var(--header-icon);
         opacity: 0.9;
+        filter: drop-shadow(0 2px 2px var(--fill-color));
     }
 `;
 
 export const ViewTitle = styled.h1`
     margin: 0;
-    font-size: 28px;
-    font-weight: 700;
+    font-size: 32px;
+    font-weight: 600;
+    font-family: var(--font-header);
     color: var(--header-text);
-    letter-spacing: -0.5px;
+    text-shadow: 2px 2px 3px var(--fill-color);
+    letter-spacing: -0.2px;
 `;

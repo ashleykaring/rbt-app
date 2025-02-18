@@ -109,6 +109,13 @@ export const userDB = {
     async update(user) {
         const db = await initDB();
         return db.put("users", user);
+    },
+
+    async getAll() {
+        const db = await initDB();
+        const tx = db.transaction("users", "readonly");
+        const store = tx.store;
+        return store.getAll();
     }
 };
 

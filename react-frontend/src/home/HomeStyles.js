@@ -15,19 +15,23 @@ export const HomeContainer = styled.div`
 export const WelcomeSection = styled.div`
     width: 100%;
     text-align: center;
-    margin-bottom: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: ${(props) =>
+        props.children.length > 1 ? "0.5rem" : "0"};
 `;
 
 export const WelcomeHeader = styled.h1`
-    font-size: 2.4rem;
+    font-size: 2rem;
     font-weight: 800;
     color: ${(props) =>
         props.theme.mode === "dark-mode" ? "#fff" : "#2c3e50"};
-    margin-bottom: 1.2rem;
     text-shadow: 2px 2px 4px var(--fill-color);
     letter-spacing: -0.5px;
     position: relative;
     display: inline-block;
+    margin: 0 auto;
 
     &::after {
         content: "";

@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSwipeable } from "react-swipeable";
 import Calendar from "react-calendar";
 import Modal from "react-modal";
-import { entriesDB } from "../utils/db";
+import { entriesDB, userDB } from "../utils/db";
 
 // Styles
 import "react-calendar/dist/Calendar.css";
@@ -41,18 +41,53 @@ function HomePage({ userId }) {
 
     const API_BASE_URL = "http://localhost:8000";
 
+    // add swipe function
+    const handleSwipe = (direction) => {
+        const newDate = new Date(activeStartDate);
+        if (direction === "left") {
+            newDate.setMonth(newDate.getMonth() + 1);
+        } else if (direction === "right") {
+            newDate.setMonth(newDate.getMonth() - 1);
+        }
+        setActiveStartDate(newDate);
+    };
+
+    const swipeHandlers = useSwipeable({
+        onSwipedLeft: () => handleSwipe("left"),
+        onSwipedRight: () => handleSwipe("right")
+    });
+
     // Fetch user details
     const fetchUserDetails = useCallback(async () => {
         try {
-            const response = await fetch(
-                `${API_BASE_URL}/api/user/details`,
-                {
-                    credentials: "include"
+            // First try to get from IndexedDB
+            const users = await userDB.getAll();
+            if (users && users.length > 0) {
+                setUserName(users[0].name);
+            }
+
+            // Then fetch from API and update IndexedDB
+            try {
+                const response = await fetch(
+                    `${API_BASE_URL}/api/user/details`,
+                    {
+                        credentials: "include"
+                    }
+                );
+                if (response.ok) {
+                    const data = await response.json();
+                    setUserName(data.name);
+                    // Update user in IndexedDB
+                    await userDB.update({
+                        ...data,
+                        _id: userId
+                    });
                 }
-            );
-            if (response.ok) {
-                const data = await response.json();
-                setUserName(data.name);
+            } catch (networkError) {
+                console.error(
+                    "Network request failed, using cached data:",
+                    networkError
+                );
             }
         } catch (error) {
             console.error(
@@ -60,20 +95,15 @@ function HomePage({ userId }) {
                 error
             );
         }
-    }, []);
-
-    useEffect(() => {
-        fetchUserDetails();
-    }, [fetchUserDetails]);
+    }, [userId]);
 
     // fetch most recent entry
     const fetchMostRecentEntry = useCallback(async () => {
-        setIsLoading(true);
         try {
             const cachedEntry =
-                await entriesDB.getMostRecent(userId); //added
+                await entriesDB.getMostRecent(userId);
             if (cachedEntry) {
-                setRecentEntry(cachedEntry); // added
+                setRecentEntry(cachedEntry);
             }
             const response = await fetch(
                 `${API_BASE_URL}/api/entries`,
@@ -94,65 +124,26 @@ function HomePage({ userId }) {
             );
 
             setRecentEntry(sortedEntries[0] || null);
-            await entriesDB.add(sortedEntries[0]); // added
-            setIsOffline(false); //added
+            await entriesDB.add(sortedEntries[0]);
+            setIsOffline(false);
         } catch (error) {
             console.error(
                 "Error fetching most recent entry:",
                 error
             );
         }
-        setIsLoading(false); // added
-    }, []);
-
-    // Fetch entry for selected date
-    const fetchEntryForDate = async (selectedDate) => {
-        try {
-            const cachedEntry = await entriesDB.getByDate(
-                userId,
-                selectedDate
-            ); // added
-            if (cachedEntry) {
-                setSelectedEntry(cachedEntry);
-                return; // added
-            }
-            const response = await fetch(
-                `${API_BASE_URL}/api/entries`,
-                {
-                    credentials: "include"
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch entries");
-            }
-
-            const entries = await response.json();
-
-            const matchingEntry = entries.find((entry) => {
-                const entryDate = new Date(entry.date);
-                return (
-                    entryDate.toDateString() ===
-                    selectedDate.toDateString()
-                );
-            });
-
-            setSelectedEntry(matchingEntry || null);
-        } catch (error) {
-            console.error("Error fetching entry:", error);
-        }
-    };
+    }, [userId]);
 
     // Fetch all entry dates
     const fetchAllEntryDates = useCallback(async () => {
         try {
             const cachedEntries =
-                await entriesDB.getAll(userId); // added
+                await entriesDB.getAll(userId);
             const cachedDates = cachedEntries.map((entry) =>
                 new Date(entry.date).toDateString()
-            ); // added
-            setEntryDates(cachedDates); //added
-            calculateStreakCount(cachedDates); // added
+            );
+            setEntryDates(cachedDates);
+            calculateStreakCount(cachedDates);
             const response = await fetch(
                 `${API_BASE_URL}/api/entries`,
                 {
@@ -179,11 +170,11 @@ function HomePage({ userId }) {
                         entriesDB.update(entry)
                     )
                 )
-            ); // added
+            );
         } catch (error) {
             console.error("Error fetching entry dates:", error);
         }
-    }, [userId]); // added userId
+    }, [userId]);
 
     // streak tracking
     const calculateStreakCount = (dates) => {
@@ -232,14 +223,28 @@ function HomePage({ userId }) {
         setStreakCount(streak);
     };
 
-    useEffect(() => {
-        fetchMostRecentEntry();
-        fetchAllEntryDates();
-    }, [fetchMostRecentEntry, fetchAllEntryDates]);
+    // Fetch all entry dates and initialize everything
+    const initializeData = useCallback(async () => {
+        setIsLoading(true);
+        await Promise.all([
+            fetchUserDetails(),
+            fetchMostRecentEntry(),
+            fetchAllEntryDates()
+        ]);
+        setIsLoading(false);
+    }, [
+        fetchUserDetails,
+        fetchMostRecentEntry,
+        fetchAllEntryDates
+    ]);
 
     useEffect(() => {
-        fetchEntryForDate(date);
-    }, [date]);
+        initializeData();
+    }, [initializeData]);
+
+    if (isLoading) {
+        return null;
+    }
 
     const handleDateChange = (newDate) => {
         setDate(newDate);
@@ -272,34 +277,21 @@ function HomePage({ userId }) {
         });
     };
 
-    // add swipe function
-    const handleSwipe = (direction) => {
-        const newDate = new Date(activeStartDate);
-        if (direction === "left") {
-            newDate.setMonth(newDate.getMonth() + 1);
-        } else if (direction === "right") {
-            newDate.setMonth(newDate.getMonth() - 1);
-        }
-        setActiveStartDate(newDate);
-    };
-
-    const swipeHandlers = useSwipeable({
-        onSwipedLeft: () => handleSwipe("left"),
-        onSwipedRight: () => handleSwipe("right")
-    });
-
     return (
         <HomeContainer {...swipeHandlers}>
             <WelcomeSection>
                 <WelcomeHeader>
                     Welcome back, {userName}!
                 </WelcomeHeader>
-                <StreakCounter>
-                    <h2>
-                        Current Streak: {streakCount}{" "}
-                        {streakCount === 1 ? "day" : "days"}!
-                    </h2>
-                </StreakCounter>
+                {streakCount > 0 && (
+                    <StreakCounter>
+                        <h2>
+                            Current Streak: {streakCount}{" "}
+                            {streakCount === 1 ? "day" : "days"}
+                            !
+                        </h2>
+                    </StreakCounter>
+                )}
                 {!hasEntryForToday() && (
                     <NoEntryMessage>
                         <h3>

@@ -135,7 +135,8 @@ export const EntryFieldTitle = styled.h3`
 `;
 
 export const TagsSection = styled.div`
-    margin-top: 1rem;
+    margin-top: ${(props) => (props.hasTags ? "1rem" : "0")};
+    display: ${(props) => (props.hasTags ? "block" : "none")};
 `;
 
 export const TagsContainer = styled.div`
@@ -143,7 +144,6 @@ export const TagsContainer = styled.div`
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 0.5rem;
-    min-height: 32px;
     padding: 4px;
 `;
 

@@ -24,7 +24,7 @@ import {
     SubmitText,
     EditIcon
 } from "./Entry.styles";
-import { entriesDB } from "../utils/db"; // -=-Import the database functions
+import { entriesDB, tagsDB } from "../utils/db";
 
 const theme = {
     lightPink: "rgba(242, 196, 187, 0.5)" // Lighter version of fill-color
@@ -269,11 +269,39 @@ const NewEntryPage = ({ userId }) => {
                     throw new Error("Failed to create entry");
 
                 const data = await response.json();
+
                 // Update IndexedDB after successful API call
                 await entriesDB.add({
                     ...data,
                     user_id: userId
                 });
+
+                // Fetch and update tags in IndexedDB
+                try {
+                    const tagsResponse = await fetch(
+                        `http://localhost:8000/api/entries/tags/${userId}`,
+                        {
+                            credentials: "include"
+                        }
+                    );
+
+                    if (tagsResponse.ok) {
+                        const tagsData =
+                            await tagsResponse.json();
+                        // Update each tag individually in IndexedDB
+                        for (const tag of tagsData) {
+                            await tagsDB.update({
+                                ...tag,
+                                user_id: userId
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.error(
+                        "Error updating tags in IndexedDB:",
+                        error
+                    );
+                }
 
                 // After successful creation, load today's entry fresh
                 await loadTodaysEntry();
@@ -340,7 +368,7 @@ const NewEntryPage = ({ userId }) => {
                         onKeyDown={handleTagKeyDown}
                         placeholder="Add tags (separate with commas)"
                     />
-                    <TagsSection>
+                    <TagsSection hasTags={tags.length > 0}>
                         <TagsContainer>
                             {tags.map((tag) => (
                                 <TagPill key={tag}>
