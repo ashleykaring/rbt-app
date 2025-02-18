@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-import { GroupSchema } from "./user.js";
-import { addGroupToUser } from "./user-services.js";
+import { GroupSchema, MemberSchema} from "./user.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -29,17 +28,16 @@ async function createGroup(group) {
         "groups",
         GroupSchema
     );
-    const groupCreatorId = group.users[0];
     try {
         const groupToAdd = new groupModel(group);
         const savedGroup = await groupToAdd.save();
-        addGroupToUser(groupCreatorId, savedGroup._id);
         return savedGroup;
     } catch (error) {
         console.log(error);
         return false;
     }
 }
+
 
 // Finds a group document from its group code
 
@@ -62,7 +60,7 @@ async function findGroupById(id) {
 }
 
 // Adds a UserID to a group document's list of members 
-
+/*
 async function joinGroup(userId, groupId) {
     const groupModel = getDbConnection().model(
         "groups",
@@ -83,10 +81,53 @@ async function joinGroup(userId, groupId) {
 
     return await addGroupToUser(userId, groupId);
 }
+*/
+
+async function joinGroup(userId, groupId) {
+    const memberModel = getDbConnection().model(
+        "members",
+        MemberSchema
+    );
+
+
+    try {
+        const memberObject = new memberModel({user_id: userId, group_id: groupId});
+        const savedMember = await memberObject.save();
+        return savedMember;
+
+    } catch (err) {
+        console.log(err);
+        return false;
+
+    }
+}
+
+async function getAllGroups(userId) {
+    const memberModel = getDbConnection().model("members", MemberSchema);
+    try {
+        return await memberModel.find({user_id: userId});
+
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}
+
+async function getAllUsers(groupId) {
+    const memberModel = getDbConnection().model("members", MemberSchema);
+    try {
+        return await memberModel.find({group_id: groupId});
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}
 
 export {
     createGroup,
     findGroupByCode,
     findGroupById,
-    joinGroup
+    joinGroup,
+    getAllGroups,
+    getAllUsers,
 };
