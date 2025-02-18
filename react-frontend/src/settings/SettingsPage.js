@@ -11,8 +11,9 @@ import {
     FaSignOutAlt as FaLeaveGroup
 } from "react-icons/fa";
 import * as S from "./SettingsStyles";
-import { createGlobalStyle } from "styled-components";
-import { clearDB } from "../utils/db";
+import { createGlobalStyle } from "styled-components"; 
+import { userDB, groupsDB, clearDB } from "../utils/db";  
+
 
 export const GlobalStyle = createGlobalStyle`
     @keyframes spin {
@@ -42,13 +43,20 @@ function Settings({ setIsLoggedIn }) {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState(null);
 
-    // Fetch user details on mount
+    // Fetch user details from indexedDB on mount
     useEffect(() => {
         const fetchUserDetails = async () => {
             try {
+                //checks incexedDB (cached data)
+                const cachedUser = await userDB.get("current_user");
+                if (cachedUser) {
+                    setCurrentUser(cachedUser);
+                    setEditedUser(cachedUser);
+                    setIsLoading(false);
+                }
+                //fetch latest data from api (always)
                 const response = await fetch(
-                    "http://localhost:8000/api/user/details",
-                    {
+                    "http://localhost:8000/api/user/details", { 
                         credentials: "include"
                     }
                 );
@@ -61,12 +69,15 @@ function Settings({ setIsLoggedIn }) {
                 const data = await response.json();
                 setCurrentUser(data);
                 setEditedUser(data);
+            //update indexedDB w latest data 
+                await userDB.update({ ...data, _id: "current_user"});
+
             } catch (error) {
                 setError("Failed to load user information");
-                console.error(
-                    "Error fetching user details:",
-                    error
-                );
+                // console.error(
+                //     "Error fetching user details:",
+                //     error
+                // );
             } finally {
                 setIsLoading(false);
             }
@@ -75,60 +86,91 @@ function Settings({ setIsLoggedIn }) {
         fetchUserDetails();
     }, []);
 
-    // Check if values have changed
+    // Check if user details have changed
     const hasChanges =
         currentUser.name !== editedUser.name ||
         currentUser.email !== editedUser.email;
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setEditedUser((prev) => ({
-            ...prev,
-            [name]: value
-        }));
+        // const { name, value } = e.target;
+        setEditedUser({
+             ...editedUser, 
+            [e.target.name]: e.target.value
+        });
         setSaveStatus(""); // Clear any previous status
     };
-
+// saved chnages (indexed first, then api)
     const handleSave = async () => {
         try {
             setSaveStatus("saving");
-            const response = await fetch(
-                "http://localhost:8000/api/user",
+            setCurrentUser(editedUser);
+            // const response = await fetch(
+            await userDB.update({
+                ...editedUser, 
+                _id: "current_user"});
+             // update server
+            const response = await fetch ("http://localhost:8000/api/user",
                 {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json"
                     },
                     credentials: "include",
-                    body: JSON.stringify({
-                        name: editedUser.name,
-                        email: editedUser.email
-                    })
-                }
-            );
+                    body: JSON.stringify(editedUser)
+            });
 
             const data = await response.json();
-
             if (!response.ok) {
-                throw new Error(
-                    data.message || "Failed to update"
-                );
+                throw new Error(data.message || "Failed to update");
             }
-
+            await userDB.update({...editedUser, _id: "current_user"});
+            
             setCurrentUser(editedUser);
             setSaveStatus("success");
-            setTimeout(() => setSaveStatus(""), 2000);
+
+            setTimeout(() => setSaveStatus(""), 2000); 
         } catch (error) {
             setSaveStatus("error");
-            setError(error.message);
-            setTimeout(() => setSaveStatus(""), 3000);
-        }
-    };
+            setError(error.message)
 
-    // theme switching logic
-    const toggleTheme = (theme) => {
-        setTheme(theme);
-    };
+            setTimeout(() => setSaveStatus(""), 3000);
+        }  
+        
+    };    
+          // Add new useEffect to fetch groups
+    useEffect(() => {
+        const fetchGroups = async () => {
+            try {
+                // check indexedDB
+                const cachedGroups = await groupsDB.getAll("current_user");
+                if (cachedGroups.length > 0){
+                    setGroups(cachedGroups);
+                }
+                // always fetch from api
+                const response = await fetch(
+                    "http://localhost:8000/api/groups",
+                    {
+                        credentials: "include"
+                    }
+                );
+
+                if (!response.ok)
+                    throw new Error("Failed to fetch groups");
+
+                const data = await response.json();
+                setGroups(data);
+                // updates indexedDB
+                for (let group of data) {
+                    await groupsDB.update(group);
+                }
+            } catch (error) {
+                setGroupsError("Failed to load groups");
+                console.error("Error fetching groups:", error);
+            }
+        };
+
+        fetchGroups();
+    }, []);    
 
     useEffect(() => {
         const currentTheme = localStorage.getItem("theme");
@@ -150,53 +192,27 @@ function Settings({ setIsLoggedIn }) {
         // }
     }, [theme]);
 
+    // Dark mode logic
+    const toggleTheme = () => {
+        setDarkMode((prev) => !prev);
+    };
+
     // Logout logic
     const handleLogout = async () => {
         try {
-            const response = await fetch(
-                "http://localhost:8000/api/logout",
-                {
-                    method: "POST",
-                    credentials: "include"
-                }
-            );
-
-            if (!response.ok) throw new Error("Logout failed");
-
-            // Clear IndexedDB before logging out
+            const db = await userDB.initDB();
             await clearDB();
+
             setIsLoggedIn(false);
             navigate("/account");
+            
         } catch (error) {
             console.error("Error logging out:", error);
         }
     };
 
-    // Add new useEffect to fetch groups
-    useEffect(() => {
-        const fetchGroups = async () => {
-            try {
-                const response = await fetch(
-                    "http://localhost:8000/api/groups",
-                    {
-                        credentials: "include"
-                    }
-                );
-
-                if (!response.ok)
-                    throw new Error("Failed to fetch groups");
-
-                const data = await response.json();
-                setGroups(data);
-            } catch (error) {
-                setGroupsError("Failed to load groups");
-                console.error("Error fetching groups:", error);
-            }
-        };
-
-        fetchGroups();
-    }, []);
-
+  
+// handle logout adn clear indexedDB
     const handleLeaveClick = (group) => {
         setSelectedGroup(group);
         setModalOpen(true);
