@@ -1,5 +1,37 @@
 import styled from "styled-components";
 
+export const Circle = styled.div`
+    width: 1.3rem;
+    height: 1.3rem;
+    background-color: ${(props) => props.color};
+    border-radius: 50%;
+    margin-right: 8px;
+`;
+
+export const ThemeSelection = styled.div`
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    margin: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    gap: 12px;
+    color: var(--text-primary);
+    font-weight: 500;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    ${(props) =>
+        props.selected &&
+        `
+        border-color: #4A90E2;
+    `}
+`;
+
 export const SettingsContainer = styled.div`
     max-width: 900px;
     width: 100%;
@@ -69,14 +101,14 @@ export const LogoutButton = styled.button`
     }
 `;
 
-export const ToggleWrapper = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 6px 8px;
-    color: var(--text-primary);
-    font-weight: 500;
-`;
+// export const ToggleWrapper = styled.div`
+//     display: flex;
+//     align-items: center;
+//     gap: 12px;
+//     padding: 6px 8px;
+//     color: var(--text-primary);
+//     font-weight: 500;
+// `;
 
 export const IconWrapper = styled.div`
     display: flex;

@@ -4,10 +4,7 @@ import { lightTheme, darkTheme } from "../layout/themes.js";
 export const Title = styled.h1`
     font-size: 2.4rem;
     font-weight: 700;
-    color: ${(props) =>
-        props.theme.mode === "dark-mode"
-            ? darkTheme.text
-            : lightTheme.text};
+    color: var(--text);
     margin-bottom: 15px;
     position: relative;
     padding-left: 1rem;
@@ -35,19 +32,13 @@ export const Subtitle = styled(Title).attrs({ as: "h2" })`
     width: 100%;
     margin-bottom: 1.5rem;
     align-items: center;
-    color: ${(props) =>
-        props.theme.mode === "dark-mode"
-            ? darkTheme.text
-            : lightTheme.text};
+    color: var(--text);
 `;
 
 export const TagName = styled.h1`
     font-size: 2rem;
     font-weight: 700;
-    color: ${(props) =>
-        props.theme.mode === "dark-mode"
-            ? darkTheme.text
-            : lightTheme.text};
+    color: var(--text);
     margin-bottom: 5px;
     margin-top: 5px;
     position: relative;
@@ -72,8 +63,13 @@ export const TagFolder = styled.div`
     transition: all 0.3s ease;
     background: ${(props) =>
         props.theme.mode === "dark-mode"
-            ? "linear-gradient(to right,rgb(197, 141, 170),rgb(152, 34, 83))" // dark
-            : "linear-gradient(to right, #fadadd, #f2c4bb)"};
+            ? "linear-gradient(to right, rgb(197, 141, 170), rgb(152, 34, 83))" // dark
+            : props.theme.mode === "blue-theme"
+            ? "linear-gradient(to right, #7CA9D6, #B8D3EB)" // blue
+            : props.theme.mode === "min-theme"
+            ? "linear-gradient(to right, #ffffff, #e6e6e6)"
+            : // light
+              "linear-gradient(to right, #fadadd, #f2c4bb)"};
     color: white;
     display: flex;
     align-items: center;
@@ -145,10 +141,7 @@ export const ContentContainer = styled.div`
     width: 100%;
     max-width: 480px;
     height: 100%;
-    background: ${(props) =>
-        props.theme.mode === "dark-mode"
-            ? "#2d1f1f" // darker pink for dark mode
-            : "#fdf2f1"};
+    background: var(--container-background);
     padding: 20px;
     position: relative;
     display: flex;
@@ -156,10 +149,7 @@ export const ContentContainer = styled.div`
 `;
 
 export const HeaderContainer = styled.div`
-    background: ${(props) =>
-        props.theme.mode === "dark-mode"
-            ? darkTheme.cardBackground
-            : "white"};
+    background: var(--top-background);
     border-radius: 16px;
     padding: 16px 10px;
     margin: 0 5px;
@@ -387,10 +377,7 @@ export const Folder = styled.div`
 export const EntryNumber = styled.h4`
     font-size: 0.7rem;
     font-weight: 700;
-    color: ${(props) =>
-        props.theme.mode === "dark-mode"
-            ? darkTheme.text
-            : lightTheme.text};
+    color: var(--text);
     margin-bottom: 5px;
     margin-top: 5px;
     text-align: right;
