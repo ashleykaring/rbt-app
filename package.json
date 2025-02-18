@@ -1,11 +1,14 @@
 {
-    "name": "full-stack-app",
+    "name": "rbt-base-app",
     "version": "1.0.0",
-    "description": "Full stack application with Express backend and React frontend",
+    "description": "RBT app's base directory, utilising Express and React for the frontend and backend respectively",
     "scripts": {
         "install": "npm run install:backend && npm run install:frontend",
         "install:backend": "cd express-backend && npm install",
         "install:frontend": "cd react-frontend && npm install",
+        "lint": "npm run lint:backend && npm run lint:frontend",
+        "lint:backend": "cd express-backend && npx eslint --config ../eslint.config.mjs .",
+        "lint:frontend": "cd react-frontend && npx eslint --config ../eslint.config.mjs .",
         "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
         "start:backend": "cd express-backend && node backend.js",
         "start:frontend": "cd react-frontend && npm start",
@@ -15,6 +18,7 @@
         "loginBackend": "cd express-backend\\login && node userServer.js",
         "loginFrontend": "cd react-frontend && npm start",
         "test": "cd express-backend && npm test",
+        "build": "cd react-frontend && npm run build",
         "ngrok:setup": "concurrently \"npm run ngrok:backend\" \"npm run ngrok:frontend\"",
         "ngrok:backend": "cd express-backend && node backend.js",
         "ngrok:frontend": "cd react-frontend && set HTTPS=true && npm start"
@@ -22,9 +26,14 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "@eslint/js": "^9.20.0",
         "concurrently": "^6.2.0",
+        "eslint": "^9.20.1",
+        "eslint-plugin-react": "^7.37.4",
+        "globals": "^15.14.0",
         "jest": "^29.7.0",
-        "mockingoose": "^2.16.2"
+        "mockingoose": "^2.16.2",
+        "prettier": "^3.5.0"
     },
     "dependencies": {
         "axios": "^1.7.7",

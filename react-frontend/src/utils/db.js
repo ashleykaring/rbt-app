@@ -72,6 +72,25 @@ export const initDB = async () => {
     return db;
 };
 
+// Clear all data from IndexedDB (used when a user logs out)
+export const clearDB = async () => {
+    const db = await initDB();
+    const tx = db.transaction(
+        ["users", "entries", "groups", "tags"],
+        "readwrite"
+    );
+
+    // Clear all data from the database
+    await Promise.all([
+        tx.objectStore("users").clear(),
+        tx.objectStore("entries").clear(),
+        tx.objectStore("groups").clear(),
+        tx.objectStore("tags").clear()
+    ]);
+
+    await tx.done;
+};
+
 /*
 Below this are all the operations that can then be performed on the database. I just generated some of the common ones, but you will certainly need to add more. The functions SHOULD match the database calls, because any call you make to the cloud database, should be first made to this, and then the cloud, and then this again.
 */

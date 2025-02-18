@@ -1,0 +1,47 @@
+name: CI Testing
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            # 1. Check out your repository so that the workflow has access to your code.
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            # 2. Set up Node.js with the version (here, version 20).
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+
+            # 3. Install the root dependencies.
+            - name: Install root dependencies
+              run: npm ci
+
+            # 4. Install backend dependencies (in the express-backend subdirectory).
+            - name: Install backend dependencies
+              run: npm run install:backend
+
+            # 5. Install frontend dependencies (in the react-frontend subdirectory).
+            - name: Install frontend dependencies
+              run: npm run install:frontend
+
+            # 6. Run centralized lint checks.
+            # If linting fails, this step will error out and the workflow stops here.
+            - name: Run Lint Checks
+              run: npm run lint
+
+            # 7. Run backend tests.
+            - name: Run Tests (Backend)
+              run: npm test
+
+            # 8. Build the frontend.
+            - name: Build Frontend
+              run: npm run build
