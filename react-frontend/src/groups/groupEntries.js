@@ -20,7 +20,7 @@ import {
 } from "react-icons/fi";
 import { ThemeProvider } from "styled-components";
 
-import { groupsDB, membersDB, entriesDB } from "../utils/db";
+import { membersDB, entriesDB } from "../utils/db";
 
 // Styles
 import {
@@ -142,7 +142,6 @@ function GroupEntries({ userId }) {
         }
 
         try {
-            const currentUser = userId;
             const response = await fetch(
                 `${API_BASE_URL}/api/groups/${groupId}/entries`,
                 {
@@ -173,6 +172,7 @@ function GroupEntries({ userId }) {
         if (groupId && userId) {
             fetchEntries();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [groupId, userId]);
 
     // add new reaction
@@ -389,6 +389,11 @@ function GroupEntries({ userId }) {
         }
         // fetch numbers on change of:
     }, [entries, groupUsers]);
+
+    useEffect(() => {
+        fetchEntries();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <ThemeProvider theme={theme}>

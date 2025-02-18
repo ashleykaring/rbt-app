@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-    FaTimes,
-    FaEye,
-    FaLock,
-    FaPencilAlt
-} from "react-icons/fa";
+import { FaTimes, FaEye, FaLock } from "react-icons/fa";
 import { ThemeProvider } from "styled-components";
 import {
     EntryContainer,
@@ -21,8 +16,7 @@ import {
     VisibilityToggle,
     ToggleOption,
     SubmitWrapper,
-    SubmitText,
-    EditIcon
+    SubmitText
 } from "./Entry.styles";
 import { entriesDB, tagsDB } from "../utils/db";
 
@@ -51,6 +45,7 @@ const NewEntryPage = ({ userId }) => {
     // Fetch today's entry on mount
     useEffect(() => {
         loadTodaysEntry();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     /* 

@@ -1,6 +1,7 @@
 // eslint.config.mjs
 import js from "@eslint/js";
 import reactPlugin from "eslint-plugin-react";
+import reactHooksPlugin from "eslint-plugin-react-hooks";
 import globals from "globals";
 
 export default [
@@ -32,7 +33,8 @@ export default [
             }
         },
         plugins: {
-            react: reactPlugin
+            react: reactPlugin,
+            "react-hooks": reactHooksPlugin
         },
         settings: {
             react: { version: "detect" }
@@ -55,6 +57,10 @@ export default [
             "react/jsx-uses-react": "error",
             "react/jsx-uses-vars": "error",
             "react/prop-types": "off",
+
+            // React Hooks rules
+            "react-hooks/rules-of-hooks": "error",
+            "react-hooks/exhaustive-deps": "off", // Turning off since we want to control dependencies manually
 
             // Common JS best practices
             "no-var": "error",

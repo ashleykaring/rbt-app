@@ -24,12 +24,10 @@ import {
     EntryModel,
     addReactionToEntry,
     updateUser,
-    removeGroupFromUser,
     getAllTagsByUserId,
     addTagObject,
-    addTagToEntry,
-    updateTagObject,
-    deleteEntriesByEntryId
+    addTagToEntry
+    //deleteEntriesByEntryId
 } from "./models/user-services.js";
 
 // Services
@@ -80,8 +78,8 @@ console.log("MongoDB URI:", process.env.MONGODB_URI);
 mongoose
     .connect(process.env.MONGODB_URI)
     .then(() => console.log("MongoDB connected"))
-    .catch((err) =>
-        console.error("MongoDB connection error:", err)
+    .catch((error) =>
+        console.error("MongoDB connection error:", error)
     );
 
 /* 
@@ -132,9 +130,9 @@ app.post("/api/register", async (req, res) => {
             message: "Success!"
         });
     } catch (error) {
+        console.error("Error registering:", error);
         res.status(500).json({
-            message:
-                "There was an error registering, please try again."
+            error: "There was an error registering, please try again."
         });
     }
 });
@@ -161,9 +159,9 @@ app.get("/api/user-exists/:email", async (req, res) => {
             firstName: users[0].first_name
         });
     } catch (error) {
+        console.error("Error checking user existence:", error);
         res.status(500).json({
-            message:
-                "Error checking user existence. Please try again."
+            error: "Error checking user existence. Please try again."
         });
     }
 });
@@ -206,8 +204,9 @@ app.post("/api/login", async (req, res) => {
             message: "Success"
         });
     } catch (error) {
+        console.error("Error logging in:", error);
         res.status(500).json({
-            message: "Error logging you in. Please try again"
+            error: "Error logging you in. Please try again"
         });
     }
 });
@@ -252,8 +251,7 @@ app.put("/api/user", authMiddleware, async (req, res) => {
     } catch (error) {
         console.error("Error updating user:", error);
         res.status(500).json({
-            message:
-                "There was an error updating your information"
+            error: "Error updating user information"
         });
     }
 });
@@ -324,8 +322,8 @@ app.post("/api/entries", authMiddleware, async (req, res) => {
         }
 
         res.status(201).json(newEntry);
-    } catch (err) {
-        console.log(err);
+    } catch (error) {
+        console.error("Error creating entry:", error);
         res.status(500).json({
             error: "Error creating journal entry"
         });
@@ -390,7 +388,7 @@ app.patch(
 
             const updatedTags = req.body.tags;
 
-            await deleteEntriesByEntryId(entryId);
+            //await deleteEntriesByEntryId(entryId);
 
             // Compare each tag and see if it already exists in the database
             const tagIdArray = [];
@@ -435,8 +433,8 @@ app.get("/api/entries", authMiddleware, async (req, res) => {
         const entries = await getAllEntries(userId);
         console.log("Retrieved entries:", entries);
         res.json(entries);
-    } catch (err) {
-        console.error("Error fetching entries:", err);
+    } catch (error) {
+        console.error("Error fetching entries:", error);
         res.status(500).json({
             error: "Error fetching entries"
         });
@@ -462,7 +460,7 @@ app.put(
             const userId = new mongoose.Types.ObjectId(
                 req.userId
             );
-            const { groupCode } = req.params;
+            //const { groupCode } = req.params;
 
             console.log("Join group attempt:", {
                 groupCode: req.params.groupCode,
@@ -554,8 +552,8 @@ app.get("/api/groups/verify/:code", async (req, res) => {
             existingGroup.length === 0 ? "available" : "taken"
         );
         res.json({ isAvailable: existingGroup.length === 0 });
-    } catch (err) {
-        console.error("Error verifying group code:", err);
+    } catch (error) {
+        console.error("Error verifying group code:", error);
         res.status(500).json({
             error: "Error verifying group code"
         });
@@ -614,8 +612,8 @@ app.post("/api/groups", authMiddleware, async (req, res) => {
         }
 
         res.status(201).json(newGroup);
-    } catch (err) {
-        console.error("Error in create group:", err);
+    } catch (error) {
+        console.error("Error creating group:", error);
         res.status(500).json({
             error: "Error creating group"
         });
@@ -661,8 +659,8 @@ app.get("/api/groups", authMiddleware, async (req, res) => {
 
         console.log("Retrieved groups:", groups);
         res.json(groups);
-    } catch (err) {
-        console.error("Error in /api/groups:", err);
+    } catch (error) {
+        console.error("Error fetching groups:", error);
         res.status(500).json({
             error: "Error fetching groups"
         });
@@ -725,8 +723,8 @@ app.get("/users/:userId/recent", async (req, res) => {
             userName: name,
             noPublicEntries: true
         });
-    } catch (err) {
-        console.log("Error in /users/:userId/recent", err);
+    } catch (error) {
+        console.error("Error in /users/:userId/recent:", error);
         res.status(500).json({
             error: "Error fetching most recent entry"
         });
@@ -851,7 +849,10 @@ app.post("/api/logout", authMiddleware, async (req, res) => {
             message: "Logged out successfully"
         });
     } catch (error) {
-        res.status(500).json({ message: "Error logging out" });
+        console.error("Error logging out:", error);
+        res.status(500).json({
+            error: "Error logging out"
+        });
     }
 });
 
@@ -911,10 +912,10 @@ app.put(
             }
 
             res.status(201).json(updatedEntry);
-        } catch (err) {
-            console.log(err);
+        } catch (error) {
+            console.error("Error adding reaction:", error);
             res.status(500).json({
-                error: "Error creating journal entry"
+                error: "Error adding reaction to entry"
             });
         }
     }
@@ -938,8 +939,8 @@ app.get(
             const tags = await getAllTagsByUserId(userId);
             console.log("Retrieved entries:", tags);
             res.json(tags);
-        } catch (err) {
-            console.error("Error fetching tags:", err);
+        } catch (error) {
+            console.error("Error fetching tags:", error);
             res.status(500).json({
                 error: "Error fetching tags"
             });
@@ -980,7 +981,7 @@ app.get(
                 error
             );
             res.status(500).json({
-                message: "Error fetching user details"
+                error: "Error fetching user details"
             });
         }
     }

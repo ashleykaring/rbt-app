@@ -154,10 +154,9 @@ function SearchPage({ userId }) {
     };
 
     useEffect(() => {
-        if (userId) {
-            fetchTags();
-        }
-    }, [userId]);
+        fetchTags();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // navigates to the tag's folder and passes in tag id and entries
     const navigateToTag = async (tag) => {
@@ -180,47 +179,51 @@ function SearchPage({ userId }) {
         );
     };
 
-    return (
-        <ThemeProvider theme={theme}>
-            <PageContainer>
-                {/* no tags view */}
-                {tags.length === 0 ? (
-                    <>
-                        <Title>No Tags Yet!</Title>
-                    </>
-                ) : (
-                    // display tags
-                    <>
-                        <Subtitle>Your Tags</Subtitle>
-                        {tags.map((tag) => (
-                            <TagFolder
-                                key={tag._id}
-                                onClick={() =>
-                                    navigateToTag(tag)
-                                }
-                            >
-                                <Folder>
-                                    <IoFolderOutline />
-                                </Folder>
-                                <TagContent>
-                                    <TagName>
-                                        {tag.tag_name}
-                                    </TagName>
-                                    <EntryNumber>
-                                        {tag.entries.length}{" "}
-                                        {tag.entries.length ===
-                                        1
-                                            ? "entry"
-                                            : "entries"}
-                                    </EntryNumber>
-                                </TagContent>
-                            </TagFolder>
-                        ))}
-                    </>
-                )}
-            </PageContainer>
-        </ThemeProvider>
-    );
+    if (isLoading) {
+        return <div> </div>;
+    } else {
+        return (
+            <ThemeProvider theme={theme}>
+                <PageContainer>
+                    {/* no tags view */}
+                    {tags.length === 0 ? (
+                        <>
+                            <Title>No Tags Yet!</Title>
+                        </>
+                    ) : (
+                        // display tags
+                        <>
+                            <Subtitle>Your Tags</Subtitle>
+                            {tags.map((tag) => (
+                                <TagFolder
+                                    key={tag._id}
+                                    onClick={() =>
+                                        navigateToTag(tag)
+                                    }
+                                >
+                                    <Folder>
+                                        <IoFolderOutline />
+                                    </Folder>
+                                    <TagContent>
+                                        <TagName>
+                                            {tag.tag_name}
+                                        </TagName>
+                                        <EntryNumber>
+                                            {tag.entries.length}{" "}
+                                            {tag.entries
+                                                .length === 1
+                                                ? "entry"
+                                                : "entries"}
+                                        </EntryNumber>
+                                    </TagContent>
+                                </TagFolder>
+                            ))}
+                        </>
+                    )}
+                </PageContainer>
+            </ThemeProvider>
+        );
+    }
 }
 
 export default SearchPage;

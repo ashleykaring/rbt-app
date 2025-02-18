@@ -2,7 +2,6 @@
 IMPORTS
  */
 import React, { useState, useEffect } from "react";
-import { BiLoaderAlt } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
 import { IoChevronForward } from "react-icons/io5";
@@ -11,15 +10,11 @@ import { groupsDB, membersDB } from "../utils/db";
 // Styles
 import {
     PageContainer,
-    Title,
     Subtitle,
     GroupCard,
     getGradient,
     GroupCardContent,
-    ChevronIcon,
-    LoadingContainer,
-    LoadingSpinner,
-    LoadingText
+    ChevronIcon
 } from "./group.styles";
 
 // Components
@@ -137,6 +132,7 @@ function GroupsPage({ userId }) {
 
     useEffect(() => {
         fetchGroups();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Navigates to the group's entries page

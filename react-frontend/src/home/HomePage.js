@@ -3,8 +3,6 @@ IMPORTS
 */
 import { useState, useEffect, useCallback } from "react";
 import { useSwipeable } from "react-swipeable";
-import Calendar from "react-calendar";
-import Modal from "react-modal";
 import { entriesDB, userDB } from "../utils/db";
 
 // Styles
@@ -27,7 +25,6 @@ import {
 
 function HomePage({ userId }) {
     const [date, setDate] = useState(new Date());
-    const [selectedEntry, setSelectedEntry] = useState(null);
     const [recentEntry, setRecentEntry] = useState(null);
     const [entryDates, setEntryDates] = useState([]);
     const [streakCount, setStreakCount] = useState(0);
@@ -36,7 +33,7 @@ function HomePage({ userId }) {
         new Date()
     );
     const [isLoading, setIsLoading] = useState(true);
-    const [isOffline, setIsOffline] = useState(false);
+    const [setIsOffline] = useState(false);
     const [userName, setUserName] = useState("");
 
     const API_BASE_URL =
@@ -98,7 +95,7 @@ function HomePage({ userId }) {
         }
     }, [userId]);
 
-    // fetch most recent entry
+    // Fetch most recent entry
     const fetchMostRecentEntry = useCallback(async () => {
         try {
             const cachedEntry =
@@ -133,6 +130,7 @@ function HomePage({ userId }) {
                 error
             );
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId]);
 
     // Fetch all entry dates
@@ -241,6 +239,7 @@ function HomePage({ userId }) {
 
     useEffect(() => {
         initializeData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [initializeData]);
 
     if (isLoading) {
@@ -351,19 +350,19 @@ function HomePage({ userId }) {
                 overlayClassName="overlay"
             >
                 <h2>{date.toDateString()}</h2>
-                {selectedEntry ? (
+                {recentEntry ? (
                     <EntryDisplay>
                         <EntryItem>
                             <h3>Rose</h3>
-                            <p>{selectedEntry.rose_text}</p>
+                            <p>{recentEntry.rose_text}</p>
                         </EntryItem>
                         <EntryItem>
                             <h3>Bud</h3>
-                            <p>{selectedEntry.bud_text}</p>
+                            <p>{recentEntry.bud_text}</p>
                         </EntryItem>
                         <EntryItem>
                             <h3>Thorn</h3>
-                            <p>{selectedEntry.thorn_text}</p>
+                            <p>{recentEntry.thorn_text}</p>
                         </EntryItem>
                     </EntryDisplay>
                 ) : (
