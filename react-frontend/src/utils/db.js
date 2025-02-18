@@ -61,9 +61,12 @@ export const initDB = async () => {
 
             // Members store
             if (!db.objectStoreNames.contains("members")) {
-                const memberStore = db.createObjectStore("members", {
-                    keyPath: "_id"
-                });
+                const memberStore = db.createObjectStore(
+                    "members",
+                    {
+                        keyPath: "_id"
+                    }
+                );
                 memberStore.createIndex("user_id", "user_id");
                 memberStore.createIndex("group_id", "group_id");
             }
@@ -76,7 +79,7 @@ export const initDB = async () => {
 export const clearDB = async () => {
     const db = await initDB();
     const tx = db.transaction(
-        ["users", "entries", "groups", "tags"],
+        ["users", "entries", "groups", "tags", "members"],
         "readwrite"
     );
 
@@ -85,7 +88,8 @@ export const clearDB = async () => {
         tx.objectStore("users").clear(),
         tx.objectStore("entries").clear(),
         tx.objectStore("groups").clear(),
-        tx.objectStore("tags").clear()
+        tx.objectStore("tags").clear(),
+        tx.objectStore("members").clear()
     ]);
 
     await tx.done;
@@ -162,18 +166,21 @@ export const entriesDB = {
     async getMostRecentByUserId(userId) {
         const entries = await this.getAllOverall(userId);
 
-        const filteredEntries = entries.filter((entry) => entry.user_id === userId);
+        const filteredEntries = entries.filter(
+            (entry) => entry.user_id === userId
+        );
 
-        let maxDateEntry = filteredEntries.length > 0 ? filteredEntries[0]: null;
+        let maxDateEntry =
+            filteredEntries.length > 0
+                ? filteredEntries[0]
+                : null;
 
-        for (let i = 0; i<filteredEntries.length; i++) {
-            if (filteredEntries[i].date > maxDateEntry) maxDateEntry = filteredEntries[i];
-
+        for (let i = 0; i < filteredEntries.length; i++) {
+            if (filteredEntries[i].date > maxDateEntry)
+                maxDateEntry = filteredEntries[i];
         }
 
-
         return maxDateEntry;
-        
     },
 
     async addIfNotPresent(entry) {
@@ -188,16 +195,12 @@ export const entriesDB = {
 
 // Groups operations
 export const groupsDB = {
-
-
     async getById(groupId) {
         const db = await initDB();
         const tx = db.transaction("groups", "readonly");
         const store = tx.store;
         const groups = await store.getAll();
-        return groups.filter((group) => 
-            group._id.includes(groupId)
-        );
+        return groups.filter((group) => group._id === groupId);
     },
 
     async add(group) {
@@ -208,6 +211,11 @@ export const groupsDB = {
     async update(group) {
         const db = await initDB();
         return db.put("groups", group);
+    },
+
+    async delete(groupId) {
+        const db = await initDB();
+        return db.delete("groups", groupId);
     }
 };
 
@@ -217,8 +225,8 @@ export const membersDB = {
         const tx = db.transaction("members", "readonly");
         const store = tx.store;
         const members = await store.getAll();
-        return members.filter((memberObject) =>
-            memberObject.user_id.includes(userId)
+        return members.filter(
+            (memberObject) => memberObject.user_id === userId
         );
     },
 
@@ -227,22 +235,21 @@ export const membersDB = {
         const tx = db.transaction("members", "readonly");
         const store = tx.store;
         const members = await store.getAll();
-        return members.filter((memberObject) => 
-            memberObject.group_id.includes(groupId)
+        return members.filter(
+            (memberObject) => memberObject.group_id === groupId
         );
     },
 
-    async add(memberObject) {        
-
+    async add(memberObject) {
         const db = await initDB();
         return db.add("members", memberObject);
     },
 
     async delete(memberId) {
         const db = await initDB();
-        return db.delete({_id: memberId});
+        return db.delete("members", memberId);
     }
-}
+};
 
 // Tags operations
 export const tagsDB = {

@@ -11,9 +11,13 @@ import {
     FaSignOutAlt as FaLeaveGroup
 } from "react-icons/fa";
 import * as S from "./SettingsStyles";
-import { createGlobalStyle } from "styled-components"; 
-import { userDB, groupsDB, clearDB } from "../utils/db";  
-
+import { createGlobalStyle } from "styled-components";
+import {
+    userDB,
+    groupsDB,
+    clearDB,
+    membersDB
+} from "../utils/db";
 
 export const GlobalStyle = createGlobalStyle`
     @keyframes spin {
@@ -48,7 +52,8 @@ function Settings({ setIsLoggedIn }) {
         const fetchUserDetails = async () => {
             try {
                 //checks incexedDB (cached data)
-                const cachedUser = await userDB.get("current_user");
+                const cachedUser =
+                    await userDB.get("current_user");
                 if (cachedUser) {
                     setCurrentUser(cachedUser);
                     setEditedUser(cachedUser);
@@ -56,7 +61,8 @@ function Settings({ setIsLoggedIn }) {
                 }
                 //fetch latest data from api (always)
                 const response = await fetch(
-                    "http://localhost:8000/api/user/details", { 
+                    "http://localhost:8000/api/user/details",
+                    {
                         credentials: "include"
                     }
                 );
@@ -69,9 +75,11 @@ function Settings({ setIsLoggedIn }) {
                 const data = await response.json();
                 setCurrentUser(data);
                 setEditedUser(data);
-            //update indexedDB w latest data 
-                await userDB.update({ ...data, _id: "current_user"});
-
+                //update indexedDB w latest data
+                await userDB.update({
+                    ...data,
+                    _id: "current_user"
+                });
             } catch (error) {
                 setError("Failed to load user information");
                 // console.error(
@@ -94,22 +102,24 @@ function Settings({ setIsLoggedIn }) {
     const handleInputChange = (e) => {
         // const { name, value } = e.target;
         setEditedUser({
-             ...editedUser, 
+            ...editedUser,
             [e.target.name]: e.target.value
         });
         setSaveStatus(""); // Clear any previous status
     };
-// saved chnages (indexed first, then api)
+    // saved chnages (indexed first, then api)
     const handleSave = async () => {
         try {
             setSaveStatus("saving");
             setCurrentUser(editedUser);
             // const response = await fetch(
             await userDB.update({
-                ...editedUser, 
-                _id: "current_user"});
-             // update server
-            const response = await fetch ("http://localhost:8000/api/user",
+                ...editedUser,
+                _id: "current_user"
+            });
+            // update server
+            const response = await fetch(
+                "http://localhost:8000/api/user",
                 {
                     method: "PUT",
                     headers: {
@@ -117,35 +127,57 @@ function Settings({ setIsLoggedIn }) {
                     },
                     credentials: "include",
                     body: JSON.stringify(editedUser)
-            });
+                }
+            );
 
             const data = await response.json();
             if (!response.ok) {
-                throw new Error(data.message || "Failed to update");
+                throw new Error(
+                    data.message || "Failed to update"
+                );
             }
-            await userDB.update({...editedUser, _id: "current_user"});
-            
+            await userDB.update({
+                ...editedUser,
+                _id: "current_user"
+            });
+
             setCurrentUser(editedUser);
             setSaveStatus("success");
 
-            setTimeout(() => setSaveStatus(""), 2000); 
+            setTimeout(() => setSaveStatus(""), 2000);
         } catch (error) {
             setSaveStatus("error");
-            setError(error.message)
+            setError(error.message);
 
             setTimeout(() => setSaveStatus(""), 3000);
-        }  
-        
-    };    
-          // Add new useEffect to fetch groups
+        }
+    };
+    // Add new useEffect to fetch groups
     useEffect(() => {
         const fetchGroups = async () => {
             try {
-                // check indexedDB
-                const cachedGroups = await groupsDB.getAll("current_user");
-                if (cachedGroups.length > 0){
+                // check indexedDB using both members and groups
+                const cachedMemberObjects =
+                    await membersDB.getGroupIds("current_user");
+                const cachedGroups = [];
+
+                for (
+                    let i = 0;
+                    i < cachedMemberObjects.length;
+                    i++
+                ) {
+                    const groupToAdd = await groupsDB.getById(
+                        cachedMemberObjects[i].group_id
+                    );
+                    if (groupToAdd) {
+                        cachedGroups.push(groupToAdd);
+                    }
+                }
+
+                if (cachedGroups.length > 0) {
                     setGroups(cachedGroups);
                 }
+
                 // always fetch from api
                 const response = await fetch(
                     "http://localhost:8000/api/groups",
@@ -154,14 +186,63 @@ function Settings({ setIsLoggedIn }) {
                     }
                 );
 
-                if (!response.ok)
+                if (!response.ok) {
                     throw new Error("Failed to fetch groups");
+                }
 
-                const data = await response.json();
-                setGroups(data);
-                // updates indexedDB
-                for (let group of data) {
-                    await groupsDB.update(group);
+                const fetchedGroups = await response.json();
+                setGroups(fetchedGroups);
+
+                // Update IndexedDB with latest data
+                if (fetchedGroups) {
+                    for (
+                        let i = 0;
+                        i < fetchedGroups.length;
+                        i++
+                    ) {
+                        const newGroupObject = {
+                            _id: fetchedGroups[i][0]._id,
+                            group_code:
+                                fetchedGroups[i][0].group_code,
+                            name: fetchedGroups[i][0].name
+                        };
+
+                        // Try to update first, if it doesn't exist then add
+                        try {
+                            await groupsDB.update(
+                                newGroupObject
+                            );
+                        } catch (err) {
+                            await groupsDB.add(newGroupObject);
+                        }
+
+                        // Check if member relationship exists before adding
+                        const memberExists =
+                            cachedMemberObjects.some(
+                                (member) =>
+                                    member.group_id ===
+                                    fetchedGroups[i][0]._id
+                            );
+
+                        if (!memberExists) {
+                            const newMembersObject = {
+                                _id: `${fetchedGroups[i][0]._id}_current_user`, // Create a deterministic ID
+                                user_id: "current_user",
+                                group_id:
+                                    fetchedGroups[i][0]._id
+                            };
+                            try {
+                                await membersDB.add(
+                                    newMembersObject
+                                );
+                            } catch (err) {
+                                // If it already exists, that's fine
+                                console.log(
+                                    "Member relationship already exists"
+                                );
+                            }
+                        }
+                    }
                 }
             } catch (error) {
                 setGroupsError("Failed to load groups");
@@ -170,7 +251,7 @@ function Settings({ setIsLoggedIn }) {
         };
 
         fetchGroups();
-    }, []);    
+    }, []);
 
     useEffect(() => {
         const currentTheme = localStorage.getItem("theme");
@@ -192,27 +273,42 @@ function Settings({ setIsLoggedIn }) {
         // }
     }, [theme]);
 
-    // Dark mode logic
-    const toggleTheme = () => {
-        setDarkMode((prev) => !prev);
-    };
-
     // Logout logic
     const handleLogout = async () => {
         try {
-            const db = await userDB.initDB();
+            // First clear IndexedDB
             await clearDB();
 
+            // Then call logout endpoint
+            const response = await fetch(
+                "http://localhost:8000/api/logout",
+                {
+                    method: "POST",
+                    credentials: "include"
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to logout");
+            }
+
+            // Update app state and redirect
             setIsLoggedIn(false);
-            navigate("/account");
-            
+            window.location.href = "/account";
         } catch (error) {
             console.error("Error logging out:", error);
+            // Still try to logout locally even if server fails
+            setIsLoggedIn(false);
+            window.location.href = "/account";
         }
     };
 
-  
-// handle logout adn clear indexedDB
+    // theme switching logic
+    const toggleTheme = (theme) => {
+        setTheme(theme);
+    };
+
+    // handle logout adn clear indexedDB
     const handleLeaveClick = (group) => {
         setSelectedGroup(group);
         setModalOpen(true);
@@ -225,6 +321,7 @@ function Settings({ setIsLoggedIn }) {
 
     const handleLeaveGroup = async (groupId) => {
         try {
+            // First call the server
             const response = await fetch(
                 `http://localhost:8000/api/groups/${groupId}/leave`,
                 {
@@ -237,10 +334,42 @@ function Settings({ setIsLoggedIn }) {
                 throw new Error("Failed to leave group");
             }
 
-            // Remove group from local state
-            setGroups(groups.filter((g) => g._id !== groupId));
-            setModalOpen(false);
-            setSelectedGroup(null);
+            // Then update IndexedDB
+            try {
+                // Find and remove the member relationship
+                const memberObjects =
+                    await membersDB.getGroupIds("current_user");
+                const memberToDelete = memberObjects.find(
+                    (member) => member.group_id === groupId
+                );
+
+                if (memberToDelete) {
+                    await membersDB.delete(memberToDelete._id);
+                }
+
+                // Update local state to remove the group
+                setGroups((prevGroups) =>
+                    prevGroups.filter(
+                        (g) => g[0]._id !== groupId
+                    )
+                );
+
+                setModalOpen(false);
+                setSelectedGroup(null);
+            } catch (dbError) {
+                console.error(
+                    "Error updating IndexedDB:",
+                    dbError
+                );
+                // Still update UI since server operation succeeded
+                setGroups((prevGroups) =>
+                    prevGroups.filter(
+                        (g) => g[0]._id !== groupId
+                    )
+                );
+                setModalOpen(false);
+                setSelectedGroup(null);
+            }
         } catch (error) {
             setGroupsError("Failed to leave group");
             console.error("Error leaving group:", error);
@@ -385,14 +514,14 @@ function Settings({ setIsLoggedIn }) {
                     ) : (
                         <S.GroupsList>
                             {groups.map((group) => (
-                                <S.GroupItem key={group._id}>
+                                <S.GroupItem key={group[0]._id}>
                                     <S.GroupName>
-                                        {group.name}
+                                        {group[0].name}
                                     </S.GroupName>
                                     <S.RemoveButton
                                         onClick={() =>
                                             handleLeaveClick(
-                                                group
+                                                group[0]
                                             )
                                         }
                                         aria-label="Leave group"

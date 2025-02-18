@@ -3,12 +3,13 @@ import { lightTheme, darkTheme } from "../layout/themes.js";
 
 export const Title = styled.h1`
     font-size: 2.4rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 15px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 1.2rem;
     position: relative;
     padding-left: 1rem;
     flex: 1;
+    text-align: center;
 
     &::before {
         content: "";
@@ -18,21 +19,48 @@ export const Title = styled.h1`
         transform: translateY(-50%);
         height: 70%;
         width: 4px;
-        background: #f0c5bc;
+        background: var(--fill-color);
         border-radius: 2px;
     }
 `;
 
-export const Subtitle = styled(Title).attrs({ as: "h2" })`
+export const Subtitle = styled.h2`
     font-size: 2rem;
-    font-weight: 700;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
     position: relative;
-    top: 0.4em;
-    padding-left: 2rem;
+    padding-left: 1rem;
     width: 100%;
-    margin-bottom: 1.5rem;
-    align-items: center;
-    color: var(--text);
+    letter-spacing: -0.5px;
+
+    &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 1.6rem;
+        width: 4px;
+        background: var(--fill-color);
+        border-radius: 2px;
+        box-shadow: 0 2px 8px var(--fill-color);
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 1rem;
+        width: 100px;
+        height: 3px;
+        background: linear-gradient(
+            90deg,
+            var(--fill-color) 0%,
+            transparent 100%
+        );
+        border-radius: 2px;
+    }
 `;
 
 export const TagName = styled.h1`
@@ -65,11 +93,11 @@ export const TagFolder = styled.div`
         props.theme.mode === "dark-mode"
             ? "linear-gradient(to right, rgb(197, 141, 170), rgb(152, 34, 83))" // dark
             : props.theme.mode === "blue-theme"
-            ? "linear-gradient(to right, #7CA9D6, #B8D3EB)" // blue
-            : props.theme.mode === "min-theme"
-            ? "linear-gradient(to right, #ffffff, #e6e6e6)"
-            : // light
-              "linear-gradient(to right, #fadadd, #f2c4bb)"};
+              ? "linear-gradient(to right, #7CA9D6, #B8D3EB)" // blue
+              : props.theme.mode === "min-theme"
+                ? "linear-gradient(to right, #ffffff, #e6e6e6)"
+                : // light
+                  "linear-gradient(to right, #fadadd, #f2c4bb)"};
     color: white;
     display: flex;
     align-items: center;

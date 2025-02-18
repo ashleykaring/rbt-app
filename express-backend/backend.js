@@ -29,7 +29,7 @@ import {
     addTagObject,
     addTagToEntry,
     updateTagObject,
-    deleteEntriesByEntryId,
+    deleteEntriesByEntryId
 } from "./models/user-services.js";
 
 // Services
@@ -39,7 +39,8 @@ import {
     joinGroup,
     findGroupById,
     getAllGroups,
-    getAllUsers
+    getAllUsers,
+    removeMember
 } from "./models/group-services.js";
 
 // JWT Utils
@@ -219,9 +220,8 @@ app.put("/api/user", authMiddleware, async (req, res) => {
 
         // If trying to update email, check if new email is already in use
         if (email) {
-            const existingUser = await findUserByUsername(
-                email
-            );
+            const existingUser =
+                await findUserByUsername(email);
             if (
                 existingUser.length > 0 &&
                 existingUser[0]._id.toString() !== userId
@@ -645,7 +645,6 @@ app.get("/api/groups", authMiddleware, async (req, res) => {
         // Get full group details for each group ID
         const userGroups = await getAllGroups(userId); // ONLY HAS ONE ID
 
-
         /*
         const userGroups = await Promise.all(
             user[0].groups.map((groupId) =>
@@ -655,13 +654,10 @@ app.get("/api/groups", authMiddleware, async (req, res) => {
         */
 
         const groups = await Promise.all(
-            userGroups.map((member) => 
+            userGroups.map((member) =>
                 findGroupById(member.group_id)
             )
         );
-
-
-
 
         console.log("Retrieved groups:", groups);
         res.json(groups);
@@ -688,9 +684,8 @@ app.get("/users/:userId/recent", async (req, res) => {
         const userId = new mongoose.Types.ObjectId(
             req.params.userId
         );
-        const userEntries = await getUserEntriesByUserId(
-            userId
-        );
+        const userEntries =
+            await getUserEntriesByUserId(userId);
 
         if (!userEntries) {
             return res
@@ -713,9 +708,8 @@ app.get("/users/:userId/recent", async (req, res) => {
 
         for (let i = listOfEntries.length - 1; i >= 0; i--) {
             const currentEntryId = listOfEntries[i];
-            const currentEntry = await getEntryById(
-                currentEntryId
-            );
+            const currentEntry =
+                await getEntryById(currentEntryId);
 
             if (currentEntry[0] && currentEntry[0].is_public) {
                 currentEntry[0].userName = name;
@@ -776,18 +770,19 @@ app.get(
                     .json({ error: "Group not found" });
             }
 
-            const allUsers = await getAllUsers(groupId);  // LIST OF MEMBER OBJECTS
-
-
+            const allUsers = await getAllUsers(groupId); // LIST OF MEMBER OBJECTS
 
             // Get recent entries for all users in one query
             const recentEntries = await Promise.all(
                 allUsers.map(async (currentUser) => {
                     const userEntries =
-                        await getUserEntriesByUserId(currentUser.user_id);
+                        await getUserEntriesByUserId(
+                            currentUser.user_id
+                        );
 
-
-                    const userInfo = await findUserById(currentUser.user_id);
+                    const userInfo = await findUserById(
+                        currentUser.user_id
+                    );
 
                     if (
                         !userEntries ||
@@ -824,8 +819,6 @@ app.get(
                     return null;
                 })
             );
-
-
 
             // Filter out null entries and send
             res.json(
@@ -1004,12 +997,9 @@ app.delete(
             );
             const userId = req.userId;
 
-            const updatedUser = await removeGroupFromUser(
-                userId,
-                groupId
-            );
+            const result = await removeMember(userId, groupId);
 
-            if (!updatedUser) {
+            if (!result) {
                 return res.status(500).json({
                     message: "Error leaving group"
                 });

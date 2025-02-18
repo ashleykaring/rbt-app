@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { FaTimes, FaEye, FaLock } from "react-icons/fa";
+import {
+    FaTimes,
+    FaEye,
+    FaLock,
+    FaPencilAlt
+} from "react-icons/fa";
 import { ThemeProvider } from "styled-components";
 import {
     EntryContainer,
@@ -16,7 +21,8 @@ import {
     VisibilityToggle,
     ToggleOption,
     SubmitWrapper,
-    SubmitText
+    SubmitText,
+    EditIcon
 } from "./Entry.styles";
 import { entriesDB } from "../utils/db"; // -=-Import the database functions
 
@@ -56,19 +62,16 @@ const NewEntryPage = ({ userId }) => {
 
         try {
             // First try IndexedDB
-            // Notice how it uses the function from the db.js file (and has access to all entriesDB functions via the import)
-            const cachedEntry = await entriesDB.getTodaysEntry(
-                userId
-            );
+            const cachedEntry =
+                await entriesDB.getTodaysEntry(userId);
 
             // If you find an entry in the IndexedDB, use that
             if (cachedEntry) {
-                updateUIFromEntry(cachedEntry);
+                await updateUIFromEntry(cachedEntry);
             }
 
             // Then regardless of what happens, fetch from API - get all entries and find today's
             try {
-                // Same old way of fetching
                 const response = await fetch(
                     "http://localhost:8000/api/entries",
                     {
@@ -76,12 +79,8 @@ const NewEntryPage = ({ userId }) => {
                     }
                 );
 
-                // You got a response, so now you can do stuff with it
                 if (response.ok) {
                     const entries = await response.json();
-
-                    // Find today's entry if it exists
-                    // (Logic should probably be in the backend but eh)
                     const today = new Date();
                     const todaysEntry = entries.find(
                         (entry) => {
@@ -100,12 +99,10 @@ const NewEntryPage = ({ userId }) => {
                     );
 
                     if (todaysEntry) {
-                        // If you do find an entry you need to:
+                        // Update the UI
+                        await updateUIFromEntry(todaysEntry);
 
-                        // 1. Update the UI
-                        updateUIFromEntry(todaysEntry);
-
-                        // 2. Update the IndexedDB with the latest data
+                        // Update the IndexedDB with the latest data
                         await entriesDB.update({
                             ...todaysEntry,
                             user_id: userId
@@ -121,27 +118,58 @@ const NewEntryPage = ({ userId }) => {
             console.error("Error loading entry:", error);
         }
 
-        // When done stop loading state
         setIsLoading(false);
     };
 
     // Helper to update UI state from entry data
-    const updateUIFromEntry = (entryData) => {
+    const updateUIFromEntry = async (entryData) => {
         setEntry({
             rose: entryData.rose_text,
             bud: entryData.bud_text,
             thorn: entryData.thorn_text,
             _id: entryData._id
         });
-        // Use tags array directly if available, otherwise parse tag_string
-        const tagArray = Array.isArray(entryData.tags)
-            ? entryData.tags
-            : entryData.tag_string
-            ? entryData.tag_string
-                  .split(", ")
-                  .filter((tag) => tag)
-            : [];
-        setTags(tagArray);
+
+        // Handle tags
+        let tagNames = [];
+        if (
+            Array.isArray(entryData.tags) &&
+            entryData.tags.length > 0
+        ) {
+            // Fetch tag names for each tag ID
+            try {
+                const response = await fetch(
+                    `http://localhost:8000/api/entries/tags/${userId}`,
+                    {
+                        credentials: "include"
+                    }
+                );
+                if (response.ok) {
+                    const allTags = await response.json();
+                    // Map tag IDs to their names
+                    tagNames = entryData.tags
+                        .map((tagId) => {
+                            const tag = allTags.find(
+                                (t) => t._id === tagId
+                            );
+                            return tag ? tag.tag_name : null;
+                        })
+                        .filter((name) => name !== null); // Remove any null values
+                }
+            } catch (error) {
+                console.error(
+                    "Error fetching tag names:",
+                    error
+                );
+            }
+        } else if (entryData.tag_string) {
+            // If we have a tag_string, use that as fallback
+            tagNames = entryData.tag_string
+                .split(", ")
+                .filter((tag) => tag);
+        }
+
+        setTags(tagNames);
         setIsPublic(entryData.is_public);
         setIsEditMode(true);
         setHasChanges(false);
@@ -264,9 +292,7 @@ const NewEntryPage = ({ userId }) => {
         <ThemeProvider theme={theme}>
             <EntryContainer>
                 <EntryTitle>
-                    {isEditMode
-                        ? "Edit Today's Entry"
-                        : "Add Today's Entry"}
+                    {isEditMode ? "Today's Entry" : "New Entry"}
                 </EntryTitle>
 
                 {["rose", "bud", "thorn"].map((field) => (

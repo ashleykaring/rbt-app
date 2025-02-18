@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
-import { GroupSchema, MemberSchema} from "./user.js";
+import { GroupSchema, MemberSchema } from "./user.js";
 
 import dotenv from "dotenv";
 dotenv.config();
 
 let dbConnection;
 
-// Helper function to connect to the database 
+// Helper function to connect to the database
 
 function getDbConnection() {
     if (!dbConnection) {
@@ -38,7 +38,6 @@ async function createGroup(group) {
     }
 }
 
-
 // Finds a group document from its group code
 
 async function findGroupByCode(code) {
@@ -59,7 +58,7 @@ async function findGroupById(id) {
     return await groupModel.find({ _id: id });
 }
 
-// Adds a UserID to a group document's list of members 
+// Adds a UserID to a group document's list of members
 /*
 async function joinGroup(userId, groupId) {
     const groupModel = getDbConnection().model(
@@ -89,24 +88,26 @@ async function joinGroup(userId, groupId) {
         MemberSchema
     );
 
-
     try {
-        const memberObject = new memberModel({user_id: userId, group_id: groupId});
+        const memberObject = new memberModel({
+            user_id: userId,
+            group_id: groupId
+        });
         const savedMember = await memberObject.save();
         return savedMember;
-
     } catch (err) {
         console.log(err);
         return false;
-
     }
 }
 
 async function getAllGroups(userId) {
-    const memberModel = getDbConnection().model("members", MemberSchema);
+    const memberModel = getDbConnection().model(
+        "members",
+        MemberSchema
+    );
     try {
-        return await memberModel.find({user_id: userId});
-
+        return await memberModel.find({ user_id: userId });
     } catch (err) {
         console.log(err);
         return false;
@@ -114,9 +115,29 @@ async function getAllGroups(userId) {
 }
 
 async function getAllUsers(groupId) {
-    const memberModel = getDbConnection().model("members", MemberSchema);
+    const memberModel = getDbConnection().model(
+        "members",
+        MemberSchema
+    );
     try {
-        return await memberModel.find({group_id: groupId});
+        return await memberModel.find({ group_id: groupId });
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}
+
+// Add function to remove a member from a group
+async function removeMember(userId, groupId) {
+    const memberModel = getDbConnection().model(
+        "members",
+        MemberSchema
+    );
+    try {
+        return await memberModel.findOneAndDelete({
+            user_id: userId,
+            group_id: groupId
+        });
     } catch (err) {
         console.log(err);
         return false;
@@ -130,4 +151,5 @@ export {
     joinGroup,
     getAllGroups,
     getAllUsers,
+    removeMember
 };

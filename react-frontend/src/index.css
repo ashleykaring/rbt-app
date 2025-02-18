@@ -53,17 +53,17 @@ body.dark-mode {
 }
 
 body.blue-theme {
-    --background-color: #e3f2f9; 
-    --card-background: #ffffff; 
-    --border-color: #bdd8eb; 
-    --text-primary: #2c3e50; 
-    --text-secondary: #666666; 
-    --header-text: #2c3e50; 
-    --header-icon: #2c3e50; 
+    --background-color: #e3f2f9;
+    --card-background: #ffffff;
+    --border-color: #bdd8eb;
+    --text-primary: #2c3e50;
+    --text-secondary: #666666;
+    --header-text: #2c3e50;
+    --header-icon: #2c3e50;
     --header-border: rgba(0, 0, 0, 0.08);
 
     --text-color: #2c3e50;
-    --fill-color: #B8D3EB;
+    --fill-color: #b8d3eb;
     --button-color: #89afca;
     --input-color: #e4e4e4;
     --past-background: white;
@@ -84,8 +84,8 @@ body.min-theme {
     --header-border: rgba(0, 0, 0, 0.08);
 
     --text-color: #2c3e50;
-    --fill-color: #D3D3D3;
-    --button-color: #D3D3D3;
+    --fill-color: #d3d3d3;
+    --button-color: #d3d3d3;
     --input-color: #e4e4e4;
     --past-background: white;
 
@@ -101,8 +101,9 @@ body {
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-        "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
         "Droid Sans", "Helvetica Neue", sans-serif;
 }
 
