@@ -18,7 +18,7 @@
 
 A mobile-first progressive web application for creating, saving, and sharing Rose, Bud, Thorn reflections.
 
-![App Logo](react-frontend/public/RBDLogoRounded.png)
+<img src="react-frontend/public/RBDLogoRounded.png" width="35%" />
 
 #### Pages
 
