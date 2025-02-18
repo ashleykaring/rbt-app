@@ -3,7 +3,7 @@ import { openDB } from "idb";
 
 // Do not change these for now
 const DB_NAME = "rbtApp";
-const DB_VERSION = 1;
+const DB_VERSION = 5;
 
 // Database initialization
 /*
@@ -47,9 +47,7 @@ export const initDB = async () => {
                     "group_code",
                     { unique: true }
                 );
-                groupStore.createIndex("users", "users", {
-                    multiEntry: true
-                });
+                groupStore.createIndex("name", "name");
             }
 
             // Tags store
@@ -60,9 +58,37 @@ export const initDB = async () => {
                 tagStore.createIndex("user_id", "user_id");
                 tagStore.createIndex("tag_name", "tag_name");
             }
+
+            // Members store
+            if (!db.objectStoreNames.contains("members")) {
+                const memberStore = db.createObjectStore("members", {
+                    keyPath: "_id"
+                });
+                memberStore.createIndex("user_id", "user_id");
+                memberStore.createIndex("group_id", "group_id");
+            }
         }
     });
     return db;
+};
+
+// Clear all data from IndexedDB (used when a user logs out)
+export const clearDB = async () => {
+    const db = await initDB();
+    const tx = db.transaction(
+        ["users", "entries", "groups", "tags"],
+        "readwrite"
+    );
+
+    // Clear all data from the database
+    await Promise.all([
+        tx.objectStore("users").clear(),
+        tx.objectStore("entries").clear(),
+        tx.objectStore("groups").clear(),
+        tx.objectStore("tags").clear()
+    ]);
+
+    await tx.done;
 };
 
 /*
@@ -89,6 +115,13 @@ export const entriesDB = {
         const tx = db.transaction("entries", "readonly");
         const index = tx.store.index("user_id");
         return index.getAll(userId);
+    },
+
+    async getAllOverall() {
+        const db = await initDB();
+        const tx = db.transaction("entries", "readonly");
+        const index = tx.store.index("user_id");
+        return index.getAll();
     },
 
     async getMostRecent(userId) {
@@ -119,18 +152,51 @@ export const entriesDB = {
 
     async getTodaysEntry(userId) {
         return this.getByDate(userId, new Date());
+    },
+
+    async getById(entryId) {
+        const db = await initDB();
+        return db.get("entries", entryId);
+    },
+
+    async getMostRecentByUserId(userId) {
+        const entries = await this.getAllOverall(userId);
+
+        const filteredEntries = entries.filter((entry) => entry.user_id === userId);
+
+        let maxDateEntry = filteredEntries.length > 0 ? filteredEntries[0]: null;
+
+        for (let i = 0; i<filteredEntries.length; i++) {
+            if (filteredEntries[i].date > maxDateEntry) maxDateEntry = filteredEntries[i];
+
+        }
+
+
+        return maxDateEntry;
+        
+    },
+
+    async addIfNotPresent(entry) {
+        const entries = await this.getAllOverall();
+        if (!entries.some((e) => e._id === entry._id)) {
+            return this.add(entry);
+        }
+
+        return;
     }
 };
 
 // Groups operations
 export const groupsDB = {
-    async getAll(userId) {
+
+
+    async getById(groupId) {
         const db = await initDB();
         const tx = db.transaction("groups", "readonly");
         const store = tx.store;
         const groups = await store.getAll();
-        return groups.filter((group) =>
-            group.users.includes(userId)
+        return groups.filter((group) => 
+            group._id.includes(groupId)
         );
     },
 
@@ -145,6 +211,39 @@ export const groupsDB = {
     }
 };
 
+export const membersDB = {
+    async getGroupIds(userId) {
+        const db = await initDB();
+        const tx = db.transaction("members", "readonly");
+        const store = tx.store;
+        const members = await store.getAll();
+        return members.filter((memberObject) =>
+            memberObject.user_id.includes(userId)
+        );
+    },
+
+    async getUserIds(groupId) {
+        const db = await initDB();
+        const tx = db.transaction("members", "readonly");
+        const store = tx.store;
+        const members = await store.getAll();
+        return members.filter((memberObject) => 
+            memberObject.group_id.includes(groupId)
+        );
+    },
+
+    async add(memberObject) {        
+
+        const db = await initDB();
+        return db.add("members", memberObject);
+    },
+
+    async delete(memberId) {
+        const db = await initDB();
+        return db.delete({_id: memberId});
+    }
+}
+
 // Tags operations
 export const tagsDB = {
     async getAll(userId) {
@@ -157,5 +256,10 @@ export const tagsDB = {
     async add(tag) {
         const db = await initDB();
         return db.add("tags", tag);
+    },
+
+    async update(tags) {
+        const db = await initDB();
+        return db.put("tags", tags);
     }
 };

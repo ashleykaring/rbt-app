@@ -6,6 +6,7 @@
     --pop-up-background: #f2c4bb;
     --streak-counter-color: #d66c84;
     --pop-up-text-color: #333333;
+    --active-background: #f2c4bb;
 }
 
 body.dark-mode {
@@ -17,6 +18,7 @@ body.dark-mode {
     --streak-counter-color: #f8ced8;
     --pop-up-text-color: #fffdfd;
     --hover-background-dark-mode: #83444f;
+    --active-background: #f2c4bb;
     .react-calendar__tile--now {
         background: #b75f6e !important;
         color: #ffffff !important;
@@ -26,6 +28,28 @@ body.dark-mode {
         background: var(--pop-up-background) !important;
         color: #fff !important;
     }
+}
+
+body.blue-theme {
+    --date-labelc: #2c3e50;
+    --past-background: white;
+    --calendar-background: #f5f5f5;
+    --calendar-container-background: transparent;
+    --pop-up-background: #e3f2f9;
+    --streak-counter-color: #5A8FBE;
+    --pop-up-text-color: #333333;
+    --active-background: #B8D3EB;
+}
+
+body.min-theme {
+    --date-labelc: #3e3c3c;
+    --past-background: white;
+    --calendar-background: white;
+    --calendar-container-background: transparent;
+    --pop-up-background: #D3D3D3;
+    --streak-counter-color: #a59a9d;
+    --pop-up-text-color: #333333;
+    --active-background: #f5f5f5;
 }
 
 .home-page {
@@ -149,7 +173,7 @@ body.dark-mode {
 }
 
 .react-calendar__tile--active {
-    background: #f2c4bb !important;
+    background: var(--active-background) !important;
     color: #333 !important;
 }
 

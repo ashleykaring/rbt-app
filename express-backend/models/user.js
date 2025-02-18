@@ -59,4 +59,4 @@ const TagSchema = new mongoose.Schema({
 
 // export all schemas
 
-export {UserSchema as userSchema, EntrySchema as entrySchema, UserEntriesSchema as userEntriesSchema, GroupSchema, TagSchema};
+export {UserSchema as userSchema, EntrySchema as entrySchema, UserEntriesSchema as userEntriesSchema, GroupSchema, TagSchema, MemberSchema};

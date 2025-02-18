@@ -4,6 +4,7 @@ IMPORTS
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import RBDLogo from "./RBDLogo.png";
+import { initDB } from "../utils/db";
 
 // Styles
 import {
@@ -120,6 +121,7 @@ function AccountFlow({ setIsLoggedIn }) {
         e.preventDefault();
         const result = await loginUser({ email, password });
         if (result.success) {
+            await initDB();
             setShowSuccessAnimation(true);
             // Wait for animation to complete before transitioning
             setTimeout(() => {
@@ -140,6 +142,7 @@ function AccountFlow({ setIsLoggedIn }) {
             first_name: firstName
         });
         if (result.success) {
+            await initDB();
             setShowSuccessAnimation(true);
             // Wait for animation to complete before transitioning
             setTimeout(() => {

@@ -95,9 +95,18 @@ const MainAppRoutes = ({
 }) => {
     // Check for dark mode and pass through
     useEffect(() => {
-        const darkMode =
-            localStorage.getItem("theme") === "dark-mode";
-        document.body.classList.toggle("dark-mode", darkMode);
+        const currentTheme =
+            localStorage.getItem("theme") || "light-mode";
+
+        // remove any other themes
+        document.body.classList.remove(
+            "dark-mode",
+            "min-theme",
+            "blue-theme"
+        );
+
+        // apply current theme
+        document.body.classList.add(currentTheme);
     }, []);
 
     return (
@@ -112,7 +121,7 @@ const MainAppRoutes = ({
                 path="/new-entry"
                 element={<NewEntryPage userId={userId} />}
             />
-            <Route path="/groups" element={<GroupsPage />} />
+            <Route path="/groups" element={<GroupsPage userId={userId}/>} />
             <Route
                 path="/settings"
                 element={

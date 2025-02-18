@@ -12,7 +12,8 @@ import {
 } from "react-icons/fa";
 import * as S from "./SettingsStyles";
 import { createGlobalStyle } from "styled-components"; 
-import { userDB, groupsDB } from "../utils/db";  //imported IndexedBD 
+import { userDB, groupsDB, clearDB } from "../utils/db";  
+
 
 export const GlobalStyle = createGlobalStyle`
     @keyframes spin {
@@ -23,7 +24,7 @@ export const GlobalStyle = createGlobalStyle`
 
 function Settings({ setIsLoggedIn }) {
     const navigate = useNavigate();
-    const [darkMode, setDarkMode] = useState(false);
+    const [theme, setTheme] = useState("light-mode");
 
     // Track both current and edited values
     const [currentUser, setCurrentUser] = useState({
@@ -174,49 +175,34 @@ function Settings({ setIsLoggedIn }) {
     useEffect(() => {
         const currentTheme = localStorage.getItem("theme");
         if (currentTheme) {
-            setDarkMode(currentTheme === "dark-mode");
+            setTheme(currentTheme);
         }
     }, []);
 
     useEffect(() => {
-        if (darkMode) {
-            localStorage.setItem("theme", "dark-mode");
-            document.body.classList.add("dark-mode");
-        } else {
-            localStorage.setItem("theme", "light-mode");
-            document.body.classList.remove("dark-mode");
-        }
-    }, [darkMode]);
+        localStorage.setItem("theme", theme);
+        document.body.className = theme;
+        console.log(theme);
+        // if (darkMode) {
+        //     localStorage.setItem("theme", "dark-mode");
+        //     document.body.classList.add("dark-mode");
+        // } else {
+        //     localStorage.setItem("theme", "light-mode");
+        //     document.body.classList.remove("dark-mode");
+        // }
+    }, [theme]);
 
     // Dark mode logic
     const toggleTheme = () => {
         setDarkMode((prev) => !prev);
     };
 
-    // if (isLoading) {
-    //     return <S.LoadingSpinner>Loading...</S.LoadingSpinner>;
-        
-    // }
-
     // Logout logic
     const handleLogout = async () => {
         try {
             const db = await userDB.initDB();
-            await db.clear("users");
-            await db.clear("entries");
-            await db.clear("groups");
-            await db.clear("tags");
+            await clearDB();
 
-            const response = await fetch(
-                "http://localhost:8000/api/logout",
-                {
-                    method: "POST",
-                    credentials: "include"
-                }
-            );
-
-            if (!response.ok) throw new Error("Logout failed");
-           
             setIsLoggedIn(false);
             navigate("/account");
             
@@ -269,19 +255,55 @@ function Settings({ setIsLoggedIn }) {
     return (
         <S.SettingsContainer>
             <S.SectionContainer>
-                <S.SectionHeader>System</S.SectionHeader>
+                <S.SectionHeader>Appearance</S.SectionHeader>
                 <S.ContentCard>
-                    <S.ToggleWrapper>
-                        <S.IconWrapper active={darkMode}>
-                            {darkMode ? <FaMoon /> : <FaSun />}
+                    {/* <S.ToggleWrapper>
+                            <S.IconWrapper active={darkMode}>
+                                {darkMode ? <FaMoon /> : <FaSun />}
+                            </S.IconWrapper>
+                            Dark Mode
+                            <S.Toggle
+                                onClick={toggleTheme}
+                                active={darkMode}
+                                aria-label="Toggle dark mode"
+                            />
+                        </S.ToggleWrapper> */}
+                    <S.ThemeSelection
+                        onClick={() =>
+                            toggleTheme("light-mode")
+                        }
+                        active={"light-mode"}
+                        selected={theme === "light-mode"}
+                    >
+                        <S.IconWrapper>
+                            <S.Circle color="#f2c4bb" />
                         </S.IconWrapper>
-                        Dark Mode
-                        <S.Toggle
-                            onClick={toggleTheme}
-                            active={darkMode}
-                            aria-label="Toggle dark mode"
-                        />
-                    </S.ToggleWrapper>
+                        Classic
+                    </S.ThemeSelection>
+                    <S.ThemeSelection
+                        onClick={() => toggleTheme("dark-mode")}
+                        active={"dark-mode"}
+                        selected={theme === "dark-mode"}
+                    >
+                        <S.Circle color="#000000" />
+                        Dark
+                    </S.ThemeSelection>
+                    <S.ThemeSelection
+                        active={theme === "blue-theme"}
+                        onClick={() => setTheme("blue-theme")}
+                        selected={theme === "blue-theme"}
+                    >
+                        <S.Circle color="#9bc4e2" />
+                        Sky
+                    </S.ThemeSelection>
+                    <S.ThemeSelection
+                        active={theme === "min-theme"}
+                        onClick={() => setTheme("min-theme")}
+                        selected={theme === "min-theme"}
+                    >
+                        <S.Circle color="#d3d3d3" />
+                        Minimalist
+                    </S.ThemeSelection>
                 </S.ContentCard>
             </S.SectionContainer>
 

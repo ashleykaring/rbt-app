@@ -157,23 +157,6 @@ async function getEntryById(entryId) {
     return await entryModel.find({ _id: entryId });
 }
 
-// Adds a groupID to a User document
-
-async function addGroupToUser(userId, groupId) {
-    const userModel = getDbConnection().model("users", uSchema);
-    try {
-        return await userModel.findOneAndUpdate(
-            { _id: userId },
-            {
-                $push: { groups: groupId }
-            }
-        );
-    } catch (error) {
-        console.log(error);
-        return false;
-    }
-}
-
 // Adds a reaction object to an Entry document
 
 async function addReactionToEntry(entryId, reactionObject) {
@@ -384,7 +367,6 @@ export {
     addEntry,
     getAllEntries,
     findUserById,
-    addGroupToUser,
     getUserEntriesByUserId,
     getEntryById,
     addReactionToEntry,

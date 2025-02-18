@@ -5,12 +5,13 @@ import { useState, useEffect, useCallback } from "react";
 import { useSwipeable } from "react-swipeable";
 import Calendar from "react-calendar";
 import Modal from "react-modal";
+import { entriesDB } from "../utils/db";
 
 // Styles
 import "react-calendar/dist/Calendar.css";
 import "./HomePage.css";
 
-function HomePage() {
+function HomePage({ userId }) {
     const [date, setDate] = useState(new Date());
     const [selectedEntry, setSelectedEntry] = useState(null);
     const [recentEntry, setRecentEntry] = useState(null);
@@ -20,12 +21,19 @@ function HomePage() {
     const [activeStartDate, setActiveStartDate] = useState(
         new Date()
     );
+    const [isLoading, setIsLoading] = useState(true); //added
+    const [isOffline, setIsOffline] = useState(false); //added
 
     const API_BASE_URL = "http://localhost:8000";
 
     // fetch most recent entry
     const fetchMostRecentEntry = useCallback(async () => {
+        setIsLoading(true);
         try {
+            const cachedEntry = await entriesDB.getMostRecent(userId); //added
+            if (cachedEntry) {
+                setRecentEntry(cachedEntry); // added
+            }
             const response = await fetch(
                 `${API_BASE_URL}/api/entries`,
                 {
@@ -45,17 +53,25 @@ function HomePage() {
             );
 
             setRecentEntry(sortedEntries[0] || null);
+            await entriesDB.add(sortedEntries[0]); // added
+            setIsOffline(false); //added
         } catch (error) {
             console.error(
                 "Error fetching most recent entry:",
                 error
             );
         }
+        setIsLoading(false); // added
     }, []);
 
     // Fetch entry for selected date
     const fetchEntryForDate = async (selectedDate) => {
         try {
+            const cachedEntry = await entriesDB.getByDate(userId, selectedDate); // added
+            if (cachedEntry) {
+                setSelectedEntry(cachedEntry);
+                return; // added
+            }
             const response = await fetch(
                 `${API_BASE_URL}/api/entries`,
                 {
@@ -86,6 +102,10 @@ function HomePage() {
     // Fetch all entry dates
     const fetchAllEntryDates = useCallback(async () => {
         try {
+            const cachedEntries = await entriesDB.getAll(userId); // added 
+            const cachedDates = cachedEntries.map(entry => new Date(entry.date).toDateString()); // added
+            setEntryDates(cachedDates); //added
+            calculateStreakCount(cachedDates); // added
             const response = await fetch(
                 `${API_BASE_URL}/api/entries`,
                 {
@@ -106,10 +126,11 @@ function HomePage() {
             setEntryDates(datesWithEntries);
             // streak count
             calculateStreakCount(datesWithEntries);
+            await Promise.all(entries.map(entries.map(entry => entriesDB.update(entry)))); // added
         } catch (error) {
             console.error("Error fetching entry dates:", error);
         }
-    }, []);
+    }, [userId]); // added userId
 
     // streak tracking
     const calculateStreakCount = (dates) => {
