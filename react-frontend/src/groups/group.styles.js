@@ -48,39 +48,65 @@ export const ContentContainer = styled.div`
 
 export const Title = styled.h1`
     font-size: 2.4rem;
-    font-weight: 700;
+    font-weight: 800;
     color: ${(props) =>
-        props.theme.mode === "dark-mode"
-            ? darkTheme.text
-            : lightTheme.text};
-    margin-bottom: 15px;
+        props.theme.mode === "dark-mode" ? "#fff" : "#2c3e50"};
+    margin-bottom: 1.2rem;
+    text-shadow: 2px 2px 4px var(--fill-color);
+    letter-spacing: -0.5px;
     position: relative;
-    padding-left: 1rem;
-    flex: 1;
+    display: inline-block;
 
-    &::before {
+    &::after {
         content: "";
         position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        height: 70%;
-        width: 4px;
-        background: #f0c5bc;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        height: 3px;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            var(--fill-color) 20%,
+            var(--fill-color) 80%,
+            transparent
+        );
         border-radius: 2px;
     }
 `;
 
-export const Subtitle = styled(Title).attrs({ as: "h2" })`
+export const Subtitle = styled.h2`
     font-size: 1.8rem;
-    margin: 4rem 0 1.5rem;
+    font-weight: 800;
     color: ${(props) =>
-        props.theme.mode === "dark-mode"
-            ? darkTheme.text
-            : lightTheme.text};
+        props.theme.mode === "dark-mode" ? "#fff" : "#2c3e50"};
+    margin: 4rem 0 1.5rem;
+    text-shadow: 2px 2px 4px var(--fill-color);
+    letter-spacing: -0.5px;
+    position: relative;
+    display: inline-block;
 
     &:first-of-type {
         margin-top: 0;
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        height: 3px;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            var(--fill-color) 20%,
+            var(--fill-color) 80%,
+            transparent
+        );
+        border-radius: 2px;
     }
 `;
 
