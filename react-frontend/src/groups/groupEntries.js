@@ -16,6 +16,8 @@ import {
 } from "react-icons/fi";
 import { ThemeProvider } from "styled-components";
 
+import {groupsDB, membersDB, entriesDB} from "../utils/db";
+
 // Styles
 import {
     Container,
@@ -104,7 +106,36 @@ function GroupEntries({ userId }) {
     };
 
     // Fetch entries for the group
+
+    // Backend function instructions
+    // 1. get all users of the group
+    // 2. get the most recent public entry of each user (this shouldn't be hard with IndexedDb)
+    // 
+
+
     const fetchEntries = async () => {
+
+        // get cached info
+
+        const cachedMemberObjects = await membersDB.getUserIds(groupId);
+
+        const groupsPageEntries = [];
+        for (let i = 0; i<cachedMemberObjects.length; i++) {
+            const newEntry = await entriesDB.getMostRecentByUserId(cachedMemberObjects[0].user_id);
+            groupsPageEntries.push(newEntry);
+        }
+
+
+
+        // Filter out nulls
+        const finalCachedPageEntries = groupsPageEntries.filter((entry) => entry!=null);
+
+        if (finalCachedPageEntries) {
+            setEntries(finalCachedPageEntries);
+        }
+
+
+
         try {
             const currentUser = userId;
             const response = await fetch(
@@ -119,7 +150,19 @@ function GroupEntries({ userId }) {
             }
 
             const entries = await response.json();
+
             setEntries(entries);
+
+
+
+            // Update indexed db - add entries to DB if they are not already in it
+
+            for (let i = 0; i<entries.length; i++) {
+                await entriesDB.addIfNotPresent(entries[i]);
+            }
+
+
+
         } catch (error) {
             console.error("Error fetching entries:", error);
         }
