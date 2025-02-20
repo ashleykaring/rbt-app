@@ -12,9 +12,10 @@ export const createToken = (userId) => {
 // Set JWT cookie
 export const setTokenCookie = (res, token) => {
     res.cookie("jwt", token, {
-        httpOnly: true, // Prevents JavaScript access
-        secure: process.env.NODE_ENV === "production", // HTTPS only in production
-        sameSite: "strict", // CSRF protection
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+        httpOnly: true,
+        secure: true, // Always use HTTPS for Azure
+        sameSite: "none", // Required for cross-origin
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+        domain: "rosebudthorn.azurewebsites.net"
     });
 };

@@ -62,14 +62,36 @@ const app = express();
 const port = 8000;
 
 // Middleware
-app.use(
-    cors({
-        origin: "https://kind-field-0c1ebd81e.4.azurestaticapps.net",
-        credentials: true,
-        methods: "GET,HEAD,PUT,PATCH,POST,DELETE"
-    })
-);
-app.options("*", cors());
+const corsOptions = {
+    origin: "https://kind-field-0c1ebd81e.4.azurestaticapps.net",
+    credentials: true,
+    methods: [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "OPTIONS",
+        "PATCH",
+        "HEAD"
+    ],
+    allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "Accept",
+        "Origin",
+        "Cookie"
+    ],
+    exposedHeaders: ["Set-Cookie"],
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
+
+// Enable pre-flight requests for all routes
+app.options("*", cors(corsOptions));
+
 app.use(express.json());
 app.use(cookieParser());
 

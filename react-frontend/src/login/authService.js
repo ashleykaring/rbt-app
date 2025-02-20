@@ -1,17 +1,27 @@
 const API_BASE_URL =
     "https://rosebudthorn.azurewebsites.net/api";
 
+// Utility function for API calls
+const apiCall = async (endpoint, options = {}) => {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            ...options.headers
+        },
+        credentials: "include",
+        ...options
+    });
+    return response;
+};
+
 // CHECK IF USER EXISTS
 export const checkIfUserExists = async (email) => {
     try {
-        const response = await fetch(
-            `${API_BASE_URL}/user-exists/${email}`,
+        const response = await apiCall(
+            `/user-exists/${email}`,
             {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json"
-                }
+                method: "GET"
             }
         );
 
@@ -44,17 +54,10 @@ export const checkIfUserExists = async (email) => {
 // REGISTER USER
 export const registerUser = async (userData) => {
     try {
-        const response = await fetch(
-            `${API_BASE_URL}/register`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                credentials: "include",
-                body: JSON.stringify(userData)
-            }
-        );
+        const response = await apiCall("/register", {
+            method: "POST",
+            body: JSON.stringify(userData)
+        });
 
         const data = await response.json();
 
@@ -82,12 +85,8 @@ export const registerUser = async (userData) => {
 // LOGIN USER
 export const loginUser = async (credentials) => {
     try {
-        const response = await fetch(`${API_BASE_URL}/login`, {
+        const response = await apiCall("/login", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            credentials: "include",
             body: JSON.stringify(credentials)
         });
 
