@@ -64,10 +64,12 @@ const port = 8000;
 // Middleware
 app.use(
     cors({
-        origin: "https://localhost:3000",
-        credentials: true
+        origin: "https://kind-field-0c1ebd81e.4.azurestaticapps.net",
+        credentials: true,
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE"
     })
 );
+app.options("*", cors());
 app.use(express.json());
 app.use(cookieParser());
 
