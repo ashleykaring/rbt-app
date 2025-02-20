@@ -23,7 +23,7 @@ jobs:
 
             # 3. Install the root dependencies.
             - name: Install root dependencies
-              run: npm ci
+              run: npm ci --legacy-peer-deps
 
             # 4. Install backend dependencies (in the express-backend subdirectory).
             - name: Install backend dependencies
