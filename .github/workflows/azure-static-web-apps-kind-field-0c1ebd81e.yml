@@ -35,7 +35,7 @@ jobs:
             - name: Install Frontend Dependencies
               run: |
                   cd react-frontend
-                  npm ci
+                  npm ci --legacy-peer-deps
             - name: Build And Deploy
               id: builddeploy
               uses: Azure/static-web-apps-deploy@v1
