@@ -17,7 +17,7 @@ import {
 } from "./search.styles";
 import { entriesDB, tagsDB } from "../utils/db";
 
-const API_BASE_URL = "http://rosebudthorn.azurewebsites.net";
+const API_BASE_URL = "https://rosebudthorn.azurewebsites.net";
 
 // import styled from "styled-components";
 

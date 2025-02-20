@@ -57,7 +57,7 @@ function Settings({ setIsLoggedIn }) {
                 }
                 //fetch latest data from api (always)
                 const response = await fetch(
-                    "http://rosebudthorn.azurewebsites.net/api/user/details",
+                    "https://rosebudthorn.azurewebsites.net/api/user/details",
                     {
                         credentials: "include"
                     }
@@ -115,7 +115,7 @@ function Settings({ setIsLoggedIn }) {
             });
             // update server
             const response = await fetch(
-                "http://rosebudthorn.azurewebsites.net/api/user",
+                "https://rosebudthorn.azurewebsites.net/api/user",
                 {
                     method: "PUT",
                     headers: {
@@ -176,7 +176,7 @@ function Settings({ setIsLoggedIn }) {
 
                 // always fetch from api
                 const response = await fetch(
-                    "http://rosebudthorn.azurewebsites.net/api/groups",
+                    "https://rosebudthorn.azurewebsites.net/api/groups",
                     {
                         credentials: "include"
                     }
@@ -277,7 +277,7 @@ function Settings({ setIsLoggedIn }) {
 
             // Then call logout endpoint
             const response = await fetch(
-                "http://rosebudthorn.azurewebsites.net/api/logout",
+                "https://rosebudthorn.azurewebsites.net/api/logout",
                 {
                     method: "POST",
                     credentials: "include"
@@ -319,7 +319,7 @@ function Settings({ setIsLoggedIn }) {
         try {
             // First call the server
             const response = await fetch(
-                `http://rosebudthorn.azurewebsites.net/api/groups/${groupId}/leave`,
+                `https://rosebudthorn.azurewebsites.net/api/groups/${groupId}/leave`,
                 {
                     method: "DELETE",
                     credentials: "include"

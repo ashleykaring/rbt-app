@@ -30,7 +30,7 @@ function JoinGroup({ onGroupUpdate }) {
     const [toastSuccess, setToastSuccess] = useState(true);
 
     const API_BASE_URL =
-        "http://rosebudthorn.azurewebsites.net";
+        "https://rosebudthorn.azurewebsites.net";
 
     // Join group API call
     const joinGroup = async (groupCode) => {

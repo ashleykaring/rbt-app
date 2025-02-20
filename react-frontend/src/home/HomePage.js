@@ -37,7 +37,7 @@ function HomePage({ userId }) {
     const [userName, setUserName] = useState("");
 
     const API_BASE_URL =
-        "http://rosebudthorn.azurewebsites.net";
+        "https://rosebudthorn.azurewebsites.net";
 
     // add swipe function
     const handleSwipe = (direction) => {

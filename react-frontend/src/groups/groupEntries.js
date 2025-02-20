@@ -65,7 +65,7 @@ function GroupEntries({ userId }) {
     const groupUsers = location.state?.users;
 
     const API_BASE_URL =
-        "http://rosebudthorn.azurewebsites.net";
+        "https://rosebudthorn.azurewebsites.net";
 
     useLayoutEffect(() => {
         const currentTheme = localStorage.getItem("theme");
@@ -201,7 +201,7 @@ function GroupEntries({ userId }) {
             try {
                 // post new reaction with credentials
                 const response = await axios.put(
-                    `http://rosebudthorn.azurewebsites.net/entries/reaction`,
+                    `https://rosebudthorn.azurewebsites.net/entries/reaction`,
                     reactionData,
                     {
                         withCredentials: true
@@ -261,7 +261,7 @@ function GroupEntries({ userId }) {
                         try {
                             const resp = await fetch(
                                 // get most recent entry for each user
-                                `http://rosebudthorn.azurewebsites.net/users/${user}/recent`
+                                `https://rosebudthorn.azurewebsites.net/users/${user}/recent`
                             );
 
                             if (!resp.ok) {

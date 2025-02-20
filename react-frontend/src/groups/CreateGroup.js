@@ -33,7 +33,7 @@ function CreateGroup({ onGroupUpdate }) {
     const [isLoading, setIsLoading] = useState(false);
 
     const API_BASE_URL =
-        "http://rosebudthorn.azurewebsites.net";
+        "https://rosebudthorn.azurewebsites.net";
 
     // Generates and verifies a unique group code
     const generateUniqueCode = async () => {
